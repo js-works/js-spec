@@ -1,2 +1,2 @@
-# js-specify
-Small spec library for JavaScript
+# js-spec
+Spec library for JavaScript
