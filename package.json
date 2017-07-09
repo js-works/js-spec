@@ -5,8 +5,8 @@
   "homepage": "https://github.com/js-works/js-spec",
   "main": "dist/js-spec/js-spec.min.js",
   "repository": {
-      "type": "git",
-      "url": "https://github.com/js-works/js-spec.git"
+    "type": "git",
+    "url": "https://github.com/js-works/js-spec.git"
   },
   "devDependencies": {
     "babel-polyfill": "^6.2.0",

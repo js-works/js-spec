@@ -34,7 +34,7 @@ module.exports = function (grunt) {
                     ],
                     bail: true
                 },
-                src: ['build/src/specs/**/*.js']
+                src: ['build/src/**/*.js']
             }
         },
         esdoc : {
@@ -42,12 +42,12 @@ module.exports = function (grunt) {
                 options: {
                     source: 'src/main/',
                     destination: 'dist/v<%= pkg.version %>/docs/api',
-                    title: 'js-prelude',
+                    title: 'js-spec',
                     undocumentIdentifier: true,
 
                     test: {
                         type: 'mocha',
-                        source: './src/specs',
+                        source: './src/test',
                         includes: ['\\-spec.js']
                     }
                 }
@@ -55,8 +55,8 @@ module.exports = function (grunt) {
         },
         browserify: {
             js: {
-                src: 'build/src/js-prelude.js',
-                dest: 'dist/v<%= pkg.version %>/js-prelude-<%= pkg.version %>.js'
+                src: 'build/src/js-spec.js',
+                dest: 'dist/v<%= pkg.version %>/js-spec-<%= pkg.version %>.js'
             }
         },
         uglify: {
@@ -70,8 +70,8 @@ module.exports = function (grunt) {
                         + '*/\n'
             },
             js: {
-                src: ['dist/v<%= pkg.version %>/js-prelude-<%= pkg.version %>.js'],
-                dest: 'dist/v<%= pkg.version %>/js-prelude-<%= pkg.version %>.min.js'
+                src: ['dist/v<%= pkg.version %>/js-spec-<%= pkg.version %>.js'],
+                dest: 'dist/v<%= pkg.version %>/js-spec-<%= pkg.version %>.min.js'
             }
         },
         compress: {
@@ -81,8 +81,8 @@ module.exports = function (grunt) {
                     level: 9
                 },
                 files: [{
-                    src: ['dist/v<%= pkg.version %>/js-prelude-<%= pkg.version %>.min.js'],
-                    dest: 'dist/v<%= pkg.version %>/js-prelude-<%= pkg.version %>.min.js.gz'
+                    src: ['dist/v<%= pkg.version %>/js-spec-<%= pkg.version %>.min.js'],
+                    dest: 'dist/v<%= pkg.version %>/js-spec-<%= pkg.version %>.min.js.gz'
                 }, {
                     src: ['node_modules/babel-polyfill/dist/polyfill.min.js'],
                     dest: 'dist/v<%= pkg.version %>/polyfill.min.js.gz'
@@ -90,17 +90,17 @@ module.exports = function (grunt) {
             }
         },
         copy: {
-            jsprelude1: {
-                src: 'dist/v<%= pkg.version %>/js-prelude-<%= pkg.version %>.js',
-                dest: 'dist/js-prelude/js-prelude.js'
+            jsspec1: {
+                src: 'dist/v<%= pkg.version %>/js-spec-<%= pkg.version %>.js',
+                dest: 'dist/js-spec/js-spec.js'
             },
-            jsprelude2: {
-                src: 'dist/v<%= pkg.version %>/js-prelude-<%= pkg.version %>.min.js',
-                dest: 'dist/js-prelude/js-prelude.min.js'
+            jsspec2: {
+                src: 'dist/v<%= pkg.version %>/js-spec-<%= pkg.version %>.min.js',
+                dest: 'dist/js-spec/js-spec.min.js'
             },
-            jsprelude3: {
-                src: 'dist/v<%= pkg.version %>/js-prelude-<%= pkg.version %>.min.js.gz',
-                dest: 'dist/js-prelude/js-prelude.min.js.gz'
+            jsspec3: {
+                src: 'dist/v<%= pkg.version %>/js-spec-<%= pkg.version %>.min.js.gz',
+                dest: 'dist/js-spec/js-spec.min.js.gz'
             },
             polyfill1: {
                 src: 'node_modules/babel-polyfill/dist/polyfill.min.js',
@@ -108,16 +108,16 @@ module.exports = function (grunt) {
             },
             polyfill2: {
                 src: 'node_modules/babel-polyfill/dist/polyfill.min.js',
-                dest: 'dist/js-prelude/polyfill.min.js'
+                dest: 'dist/js-spec/polyfill.min.js'
             },
             polyfill3: {
                 src: 'dist/v<%= pkg.version %>/polyfill.min.js.gz',
-                dest: 'dist/js-prelude/polyfill.min.js.gz'
+                dest: 'dist/js-spec/polyfill.min.js.gz'
             },
             docs: {
                 cwd: 'dist/v<%= pkg.version %>/docs',
                 src: '**',
-                dest: 'dist/js-prelude/docs/',
+                dest: 'dist/js-spec/docs/',
                 expand: true
             }
         },
@@ -127,7 +127,7 @@ module.exports = function (grunt) {
                     spawn: true,
                 },
                 files: ['src/**/*.js'],
-                 tasks: ['compile', 'mochaTest']
+                tasks: ['compile', 'mochaTest']
                 //tasks: ['esdoc']
             }
         }
@@ -155,6 +155,6 @@ module.exports = function (grunt) {
     grunt.registerTask('compile', ['babel']);
     grunt.registerTask('test', ['babel', 'mochaTest']);
     grunt.registerTask('doc', ['babel', 'mochaTest', 'esdoc']);
-    grunt.registerTask('dist', ['clean', 'babel', 'mochaTest', /*'esdoc', */ 'browserify', 'uglify', 'compress', 'copy']);
+    grunt.registerTask('dist', ['clean', 'babel', 'mochaTest', 'esdoc', 'browserify', 'uglify', 'compress', 'copy']);
     grunt.registerTask('default', ['dist']);
 };

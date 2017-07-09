@@ -2,89 +2,129 @@ import SpecError from './SpecError.js';
 
 const Spec = {
     boolean(it, path = null) {
-        return typeof it === 'boolean'
-          ? null
-          : createError('Must be boolean', path);
+        return it === true || it === false
+            ? null
+            : createError('Must be boolean', path);
     },
 
     number(it, path = null) {
         return typeof it === 'number'
-          ? null
-          : createError('Must be a number', path);
+            ? null
+            : createError('Must be a number', path);
     },
 
     string(it, path = null) {
         return typeof it === 'string'
-          ? null
-          : createError('Must be a string', path);
+            ? null
+            : createError('Must be a string', path);
     },
 
     object(it, path = null) {
         return it !== null && typeof it === 'object'
-          ? null
-          : createError('Must be an object', path);
+            ? null
+            : createError('Must be an object', path);
     },
 
     array(it, path = null) {
         return Array.isArray(it)
-          ? null
-          : createError('Must be an array', path);
+            ? null
+            : createError('Must be an array', path);
     },
 
     arrayOf(constraint) {
         return (it, path = null) => {
-            return null; // TODO
-        }
+            let ret = null;
+
+            if (!Array.isArray(it)) {
+                ret = createError('Must be an array', path);
+            } else {
+                for (let i = 0; i < it.length; ++i) {
+                    const
+                        path = !path ? null : `${path}.${i}`,
+                        result = constraint(it, path);
+
+                    if (result === false) {
+                        ret = createError('Invalid value', path);
+                    } else if (result) {
+                        ret = createError(result, path);
+                    }
+                }
+            }
+
+            return ret;
+        };
     },
 
     func(it, path = null) {
         return typeof it === 'function'
-          ? null
-          : createError('Must be a function', path);
+            ? null
+            : createError('Must be a function', path);
     },
 
-    integer(it, path) {
-        return null; // TODO
+    integer(it, path = null) {
+        return Number.isSafeInteger(it)
+            ? null
+            : createError('Must be an integer', path);
     },
 
-    positiveInteger(it, path) {
-        return null; // TODO
+    positiveInteger(it, path = null) {
+        return Number.isSafeInteger(it) && it > 0
+            ? null
+            : createError('Must be a positve integer', path);
     },
 
-    negativeInteger(it, path) {
-        return null; // TODO
+    negativeInteger(it, path = null) {
+        return Number.isSafeInteger(it) && it < 0
+            ? null
+            : createError('Must be a negative integer', path);
     },
 
-    nonNegativeInteger(it, path) {
-        return null; // TODO
+    nonNegativeInteger(it, path = null) {
+        return Number.isSafeInteger(it) && it >= 0
+            ? null
+            : createError('Must be a non-negative integer', path);
     },
 
-    nonPositiveInteger(it, path) {
-        return null; // TODO
+    nonPositiveInteger(it, path = null) {
+        return Number.isSafeInteger(it) && it <= 0
+            ? null
+            : createError('Must be a non-positive integer', path);
+    },
+
+    something(it, path) {
+        return it === undefined || it === null
+            ? createError('Must not be ' + it, path)
+            : null;
+    },
+
+    nothing(it, path) {
+        return it !== undefined || it !== null
+            ? createError('Must be undefined or null', path)
+            : null;
     },
 
     optional(constraint) {
         return (it, path) => it === undefined
             ? null
-            : constraint(it);
+            : constraint(it, path);
     },
 
     nullable(constraint) {
         return (it, path) => it === null
             ? null
-            : constraint(it);
+            : constraint(it, path);
     },
 
-    maybe(constraint) {
+    orNothing(constraint) {
         return (it, path) => it === undefined || it === null
             ? null
-            : constraint(it);
+            : constraint(it, path);
     },
 
     oneOf(items) {
-        return (it, path) => !items.every(item => item !== it)
-          ? null
-          : createError('Must be one of: ' + items.join(', '));
+        return (it, path = null) => !items.every(item => item !== it)
+            ? null
+            : createError('Must be one of: ' + items.join(', '), path);
     },
 
     match(regex) {
@@ -117,54 +157,77 @@ const Spec = {
     },
 
     instanceOf(type) {
+        if (typeof type !== 'function') {
+            throw new Error(
+                "[Spec.instanceOf] First paramter 'type' must be a function");
+        }
+
         return (it, path = null) => it instanceof type
-          ? null
-          : createError('Must be instance of ' + type);
+            ? null
+            : createError('Must be instance of ' + type.name, path);
     },
 
     is(value) {
-        return (it, path) => null; // TODO
+        return (it, path = null) => it === value
+            ? null
+            : createError('Must be identical to ' + value, path);
     },
 
     isNot(value) {
-        return (it, path) => null; // TODO
+        return (it, path = null) => it !== value
+            ? null
+            : createError('Must be not be identical to ' + value, path);
     },
 
     equal(value) {
-        return (it, path) => null; // TODO
+        return (it, path = null) => it == value
+            ? null
+            : createError('Must be equal to ' + value, path);
     },
 
     notEqual(value) {
-        return (it, path) => null; // TODO
+        return (it, path = null) => it != value
+            ? null
+            : createError('Must not be equal to ' + value, path);
     },
 
     length(constraint) {
-        return (it, path) => null; // TODO
+        return specNonNegativeIntegerProp(constraint, 'length');
     },
 
     size(constraint) {
-        return (it, path) => null; // TODO
+        return specNonNegativeIntegerProp(constraint, 'size');
     },
 
     greater(value) {
-        return (it, path) => null; // TODO
+        return (it, path) => it > value
+            ? null
+            : createError('Must be greater than ' + value, path);
     },
 
     greaterOrEqual(value) {
-        return (it, path) => null; // TODO
+        return (it, path) => it >= value
+            ? null
+            : createError('Must be greater or equal ' + value, path);
     },
 
     less(value) {
-        return (it, path) => null; // TODO
+        return (it, path) => it < value
+            ? null
+            : createError('Must be less than ' + value, path);
     },
 
     lessOrEqual(value) {
-        return (it, path) => null; // TODO
+        return (it, path) => it <= value
+            ? null
+            : createError('Must be less or equal ' + value, path);
     },
 
     between(left, right) {
-        return (it, path) => null; // TODO
-    }
+        return (it, path) => it >= left && it <= right
+            ? null
+            : createError(`Must be between ${left} and ${right}`, path);
+    },
 
     iterable(it, path = null) {
         return it !== null
@@ -221,10 +284,30 @@ const Spec = {
         };
     },
 
-    unique(it, path) {
-        return null; // TODO
+    unique(it, path = null) {
+        let ret = Spec.iterable(it, path);
+
+        if (ret === null) {
+            let itemCount = 0;
+
+            if (Array.isArray(it)) {
+                itemCount = it.length;
+            } else {
+                // eslint-disable-next-line no-unused-vars
+                for (let item of it) {
+                    ++itemCount;
+                }
+            }
+            
+            if (itemCount > new Set(it).size) {
+                ret = createError('Must be unique', path);
+            }
+        }
+
+        return ret;
     },
 
+    // TODO - what about additional properties?
     shape(shape) {
         return (it, path) => {
             let ret = null;
@@ -297,8 +380,8 @@ const Spec = {
         if (constraints && typeof constraints[Symbol.iterator] === 'function') {
             ret = (it, path = null) =>
                 !constraints.every(constraint => constraint(it, path))
-                ? null
-                : createError('Invalid value', path);
+                    ? null
+                    : createError('Invalid value', path);
         } else if (constraints !== null && typeof constraints === 'object') {
             const keys = Object.keys(constraints);
 
@@ -414,4 +497,26 @@ function createError(errMsg, path)  {
                 + `: ${errMsg}`;
 
     return new SpecError(fullErrMsg, errMsg, path);
+}
+
+
+function specNonNegativeIntegerProp(propName, constraint) {
+    return (it, path) => {
+        let ret = null;
+
+        if (!it || typeof it !== 'object') {
+            ret = createError('Must be an object', path);
+        } else {
+            const value = it[propName];
+
+            if (!Number.isSafeInteger(value) || value <= 0) {
+                ret = createError(
+                    `Must have a adequate '${propName}' property`, path);
+            } else {
+                ret = constraint(it, `${path}.${propName}`);
+            }
+        }
+
+        return ret;
+    };
 }
