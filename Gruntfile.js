@@ -127,18 +127,9 @@ module.exports = function (grunt) {
                     spawn: true,
                 },
                 files: ['src/**/*.js'],
-                tasks: ['compile', 'mochaTest']
+                tasks: ['test']
                 //tasks: ['esdoc']
             }
-        }
-    });
-
-    // TODO: This is not really working :-(
-    // On watch events, if the changed file is a test file then configure mochaTest to only
-    // run the tests from that file. Otherwise run all the tests
-    grunt.event.on('watch', function (action, filePath) {
-        if (filePath.match('^src/')) {
-            grunt.config.set(['mochaTest', 'test', 'src'], 'build/' + filePath);
         }
     });
 
@@ -148,9 +139,9 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-browserify');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-compress');
-    grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-esdoc');
     grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-watch');
 
     grunt.registerTask('compile', ['babel']);
     grunt.registerTask('test', ['babel', 'mochaTest']);

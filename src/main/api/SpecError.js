@@ -18,6 +18,8 @@ export default class SpecError {
     }
 
     toString() {
-        return 'SpecError: ' + this.message;
+        return 'SpecError: '
+            + this.message
+            + (this.path ? `(path: ${this.path})` : '');
     }
 }
