@@ -1,15 +1,18 @@
 {
     "compilerOptions": {
         "target": "ES5",
-        "module": "commonjs",
+        "module": "system",
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,
         "sourceMap": true,
-        "lib": ["es7"]
+        "lib": ["es7", "dom"],
+        "rootDirs": [
+            "src/main/api"
+        ],
+        "outFile": "build/js-spec.js"
     },
     "include": [
-        "src/main/js-spec.ts"
-    ],
-    "outDir": "build"
+        "src/main/**/*.ts"
+    ]
 }

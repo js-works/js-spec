@@ -13,11 +13,12 @@
     "cross-conf-env": "^1.1.2",
     "mocha": "^2.3.4",
     "rimraf": "^2.6.1",
-    "typedoc": "^0.7.1"
+    "typedoc": "^0.7.1",
+    "types": "^0.1.1"
   },
   "scripts": {
     "clean": "rimraf ./build ./dist",
-    "compile": "tsc --help",
+    "compile": "tsc",
     "docs": "rimraf ./dist/docs && cross-conf-env typedoc --options typedoc.json src/main/api/ -name \"js-spec vnpm_package_version\""
   }
 }
