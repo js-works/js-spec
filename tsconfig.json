@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "target": "ES5",
+        "module": "commonjs",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "sourceMap": true,
+        "lib": ["es7"]
+    },
+    "include": [
+        "src/main/js-spec.ts"
+    ],
+    "outDir": "build"
+}

@@ -1,5 +1,6 @@
 import SpecError from './SpecError';
 import SpecValidator from './SpecValidator';
+import createSpecError from '../internal/createSpecError';
 import createSpecValidator from '../internal/createSpecValidator';
 
 export default class Spec {
@@ -50,7 +51,7 @@ export default class Spec {
         ));
     }
 
-    static arrayOf(constraint) {
+    static arrayOf(constraint: Function) {
         return createSpecValidator(
             (it, path = null) => {
                 let ret = Spec.array(it, path);
@@ -58,8 +59,8 @@ export default class Spec {
                 if (ret === null) {
                     for (let i = 0; i < it.length; ++i) {
                         const
-                            subPath = _buildSubPath(path, i),
-                            result = checkConstraint(constraint, it[i], subPath);
+                            subPath = _buildSubPath(path, String(i)),
+                            result = constraint(it[i], subPath);
 
                         if (result) {
                             ret = result;
@@ -86,7 +87,7 @@ export default class Spec {
         return cache.func || (cache.func = createSpecValidator(
             it => Number.isSafeInteger(it)
                 ? null
-                : 'Must be a integer'
+                : 'Must be an integer'
         ));
     }
 
@@ -142,42 +143,46 @@ export default class Spec {
         ));
     }
 
-    static optional(constraint): SpecValidator {
-        return (it, path) => it === undefined
-            ? null
-            : checkConstraint(constraint, it, path);
+    static optional(constraint: Function): SpecValidator {
+        return createSpecValidator(
+            (it, path) => it === undefined
+                ? null
+                : constraint(it, path));
     }
 
-    static nullable(constraint): SpecValidator {
-        return (it, path) => it === null
-            ? null
-            : checkConstraint(constraint, it, path);
+    static nullable(constraint: Function): SpecValidator {
+        return createSpecValidator(
+            (it, path) => it === null
+                ? null
+                : constraint(it, path));
     }
 
-    static orNothing(constraint): SpecValidator {
-        return (it, path) => it === undefined || it === null
-            ? null
-            : checkConstraint(constraint, it, path);
+    static orNothing(constraint: Function): SpecValidator {
+        return createSpecValidator((it, path) =>
+            it === undefined || it === null
+                ? null
+                : constraint(it, path));
     }
 
-    static oneOf(items): SpecValidator {
-        return (it, path = null) => !items.every(item => item !== it)
-            ? null
-            : _createError('Must be one of: ' + items.join(', '), path);
+    static oneOf(items: any[]): SpecValidator {
+        return createSpecValidator(it =>
+            !items.every(item => item !== it)
+                ? null
+                : 'Must be one of: ' + items.join(', '));
     }
 
-    static match(regex): SpecValidator {
-        return (it, path = null) => {
+    static match(regex: RegExp): SpecValidator {
+        return createSpecValidator(it => {
             let ret = null;
 
             if (typeof it !== 'string') {
-                ret = _createError('Must be a string', path);
+                ret = 'Must be a string';
             } else if (!it.match(regex)) {
-                ret = _createError('Must match regex ' + regex, path);
+                ret = 'Must match regex ' + regex;
             }
 
             return ret;
-        };
+        });
     }
 
     static valid(condition: (it: any) => boolean): SpecValidator {
@@ -188,18 +193,18 @@ export default class Spec {
         });
     }
 
-    static instanceOf(type): SpecValidator {
+    static instanceOf(type: Function): SpecValidator {
         if (typeof type !== 'function') {
             throw new Error(
                 "[Spec.instanceOf] First paramter 'type' must be a function");
         }
 
-        return (it, path = null) => it instanceof type
+        return createSpecValidator((it, path = null) => it instanceof type
             ? null
-            : _createError('Must be instance of ' + type.name, path);
+            : 'Must be instance of ' + type.name);
     }
 
-    static is(value): SpecValidator {
+    static is(value: any): SpecValidator {
         return createSpecValidator(
             it => it === value        
                 ? null
@@ -207,7 +212,7 @@ export default class Spec {
         );
     }
 
-    static isNot(value): SpecValidator {
+    static isNot(value: any): SpecValidator {
         return createSpecValidator(
             it => it !== value        
                 ? null
@@ -215,7 +220,7 @@ export default class Spec {
         );
     }
 
-    static equal(value): SpecValidator {
+    static equal(value: any): SpecValidator {
         return createSpecValidator(
             it => it == value        
                 ? null
@@ -223,7 +228,7 @@ export default class Spec {
         );
     }
 
-    static notEqual(value): SpecValidator {
+    static notEqual(value: any): SpecValidator {
         return createSpecValidator(
             it => it != value        
                 ? null
@@ -231,30 +236,29 @@ export default class Spec {
         );
     }
 
-    static size(constraint): SpecValidator {
-        return (it, path) => {
+    static size(constraint: Function): SpecValidator {
+        return createSpecValidator((it, path) => {
             let ret = null;
 
             if (!it || typeof it !== 'object') {
-                ret = _createError('Must be an object', path);
+                ret = 'Must be an object';
             } else {
                 const
                     propName = it.length !== undefined ? 'length' : 'size',
                     size = it[propName];
 
                 if (!Number.isSafeInteger(size) || size <= 0) {
-                    ret = _createError(
-                        `Must have a adequate '${propName}' property`, path);
+                    ret = `Must have a adequate '${propName}' property`;
                 } else {
-                    ret = checkConstraint(constraint, it, `${path}.${propName}`);
+                    ret = constraint(it, _buildSubPath(path, propName));
                 }
             }
 
             return ret;
-        };
+        });
     }
 
-    static greater(value): SpecValidator {
+    static greater(value: any): SpecValidator {
         return createSpecValidator(
             it => it > value        
                 ? null
@@ -262,7 +266,7 @@ export default class Spec {
         );
     }
 
-    static greaterOrEqual(value): SpecValidator {
+    static greaterOrEqual(value: any): SpecValidator {
         return createSpecValidator(
             it => it >= value        
                 ? null
@@ -270,7 +274,7 @@ export default class Spec {
         );
     }
 
-    static less(value): SpecValidator {
+    static less(value: any): SpecValidator {
         return createSpecValidator(
             it => it < value        
                 ? null
@@ -278,7 +282,7 @@ export default class Spec {
         );
     }
 
-    static lessOrEqual(value): SpecValidator {
+    static lessOrEqual(value: any): SpecValidator {
         return createSpecValidator(
             it => it <= value        
                 ? null
@@ -286,11 +290,11 @@ export default class Spec {
         );
     }
 
-    static between(left, right): SpecValidator {
+    static between(left: any, right: any): SpecValidator {
         return createSpecValidator(
             it => it >= left && it <= right        
                 ? null
-                : `Must be between ${left} and ${right}`,
+                : `Must be between ${left} and ${right}`
         );
     }
 
@@ -303,88 +307,92 @@ export default class Spec {
         );
     }
 
-    static keys(constraint): SpecValidator {
-        return (it, path) => {
+    static keys(constraint: Function): SpecValidator {
+        return createSpecValidator((it, path) => {
             let ret = null;
 
             if (it === null || typeof it !== 'object') {
-                ret = _createError('Must be an object', path);
+                ret = 'Must be an object';
             } else {
                 for (let key of Object.keys(it)) {
                     const error = constraint(key);
 
-                    if (error) {
-                        ret = _createError(`Key '${key}' is invalid: ${error.shortMessage}`, path);
+                    if (error) { /// XXX
+                        ret = `Key '${key}' is invalid: ${error.shortMessage}`;
                         break;
                     }
                 }
             }
 
             return ret;
-        };
+        });
     }
 
-    static values(constraint): SpecValidator {
-        return (it, path) => {
+    static values(constraint: Function): SpecValidator {
+        return createSpecValidator((it, path) => {
             let ret = null;
 
             if (it === null || typeof it !== 'object') {
-                ret = _createError('Must be an object', null);
+                ret = 'Must be an object';
             } else {
                 for (let key of Object.keys(it)) {
                     const
                         value = it[key],
                         subPath = _buildSubPath(path, key);
+// XXX
+                    const result = constraint(value, subPath);
 
-                    const error = constraint(value, subPath);
-
-                    if (error) {
+                    if (result) {
                         // TODO
-                        ret = error;
+                        ret = result;
                         break;
                     }
                 }
             }
 
             return ret;
-        };
+        });
     }
 
-    static unique(it, path = null): SpecValidator {
-        let ret = Spec.iterable(it, path);
+    static get unique() {
+        return cache.unique || (cache.unique =
+            createSpecValidator((it, path) => {
+                let ret: any = Spec.iterable(it, path);
 
-        if (ret === null) {
-            let itemCount = 0;
+                if (ret === null) {
+                    let itemCount = 0;
 
-            if (Array.isArray(it)) {
-                itemCount = it.length;
-            } else {
-                // eslint-disable-next-line no-unused-vars
-                for (let item of it) {
-                    ++itemCount;
+                    if (Array.isArray(it)) {
+                        itemCount = it.length;
+                    } else {
+                        // eslint-disable-next-line no-unused-vars
+                        for (let item of it) {
+                            ++itemCount;
+                        }
+                    }
+                    
+                    if (itemCount > new Set(it).size) {
+                        ret = 'Must be unique';
+                    }
                 }
-            }
-            
-            if (itemCount > new Set(it).size) {
- //               ret = _createError('Must be unique', path);
-            }
-        }
 
-        return ret;
+                return ret;
+            }));
     }
 
     // TODO - what about additional properties?
-    static shape(shape): SpecValidator {
-        return (it, path) => {
+    static shape(shape: { [key: string]: Function }): SpecValidator {
+        return createSpecValidator((it, path) => {
             let ret = null;
 
             if (it === null || typeof it !== 'object') {
-                ret = _createError('Must be an object', path);
+                ret = 'Must be an object';
             } else {
                 for (const key of Object.keys(shape)) {
                     const subPath = _buildSubPath(path, key);
 
-                    ret = shape[key](it[key], subPath);
+                    // XXX
+                    ret = shape[key]((it as any)[key], subPath);
 
                     if (ret) {
                         break;
@@ -393,20 +401,21 @@ export default class Spec {
             }
 
             return ret;
-        };
+        });
     }
 
-    static statics(shape): SpecValidator {
-        return (it, path) => {
+    static statics(shape: {[key: string] : Function }): SpecValidator {
+        return createSpecValidator((it, path) => {
             let ret = null;
 
             if (it === null || typeof it !== 'function') {
-                ret = _createError('Must be an constructor function', path);
+                ret = 'Must be an constructor function';
             } else {
                 for (const key of Object.keys(shape)) {
                     const subPath = _buildSubPath(path, key);
 
-                    ret = shape[key](it[key], subPath);
+                    // XXX
+                    ret = shape[key]((it as any)[key], subPath);
 
                     if (ret) {
                         break;
@@ -415,19 +424,20 @@ export default class Spec {
             }
 
             return ret;
-        };
+        });
     }
 
     static get any(): SpecValidator {
         return cache.any || (cache.any = createSpecValidator(() => null));
     }
 
-    static and(...constraints): SpecValidator {
-        return (it, path = null) => {
+    static and(...constraints: Function[]): SpecValidator {
+        return createSpecValidator((it, path = null) => {
             let ret = null;
 
             for (let constraint of constraints) {
-                const error = checkConstraint(constraint, it, path);
+                // XXX
+                const error = _checkConstraint(constraint, it, path);
 
                 if (error) {
                     ret = error;
@@ -436,25 +446,26 @@ export default class Spec {
             }
 
             return ret;
-        };
+        });
     }
 
     static or(...constraints: Function[]): SpecValidator {
         return createSpecValidator(
             it => !constraints.every(constraint =>
-                !!checkConstraint(constraint, it, null))
+                // XXX
+                !!_checkConstraint(constraint, it, null))
                 ? null
                 : 'Invalid value'
         );
     }
     
-    static in(collection): SpecValidator {
-        return (it, path) => {
+    static in(collection: any): SpecValidator {
+        return createSpecValidator((it, path) => {
             let ret = null;
             
             if (collection instanceof Set) {
                 if (!collection.has(it)) {
-                    ret = _createError('Invalid value', path);
+                    ret = 'Invalid value', path;
                 }
             } else if (collection
                 && typeof collection[Symbol.iterator] === 'function') {
@@ -469,21 +480,21 @@ export default class Spec {
                 }
                 
                 if (!found) {
-                    ret = _createError('Invalid value', path);
+                    ret = 'Invalid value';
                 }
             }
             
             return ret;
-        };
+        });
     }
 
-    static notIn(collection): SpecValidator {
-        return (it, path) => {
+    static notIn(collection: any): SpecValidator {
+        return createSpecValidator((it, path) => {
             let ret = null;
-            
+ // XXX           
             if (collection instanceof Set) {
                 if (collection.has(it)) {
-                    ret = _createError('Invalid value', path);
+                    ret = 'Invalid value';
                 }
             } else if (collection
                 && typeof collection[Symbol.iterator] === 'function') {
@@ -498,12 +509,12 @@ export default class Spec {
                 }
                 
                 if (found) {
-                    ret = _createError('Invalid value', path);
+                    ret = 'Invalid value';
                 }
             }
             
             return ret;
-        };
+        });
     }
 };
 
@@ -515,10 +526,12 @@ Object.freeze(Spec);
 /**
  * @hidden 
  */
-function _buildSubPath(path, key) {
+function _buildSubPath(path: String | null, key: string): string | null {
     let ret = null;
 
-    if (path !== undefined && path !== null) {
+    if (path === '') {
+        ret = key;
+    } else if (path) {
         ret = !path ? key : `${path}.${key}`;
     }
 
@@ -528,12 +541,12 @@ function _buildSubPath(path, key) {
 /**
  * @hidden
  */
-function checkConstraint(constraint: Function, it: any, path: String = null) {
+function _checkConstraint(constraint: Function, it: any, path: string | null = null) {
     const result = constraint(it, path);
 
     return result === false
-        ? _createError('Invalid value', path)
-        : (!result ? null : _createError(result, path));
+        ? createSpecError('Invalid value', path)
+        : (!result ? null : createSpecError(result, path));
 }
 
 /**

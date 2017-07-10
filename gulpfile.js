@@ -1,6 +1,12 @@
 var gulp = require('gulp'),
+    typescript = require('gulp-typescript'),
     typedoc = require('gulp-typedoc'),
-    fs = require('fs');
+    fs = require('fs'),
+    merge = require('merge2'),
+
+    typescriptProject = typescript.createProject({
+        declaration: true
+    });
 
 function getPackageJson() {
     return JSON.parse(fs.readFileSync('./package.json', 'utf8'));
@@ -8,6 +14,24 @@ function getPackageJson() {
 
 gulp.task('default', function () {
     console.log()  
+});
+
+gulp.task('scripts', function() {
+    return gulp.src('src/main/json-spec.ts')
+        .pipe(typescriptProject({
+            target: 'es5',
+            module: 'system',
+            declaration: false,
+            noImplicitAny: false,
+            removeComments: true,
+            noLib: false,
+            emitDecoratorMetadata: true,
+            experimentalDecorators: true,
+            sourceMap: true,
+            listFiles: true,
+            outFile: 'js-spec.js'
+        }))
+        .pipe(gulp.dest('build'));
 });
 
 gulp.task('typedoc', function () {

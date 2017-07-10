@@ -1,7 +1,7 @@
 {
   "name": "js-spec",
   "version": "0.1.1",
-  "license": "BSD-3-Clause",
+  "license": "LGPLv3",
   "homepage": "https://github.com/js-works/js-spec",
   "main": "dist/js-spec/js-spec.min.js",
   "repository": {
@@ -9,25 +9,15 @@
     "url": "https://github.com/js-works/js-spec.git"
   },
   "devDependencies": {
-    "babel-polyfill": "^6.2.0",
-    "babel-preset-es2015": "^6.1.19",
     "chai": "~3.4.1",
-    "grunt": "^0.4.5",
-    "grunt-babel": "^6.0.0",
-    "grunt-browserify": "^3.8.0",
-    "grunt-cli": "^0.1.13",
-    "grunt-contrib-clean": "^0.7.0",
-    "grunt-contrib-compress": "^0.14.0",
-    "grunt-contrib-copy": "^0.8.2",
-    "grunt-contrib-uglify": "^0.11.0",
-    "grunt-contrib-watch": "^0.6.1",
-    "grunt-mocha-test": "^0.12.7",
-    "grunt-ts": "^6.0.0-beta.16",
-    "grunt-typedoc": "^0.2.4",
-    "gulp": "^3.9.1",
-    "gulp-typedoc": "^2.0.2",
+    "cross-conf-env": "^1.1.2",
     "mocha": "^2.3.4",
-    "typescript": "^2.4.1",
-    "typings": "^2.1.1"
+    "rimraf": "^2.6.1",
+    "typedoc": "^0.7.1"
+  },
+  "scripts": {
+    "clean": "rimraf ./build ./dist",
+    "compile": "tsc --help",
+    "docs": "rimraf ./dist/docs && cross-conf-env typedoc --options typedoc.json src/main/api/ -name \"js-spec vnpm_package_version\""
   }
 }

@@ -26,12 +26,21 @@ module.exports = function (grunt) {
         typedoc: {
             build: {
                 options: {
-                    module: 'commonjs',
-                    out: './dist/docs',
-                    name: 'my-project',
-                    target: 'es6'
+                    //module: 'commonjs',
+                    out: './dist/doc/api',
+                    name: 'js-spec <%= pkg.version %>',
+                    target: 'es5',
+                    ignoreCompilerErrors: true,
+                    includeDeclarations: true,
+                    //entryPoint: 'js-spec',
+                    excludeExternals: false,
+                    exclude: 'src/main/internal/**/*.ts',
+                    externalPattern: '(internal)',
+                    //version: true,
+                    // hideGenerator: true,
+                    theme: 'default'
                 },
-                src: ['./src/main/**/*']
+                src: ['./src/main/js-spec.ts']
             }
         },
         browserify: {

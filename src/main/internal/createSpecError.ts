@@ -3,7 +3,7 @@ import SpecError from '../api/SpecError';
 /**
  * @hidden
  */
-export default function createSpecError(errMsg: string, path: string)  {
+export default function createSpecError(errMsg: string, path: string | null)  {
     const
         fullErrMsg =
             'Constraint violation'

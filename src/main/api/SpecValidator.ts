@@ -1,7 +1,9 @@
-interface SpecValidator {
-    (it: any, path: String);
+import SpecError from './SpecError';
 
-    withHint(text: string): SpecValidator;
+type SpecValidator = {
+    (it: any, path: String): null | SpecError;
+
+    usingHint(hint: string): SpecValidator;
 };
 
 export default SpecValidator;
