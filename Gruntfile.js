@@ -6,23 +6,9 @@ module.exports = function (grunt) {
                 src: ['build/*', 'dist/*'],
             }
         },
-        babel: {
-            options: {
-                //modules: 'common',
-                retainLines: true,
-                moduleIds: false,
-                sourceMap: true,
-                presets: ['es2015']
-                //optional: ['runtime']
-            },
-            dist: {
-                files: [{
-                    expand: true,
-                    cwd: 'src',
-                    src: ['**/*.js'],
-                    dest: 'build/src',
-                    ext: '.js'
-                }]
+        ts: {
+            default : {
+                src: ['**/*.ts', '!node_modules/**/*.ts']
             }
         },
         mochaTest: {
@@ -34,28 +20,23 @@ module.exports = function (grunt) {
                     ],
                     bail: true
                 },
-                src: ['build/src/**/*.js']
+                src: ['build/src/**/*.ts']
             }
         },
-        esdoc : {
-            dist : {
+        typedoc: {
+            build: {
                 options: {
-                    source: 'src/main/',
-                    destination: 'dist/v<%= pkg.version %>/docs/api',
-                    title: 'js-spec',
-                    undocumentIdentifier: true,
-
-                    test: {
-                        type: 'mocha',
-                        source: './src/test',
-                        includes: ['\\-spec.js']
-                    }
-                }
+                    module: 'commonjs',
+                    out: './dist/docs',
+                    name: 'my-project',
+                    target: 'es6'
+                },
+                src: ['./src/main/**/*']
             }
         },
         browserify: {
             js: {
-                src: 'build/src/js-spec.js',
+                src: 'build/src/js-spec.ts',
                 dest: 'dist/v<%= pkg.version %>/js-spec-<%= pkg.version %>.js'
             }
         },
@@ -126,7 +107,7 @@ module.exports = function (grunt) {
                 options: {
                     spawn: true,
                 },
-                files: ['src/**/*.js'],
+                files: ['src/**/*.ts'],
                 tasks: ['test']
                 //tasks: ['esdoc']
             }
@@ -134,7 +115,7 @@ module.exports = function (grunt) {
     });
 
     grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-babel');
+    grunt.loadNpmTasks('grunt-ts');
     grunt.loadNpmTasks('grunt-mocha-test');
     grunt.loadNpmTasks('grunt-browserify');
     grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -142,10 +123,11 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-esdoc');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-typedoc');
 
-    grunt.registerTask('compile', ['babel']);
-    grunt.registerTask('test', ['babel', 'mochaTest']);
-    grunt.registerTask('doc', ['babel', 'mochaTest', 'esdoc']);
-    grunt.registerTask('dist', ['clean', 'babel', 'mochaTest', 'esdoc', 'browserify', 'uglify', 'compress', 'copy']);
+    grunt.registerTask('compile', ['ts']);
+    grunt.registerTask('test', ['ts', 'mochaTest']);
+    grunt.registerTask('doc', ['ts', 'mochaTest', 'typedoc']);
+    grunt.registerTask('dist', ['clean', 'ts', 'mochaTest', 'typedoc', 'browserify', 'uglify', 'compress', 'copy']);
     grunt.registerTask('default', ['dist']);
 };

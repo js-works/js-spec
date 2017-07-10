@@ -1,30 +1,21 @@
-import { describe, it } from 'mocha';
-import { expect } from 'chai';
-
-import SpecError from '../../main/api/SpecError.js';
-
-/**
- * @test {SpecError}
- */
-describe('Testing SpecError construction and reading properties', () => {
-    const
-        longMessage = 'long message',
-        shortMessage = 'short message',
-        path = 'some.test.path',
-        specError = new SpecError(longMessage, shortMessage, path);
-
-    it('should read long message properly', () => {
-        expect(specError.message)
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var mocha_1 = require("mocha");
+var chai_1 = require("chai");
+var SpecError_1 = require("../../main/api/SpecError");
+mocha_1.describe('Testing SpecError construction and reading properties', function () {
+    var longMessage = 'long message', shortMessage = 'short message', path = 'some.test.path', specError = new SpecError_1.default(longMessage, shortMessage, path);
+    mocha_1.it('should read long message properly', function () {
+        chai_1.expect(specError.message)
             .to.eql(longMessage);
     });
-
-    it('should read short message properly', () => {
-        expect(specError.shortMessage)
+    mocha_1.it('should read short message properly', function () {
+        chai_1.expect(specError.shortMessage)
             .to.eql(shortMessage);
     });
-    
-    it('should read path properly', () => {
-        expect(specError.path)
+    mocha_1.it('should read path properly', function () {
+        chai_1.expect(specError.path)
             .to.eql(path);
     });
 });
+//# sourceMappingURL=SpecErrorTest.js.map

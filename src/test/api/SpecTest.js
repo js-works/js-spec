@@ -1,10 +1,9 @@
-import { describe, it } from 'mocha';
-import { expect } from 'chai';
-
-import Spec from '../../main/api/Spec.js';
-import SpecError from '../../main/api/SpecError.js';
-
-const data = {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var mocha_1 = require("mocha");
+var chai_1 = require("chai");
+var Spec_1 = require("../../main/api/Spec");
+var data = {
     level1: {
         someShape: {
             someInteger: 42,
@@ -19,34 +18,33 @@ const data = {
             someArray: [0, 1, 2, 'some string', 4],
         }
     },
-
-    someArray: [0, 1, 2, 3, new Date, 4], 
+    someArray: [0, 1, 2, 3, new Date, 4],
     someIntegers: [100, 200, 300]
 };
-
-
-/**
- * @test {Spec.arrayOf}
- */
-describe('Testing Spec.arrayOf', () => {
-    it('should work properly in success case', () => {
-        const result = Spec.arrayOf(Spec.integer)(data.someIntegers);
-
-        expect(result)
+mocha_1.describe('Testing Spec.arrayOf', function () {
+    mocha_1.it('should work properly in success case', function () {
+        var result = Spec_1.default.arrayOf(Spec_1.default.integer)(data.someIntegers);
+        chai_1.expect(result)
             .to.eql(null);
     });
-    
-    it('should work properly in error case', () => {
-        const paths = [null, 'some.path'];
-
-        paths.forEach(path => {
-            const result = Spec.arrayOf(Spec.integer)(data.level1.someArray, path);
-
-            expect(result)
+    mocha_1.it('should work properly in error case', function () {
+        var paths = [null, 'some.path'];
+        paths.forEach(function (path) {
+            var result = Spec_1.default.arrayOf(Spec_1.default.integer)(data.level1.someArray, path);
+            chai_1.expect(result)
                 .to.not.eql(null);
-            
-            expect(result.path)
+            chai_1.expect(result.path)
                 .to.eql(path === null ? null : path + '.3');
         });
     });
 });
+mocha_1.describe('Testing Spec.or', function () {
+    mocha_1.it('should work properly in success case', function () {
+        var result = Spec_1.default.arrayOf(Spec_1.default.or(Spec_1.default.integer, Spec_1.default.string))(data.someArray, 'someArray');
+        chai_1.expect(result)
+            .to.eql(null);
+    });
+    mocha_1.it('should work properly in error case', function () {
+    });
+});
+//# sourceMappingURL=SpecTest.js.map
