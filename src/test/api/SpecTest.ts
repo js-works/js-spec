@@ -553,6 +553,22 @@ describe('Spec', () => {
 
         expect(result.path).to.eql(null);
     });
+
+    it('must return proper error messages when using custom hint', () => {
+        const result =
+            spec.usingHint('Please provide valid configuration')
+                ({ level1: { level2: { arr: [123, '234'] } } });
+
+        expect(result).to.be.instanceof(SpecError);
+
+        expect(result.message).to.eql(
+            "Constraint violation: "
+            + 'Please provide valid configuration');
+
+        expect(result.shortMessage).to.eql('Please provide valid configuration');
+
+        expect(result.path).to.eql(null);
+    });
 });
 
 // --------------------------------------
