@@ -275,7 +275,7 @@ export default class Spec {
                 : constraint(it, path));
     }
 
-    static oneOf(items: any[]): SpecValidator {
+    static oneOf(...items: any[]): SpecValidator {
         return createSpecValidator(it =>
             !items.every(item => item !== it)
                 ? null

@@ -282,7 +282,7 @@ describe('Spec.orNothing', () => {
 
 describe('Spec.oneOf', () => {
     runSimpleSpecTest({
-        spec: Spec.oneOf([1, 2, "42", false]),
+        spec: Spec.oneOf(1, 2, "42", false),
         validValues: [1, 2, "42", false],
         invalidValues: [true, 42, '', '0', 'some text', {}, []]
     });
@@ -302,7 +302,7 @@ describe('Spec.instanceOf', () => {
     });
 });
 
-describe('Testing Spec.arrayOf', () => {
+describe('Spec.arrayOf', () => {
     runSimpleSpecTest({
         spec: Spec.arrayOf(Spec.integer),
         validValues: [[], [1, 2, 3], [-1, -2, -3], [1, -1, 2, -2]],
@@ -310,7 +310,7 @@ describe('Testing Spec.arrayOf', () => {
     });
 });
 
-describe('Testing Spec.match', () => {
+describe('Spec.match', () => {
     runSimpleSpecTest({
         spec: Spec.match(/^[a-z]+$/),
         validValues: ['a', 'abc', 'x', 'xxx', 'az'],
@@ -318,7 +318,7 @@ describe('Testing Spec.match', () => {
     });
 });
 
-describe('Testing Spec.valid', () => {
+describe('Spec.valid', () => {
     runSimpleSpecTest({
         spec: Spec.valid(it => it > 5),
         validValues: [6, 7, 8, 42, Infinity, '6', '66 '],
@@ -326,7 +326,7 @@ describe('Testing Spec.valid', () => {
     });
 });
 
-describe('Testing Spec.size', () => {
+describe('Spec.size', () => {
     runSimpleSpecTest({
         spec: Spec.size((it: any) => it > 3),
         validValues: ['1234', [1, 2, 3, 4], new Set([1, 2, 3, 4])],
@@ -334,7 +334,7 @@ describe('Testing Spec.size', () => {
     });
 });
 
-describe('Testing Spec.greater', () => {
+describe('Spec.greater', () => {
     runSimpleSpecTest({
         spec: Spec.greater('5'),
         validValues: [5.1, 6, 7, 42, '6', '50', '5x', 'x4'],
@@ -342,21 +342,146 @@ describe('Testing Spec.greater', () => {
     });
 });
 
-describe('Testing Spec.or', () => {
-    it('should work properly in success case', () => {
-        const result =
-            Spec.arrayOf(
-                Spec.or(
-                    Spec.integer,
-                    Spec.date))(data.arrayOfIntegersAndDates);
-
-        expect(result)
-            .to.eql(null);
-    });
-    
-    it('should work properly in error case', () => {
+describe('Spec.greaterOrEqual', () => {
+    runSimpleSpecTest({
+        spec: Spec.greaterOrEqual('5'),
+        validValues: [5, 5.1, 6, 7, 42, '5', '6', '50', '5x', 'x4'],
+        invalidValues: [undefined, null, true, false, 0, 4.9, '', '4x']
     });
 });
+
+describe('Spec.less', () => {
+    runSimpleSpecTest({
+        spec: Spec.less('5'),
+        validValues: [null, true, false, 0, 1, 2, 4, '', '4.9', []],
+        invalidValues: [undefined, 5, 5.1, 6, '5x', {}]
+    });
+});
+
+describe('Spec.lessOrEqual', () => {
+    runSimpleSpecTest({
+        spec: Spec.lessOrEqual('5'),
+        validValues: [null, true, false, 0, 1, 2, 4, 4.9, 5, 5.0, '', '4.9', '5', []],
+        invalidValues: [undefined, 5.1, 6, '5x', {}]
+    });
+});
+
+describe('Spec.between', () => {
+    runSimpleSpecTest({
+        spec: Spec.between(0, 100),
+        validValues: [true, false, null, 1, 2, 2.22, 3, 42, 100, '100', [], [0]],
+        invalidValues: [undefined, -1, -42, '-42', [0, 0], [101], {}]
+    });
+});
+
+describe('Spec.keys', () => {
+    runSimpleSpecTest({
+        spec: Spec.keys(Spec.match(/^[a-z]+$/)),
+        validValues: [{}, { a: 1, b: 2 }, { abc: 123, xyz: 789 }],
+        invalidValues: [undefined, null, true, false, 0, 1, '', 'some text', { A: 1, b: 2}]
+    });
+});
+
+describe('Spec.values', () => {
+    runSimpleSpecTest({
+        spec: Spec.values(Spec.number),
+        validValues: [{}, { a: 1, b: 2 }, { A: 123.4, B: 678.9 }],
+        invalidValues: [undefined, null, true, false, 0, 1, '', 'some text', { a: 1, b: '2'}]
+    });
+});
+
+describe('Spec.and', () => {
+    runSimpleSpecTest({
+        spec: Spec.and(Spec.string, (it: string) => it.indexOf('x') !== -1),
+        validValues: ['x', 'axb', 'xab', 'abx', 'xxx', 'aaxxbb'],
+        invalidValues: [undefined, null, true, false, 0, 1, '', 'some string', '', 'X']
+    });
+});
+
+describe('Spec.or', () => {
+    runSimpleSpecTest({
+        spec: Spec.or(Spec.string, Spec.number),
+        validValues: ['', 'xxx', 'some text', 0, 1, -1, 12.3, -12.3],
+        invalidValues: [undefined, null, true, false, [], {}, Infinity, -Infinity]
+    });
+});
+
+describe('Spec.in', () => {
+    runSimpleSpecTest({
+        spec: Spec.in(new Set([1, 2, 3, 4, 5])),
+        validValues: [1, 2, 3, 4, 5],
+        invalidValues: [undefined, null, true, false, '1', '2', [], {}]
+    });
+});
+
+describe('Spec.notIn', () => {
+    runSimpleSpecTest({
+        spec: Spec.notIn(new Set([1, 2, 3, 4, 5])),
+        validValues: [undefined, null, true, false, '1', '2', [], {}],
+        invalidValues: [1, 2, 3, 4, 5],
+    });
+});
+
+describe('Spec.shape', () => {
+    const
+        spec = Spec.shape({
+            id: Spec.positiveInteger,
+            firstName: Spec.string,
+            lastName: Spec.string,
+
+            addresses:
+                Spec.arrayOf(
+                        Spec.shape({
+                            addressType: Spec.oneOf('home', 'work', 'other'),
+                            street: Spec.string,
+                            zipCode: Spec.string,
+                            city: Spec.string
+                    })
+                )
+        }),
+
+        valid = {
+            id: 12345,
+            firstName: 'Jane',
+            lastName: 'Doe',
+            addresses: [{
+                addressType: 'home',
+                street: 'Home Street 123',
+                zipCode: '888',
+                city: 'Home Town'
+            }, {
+                addressType: 'work',
+                street: 'Work Street 456',
+                zipCode: '999',
+                city: 'Work city'
+            }]
+        },
+
+        invalid = {
+            id: 12345,
+            firstName: 'Jane',
+            lastName: 'Doe',
+            addresses: [{
+                addressType: 'home',
+                street: 'Home Street 123',
+                zipCode: '888',
+                city: 'Home Town'
+            }, {
+                addressType: 'work',
+                street: 'Work Street 456',
+                zipCode: 999, // Invalid!!! Zip code must be a strig
+                city: 'Work city'
+            }]
+        };
+
+
+    runSimpleSpecTest({
+        spec,
+        validValues: [valid],
+        invalidValues: [undefined, null, true, false, 0, 1, '', '1', {}, [], invalid],
+    });
+});
+
 
 // --------------------------------------
 
