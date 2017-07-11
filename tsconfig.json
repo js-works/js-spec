@@ -8,7 +8,13 @@
         "sourceMap": true,
         "lib": ["es7", "dom"],
         "rootDir": "src",
-        "outDir": "build"
+        "outDir": "build",
+        "typeRoots": [
+            "node_modules/@types"
+        ],
+        "types":[
+            "node", "mocha", "chai"
+        ]
     },
     "files": [
         "src/main/js-spec.ts"
