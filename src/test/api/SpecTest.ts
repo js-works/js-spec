@@ -469,7 +469,7 @@ describe('Spec.shape', () => {
             }, {
                 addressType: 'work',
                 street: 'Work Street 456',
-                zipCode: 999, // Invalid!!! Zip code must be a strig
+                zipCode: 999, // Invalid!!! Zip code must be a strig!
                 city: 'Work city'
             }]
         };
@@ -482,6 +482,78 @@ describe('Spec.shape', () => {
     });
 });
 
+describe('Spec.statics', () => {
+    const
+        spec = Spec.statics({
+            id: Spec.positiveInteger,
+            keys: Spec.arrayOf(Spec.string)
+        }),
+
+        valid = class {
+            static get id() {
+              return 5;
+            }
+
+            static get keys() {
+               return ['key1', 'key2', 'key3']
+           }
+        },
+        
+        invalid = class {
+            static get id() {
+              return 5;
+            }
+
+            static get keys() {
+               return ['key1', 'key2', 333] // Invalid!!! 333 is not a string!
+           }
+        };
+
+    runSimpleSpecTest({
+        spec,
+        validValues: [valid],
+        invalidValues: [undefined, null, true, false, 0, 1, '', '1', {}, [], invalid, Date],
+    });
+});
+
+describe('Spec', () => {
+    const 
+        spec = Spec.shape({
+            level1: Spec.shape({
+                level2: Spec.shape({
+                    arr: Spec.arrayOf(Spec.integer)
+                })
+            })
+        });
+        
+    it('must return proper error messages with path information', () => {
+        const result = spec({ level1: { level2: { arr: [123, '234'] } } }, '');
+
+        expect(result).to.be.instanceof(SpecError);
+
+        expect(result.message).to.eql(
+            "Constraint violation at 'level1.level2.arr.1': "
+            + 'Must be an integer');
+
+        expect(result.shortMessage).to.eql('Must be an integer');
+
+        expect(result.path).to.eql('level1.level2.arr.1');
+    });
+    
+    it('must return proper error messages without path information', () => {
+        const result = spec({ level1: { level2: { arr: [123, '234'] } } });
+
+        expect(result).to.be.instanceof(SpecError);
+
+        expect(result.message).to.eql(
+            "Constraint violation: "
+            + 'Must be an integer');
+
+        expect(result.shortMessage).to.eql('Must be an integer');
+
+        expect(result.path).to.eql(null);
+    });
+});
 
 // --------------------------------------
 
@@ -496,7 +568,7 @@ function runSimpleSpecTest(config: any) {
 
     it('should work properly in success case', () => {
         for (let value of config.validValues) {
-            const result = config.spec(value);
+            const result = config.spec(value, '');
 
             if (result) {
                 console.log('Error:', result);
@@ -508,7 +580,7 @@ function runSimpleSpecTest(config: any) {
     });
     
     it('should work properly in error case', () => {
-        const paths = [null, 'some.path'];
+        const paths = ['some.path', null];
 
         for (let path of paths) {
             for (let value of config.invalidValues) {

@@ -27,7 +27,9 @@ export default class Spec {
         return cache.number || (cache.number = createSpecValidator(
             it => typeof it === 'number' && isFinite(it)
                 ? null
-                : 'Must be a finite number'
+                : (Math.abs(it) === Infinity
+                    ? 'Must be a finite number'
+                    : 'Must be a number')
         ));
     }
 
@@ -36,7 +38,9 @@ export default class Spec {
             (cache.positiveNumber = createSpecValidator(
                 it => typeof it === 'number' && isFinite(it) && it > 0
                     ? null
-                    : 'Must be a positive finite number'
+                    : (Math.abs(it) === Infinity
+                        ? 'Must be a finite positive number'
+                        : 'Must be a positive number')
             ));
     }
 
@@ -45,7 +49,9 @@ export default class Spec {
             (cache.nonPositiveNumber = createSpecValidator(
                 it => typeof it === 'number' && isFinite(it) && it <= 0
                     ? null
-                    : 'Must be a non-positive finite number'
+                    : (Math.abs(it) === Infinity
+                        ? 'Must be a finite non-positive number'
+                        : 'Must be a non-positive number')
             ));
     }
 
@@ -54,7 +60,9 @@ export default class Spec {
             (cache.negativeNumber = createSpecValidator(
                 it => typeof it === 'number' && isFinite(it) && it < 0
                     ? null
-                    : 'Must be a negative finite number'
+                    : (Math.abs(it) === Infinity
+                        ? 'Must be a finite negative number'
+                        : 'Must be a negative number')
             ));
     }
 
@@ -63,7 +71,9 @@ export default class Spec {
             (cache.nonNegativeNumber = createSpecValidator(
                 it => typeof it === 'number' && isFinite(it) && it >= 0
                     ? null
-                    : 'Must be a non-negative finite number'
+                    : (Math.abs(it) === Infinity
+                        ? 'Must be a finite non-negative number'
+                        : 'Must be a non-negative number')
             ));
     }
 
@@ -71,7 +81,9 @@ export default class Spec {
         return cache.integer || (cache.integer = createSpecValidator(
             it => Number.isSafeInteger(it)
                 ? null
-                : 'Must be a finite integer'
+                : (Math.abs(it) === Infinity
+                    ? 'Must be a finite integer'
+                    : 'Must be an integer')
         ));
     }
 
@@ -80,7 +92,9 @@ export default class Spec {
             (cache.positiveInteger = createSpecValidator(
                 it => Number.isSafeInteger(it) && it > 0
                     ? null
-                    : 'Must be a positive finite integer'
+                    : (Math.abs(it) === Infinity
+                        ? 'Must be a finite positive integer'
+                        : 'Must be a positive integer')
             ));
     }
 
@@ -89,7 +103,9 @@ export default class Spec {
             (cache.nonPositiveInteger = createSpecValidator(
                 it => Number.isSafeInteger(it) && it <= 0
                     ? null
-                    : 'Must be a non-positive finite integer',
+                    : (Math.abs(it) === Infinity
+                        ? 'Must be a finite non-positive integer'
+                        : 'Must be a non-positive integer')
             ));
     }
 
@@ -98,7 +114,9 @@ export default class Spec {
             (cache.negativeInteger = createSpecValidator(
                 it => Number.isSafeInteger(it) && it < 0
                     ? null
-                    : 'Must be a negative finite integer',
+                    : (Math.abs(it) === Infinity
+                        ? 'Must be a finite negative integer'
+                        : 'Must be a negative integer')
             ));
     }
 
@@ -107,7 +125,9 @@ export default class Spec {
             (cache.nonNegativeInteger = createSpecValidator(
                 it => Number.isSafeInteger(it) && it >= 0
                     ? null
-                    : 'Must be a non-negative finite integer'
+                    : (Math.abs(it) === Infinity
+                        ? 'Must be a finite non-negative integer'
+                        : 'Must be a non-negative integer')
             ));
     }
 
@@ -613,12 +633,20 @@ function _buildSubPath(path: String | null, key: string): string | null {
 /**
  * @hidden
  */
-function _checkConstraint(constraint: Function, it: any, path: string | null = null) {
+function _checkConstraint(constraint: Function, it: any, path: string | null = null): null | SpecError {
+    let ret = null;
+
     const result = constraint(it, path);
 
-    return result === false
-        ? createSpecError('Invalid value', path)
-        : (!result || result === true ? null : createSpecError(result, path));
+    if (result === false) {
+        ret = createSpecError('Invalid value', path);
+    } else if (result instanceof SpecError && result.shortMessage) {
+        ret = createSpecError(result.shortMessage, path)
+    } else if (result !== true && result !== null) {
+        ret = createSpecError(String(result), path);
+    }
+    
+    return ret;
 }
 
 /**
