@@ -4,6 +4,14 @@ import { expect } from 'chai';
 import Spec from '../../main/api/Spec';
 import SpecError from '../../main/api/SpecError';
 
+const validateSimpleSpecTestConfig = Spec.shape({
+    spec: Spec.valid(it => typeof it === 'function'
+        && typeof it.usingHint === 'function'),
+
+    validValues: Spec.array,
+    invalidValues: Spec.array
+});
+
 const data = {
     level1: {
         someShape: {
@@ -27,7 +35,168 @@ const data = {
     arrayOfIntegers: [100, 200, 300]
 }
 
-describe('Testing Spec.boolean', () => {
+describe('Spec.boolean', () => {
+    runSimpleSpecTest({
+        spec: Spec.boolean,
+        validValues: [true, false],
+        invalidValues: [undefined, null, 42, 'some text']
+    });
+});
+
+describe('Spec.number', () => {
+    runSimpleSpecTest({
+        spec: Spec.number,
+        validValues: [0, 1, -1, 42, -42, 12.34, -12.34],
+        
+        invalidValues: [undefined, null, true, false, {}, '0', Infinity, -Infinity]
+    });
+});
+
+describe('Spec.positiveNumber', () => {
+    runSimpleSpecTest({
+        spec: Spec.positiveNumber,
+        validValues: [1, 2, 3, 42],
+        invalidValues: [undefined, null, true, false, {}, '0', 0, -1, Infinity, '1']
+    });
+});
+
+describe('Spec.nonPositiveNumber', () => {
+    runSimpleSpecTest({
+        spec: Spec.nonPositiveNumber,
+        validValues: [0, -1, -2, -12.34],
+        invalidValues: [undefined, null, true, false, {}, '0', 2, 3, '-1', -Infinity]
+    });
+});
+
+describe('Spec.negativeNumber', () => {
+    runSimpleSpecTest({
+        spec: Spec.negativeNumber,
+        validValues: [-1, -12.34, -42],
+        invalidValues: [undefined, null, true, false, {}, 1, 2, 1.2, '-1', -Infinity]
+    });
+});
+
+describe('Spec.nonNegativeNumber', () => {
+    runSimpleSpecTest({
+        spec: Spec.nonNegativeNumber,
+        validValues: [0, 1, 2, 12.34, 42],
+        invalidValues: [undefined, null, true, false, {}, -1, -12.34, '1', Infinity]
+    });
+});
+
+describe('Spec.integer', () => {
+    runSimpleSpecTest({
+        spec: Spec.integer,
+        validValues: [0, 1, -1, 42, -42],
+        invalidValues: [undefined, null, true, false, {}, 1.1, '1', Infinity]
+    });
+});
+
+describe('Spec.positiveInteger', () => {
+    runSimpleSpecTest({
+        spec: Spec.positiveInteger,
+        validValues: [1, 2, 3, 42],
+        invalidValues: [undefined, null, true, false, {}, 0, -1, '1', Infinity]
+    });
+});
+
+describe('Spec.nonPositiveInteger', () => {
+    runSimpleSpecTest({
+        spec: Spec.nonPositiveInteger,
+        validValues: [0, -1, -2, -42],
+        invalidValues: [undefined, null, true, false, {}, 1, 2, -1.23, '-1', -Infinity]
+    });
+});
+
+describe('Spec.negativeInteger', () => {
+    runSimpleSpecTest({
+        spec: Spec.negativeInteger,
+        validValues: [-1, -2, -42],
+        invalidValues: [undefined, null, true, false, {}, 0, 1, 2, -1.23, '-1', -Infinity]
+    });
+});
+
+describe('Spec.nonNegativeInteger', () => {
+    runSimpleSpecTest({
+        spec: Spec.nonNegativeInteger,
+        validValues: [0, 1, 2, 42],
+        invalidValues: [undefined, null, true, false, {}, -1, -2, 1.23, '1', Infinity]
+    });
+});
+
+describe('Spec.finite', () => {
+    runSimpleSpecTest({
+        spec: Spec.finite,
+        validValues: [1, -1, 2, -2, 3, '1', '-1', '2', '-2', true, false, null, [], [1]],
+        invalidValues: [undefined, Infinity, -Infinity, {}]
+    });
+});
+
+describe('Spec.infinite', () => {
+    runSimpleSpecTest({
+        spec: Spec.infinite,
+        validValues: [undefined, Infinity, -Infinity, {}]
+        invalidValues: [1, -1, 2, -2, 3, '1', '-1', '2', '-2', true, false, null, [], [1]],
+    });
+});
+
+describe('Spec.string', () => {
+    runSimpleSpecTest({
+        spec: Spec.string,
+        validValues: ['', 'some text'],
+        invalidValues: [undefined, null, true, false, 0, 1, -1, 1,23, -1.23, {}, []]
+    });
+});
+
+describe('Spec.func', () => {
+    runSimpleSpecTest({
+        spec: Spec.func,
+        validValues: [() => {}, Object, Array, Date],
+        invalidValues: [undefined, null, true, false, 0, 1, -1, "", {}, []]
+    });
+});
+
+describe('Spec.object', () => {
+    runSimpleSpecTest({
+        spec: Spec.object,
+        validValues: [{}, [], new Date],
+        invalidValues: [undefined, null, true, false, 0, 1, -1, ""]
+    });
+});
+
+describe('Spec.array', () => {
+    runSimpleSpecTest({
+        spec: Spec.array,
+        validValues: [[], [0], [1, 2, 3], new Array],
+        invalidValues: [undefined, null, true, false, 0, 1, -1, {}]
+    });
+});
+
+describe('Spec.iterable', () => {
+    runSimpleSpecTest({
+        spec: Spec.iterable,
+        validValues: ["123", [1, 2, 3], new Set()],
+        invalidValues: [undefined, null, true, false, 0, 1, -1, {}]
+    });
+});
+
+describe('Spec.unique', () => {
+    runSimpleSpecTest({
+        spec: Spec.unique,
+        validValues: [[], [1, 2, 3]],
+        invalidValues: [undefined, null, true, false, 0, 1, -1, {}, [1, 2, 1]]
+    });
+});
+
+describe('Spec.date', () => {
+    runSimpleSpecTest({
+        spec: Spec.date,
+        validValues: [new Date()],
+        invalidValues: [undefined, null, true, false, 0, 1, -1, {}, '1989-11-09']
+    });
+});
+
+/*
     it('should work properly in success case', () => {
         const result = Spec.boolean(true);
 
@@ -48,6 +217,7 @@ describe('Testing Spec.boolean', () => {
                 .to.eql(path === null ? null : path);
         });
     });
+*/
 });
 
 describe('Testing Spec.number', () => {
@@ -227,3 +397,43 @@ describe('Testing Spec.or', () => {
     it('should work properly in error case', () => {
     });
 });
+
+// --------------------------------------
+
+function runSimpleSpecTest(config: any) {
+    const configCheckResult = validateSimpleSpecTestConfig(config, '');
+
+    if (configCheckResult) {
+        throw new Error(
+            "[runSimpleSpecTest] Fist argument 'config' is invalid: "
+            + configCheckResult.message);
+    }
+
+    it('should work properly in success case', () => {
+        for (let value of config.validValues) {
+            const result = config.spec(value);
+
+            if (result) {
+                throw result;
+            }
+        }
+    });
+    
+    it('should work properly in error case', () => {
+        const paths = [null, 'some.path'];
+
+        for (let path of paths) {
+            for (let value of config.invalidValues) {
+                const result = config.spec(value, path);
+
+                if (!(result instanceof SpecError)) {
+                    throw new Error(
+                        'Result of spec test should have been a SpecError');
+                } else if (path !== null && typeof result.path !== 'string') {
+                    throw new Error(
+                        'Path property of SpecError should be a string');
+                }
+            }
+        }
+    });
+} 

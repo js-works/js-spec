@@ -11,6 +11,10 @@ export default class Spec {
         throw new Error('[Spec.constructor] Class Spec is not instantiable');
     }
 
+    static get any(): SpecValidator {
+        return cache.any || (cache.any = createSpecValidator(() => null));
+    }
+
     static get boolean(): SpecValidator {
         return cache.boolean || (cache.boolean = createSpecValidator(
             it => it === true || it === false
@@ -21,10 +25,108 @@ export default class Spec {
 
     static get number(): SpecValidator {
         return cache.number || (cache.number = createSpecValidator(
-            it => typeof it === 'number'
+            it => typeof it === 'number' && isFinite(it)
                 ? null
                 : 'Must be a number'
         ));
+    }
+
+    static get positiveNumber(): SpecValidator {
+        return cache.positiveNumber || 
+            (cache.positiveNumber = createSpecValidator(
+                it => typeof it === 'number' && isFinite(it) && it > 0
+                    ? null
+                    : 'Must be a positive number'
+            ));
+    }
+
+    static get nonPositiveNumber(): SpecValidator {
+        return cache.nonPositiveNumber || 
+            (cache.nonPositiveNumber = createSpecValidator(
+                it => typeof it === 'number' && isFinite(it) && it <= 0
+                    ? null
+                    : 'Must be a non-positive number'
+            ));
+    }
+
+    static get negativeNumber(): SpecValidator {
+        return cache.negativeNumber || 
+            (cache.negativeNumber = createSpecValidator(
+                it => typeof it === 'number' && isFinite(it) && it < 0
+                    ? null
+                    : 'Must be a negative number'
+            ));
+    }
+
+    static get nonNegativeNumber(): SpecValidator {
+        return cache.nonNegativeNumber || 
+            (cache.nonNegativeNumber = createSpecValidator(
+                it => typeof it === 'number' && isFinite(it) && it >= 0
+                    ? null
+                    : 'Must be a non-negative number'
+            ));
+    }
+
+    static get integer(): SpecValidator {
+        return cache.func || (cache.func = createSpecValidator(
+            it => Number.isSafeInteger(it)
+                ? null
+                : 'Must be an integer'
+        ));
+    }
+
+    static get positiveInteger(): SpecValidator {
+        return cache.positiveInteger || 
+            (cache.positiveInteger = createSpecValidator(
+                it => Number.isSafeInteger(it) && it > 0
+                    ? null
+                    : 'Must be a positive integer'
+            ));
+    }
+
+    static get nonPositiveInteger(): SpecValidator {
+        return cache.nonPositiveInteger || 
+            (cache.nonPositiveInteger = createSpecValidator(
+                it => Number.isSafeInteger(it) && it <= 0
+                    ? null
+                    : 'Must be a non-positive integer',
+            ));
+    }
+
+    static get negativeInteger(): SpecValidator {
+        return cache.negativeInteger || 
+            (cache.negativeInteger = createSpecValidator(
+                it => Number.isSafeInteger(it) && it < 0
+                    ? null
+                    : 'Must be a negative integer',
+            ));
+    }
+
+    static get nonNegativeInteger(): SpecValidator {
+        return cache.nonNegativeInteger || 
+            (cache.nonNegativeInteger = createSpecValidator(
+                it => Number.isSafeInteger(it) && it >= 0
+                    ? null
+                    : 'Must be a non-negative integer'
+            ));
+    }
+
+    static get finite(): SpecValidator {
+        return cache.finite || 
+            (cache.finite = createSpecValidator(
+                it => isFinite(it) 
+                    ? null
+                    : 'Must be finite'
+            ));
+    }
+
+    static get infinite(): SpecValidator {
+        return cache.infinite || 
+            (cache.infinite = createSpecValidator(
+                it => it === Number.POSITIVE_INFINITY || Number.NEGATIVE_INFINITY 
+                    ? null
+                    : 'Must be infinite'
+            ));
     }
 
     static get string(): SpecValidator {
@@ -32,6 +134,14 @@ export default class Spec {
             it => typeof it === 'string'
                 ? null
                 : 'Must be a string'
+        ));
+    }
+
+    static get func(): SpecValidator {
+        return cache.func || (cache.func = createSpecValidator(
+            it => typeof it === 'function'
+                ? null
+                : 'Must be a function'
         ));
     }
 
@@ -75,20 +185,39 @@ export default class Spec {
         );
     }
 
-    static get func(): SpecValidator {
-        return cache.func || (cache.func = createSpecValidator(
-            it => typeof it === 'function'
+    static get iterable(): SpecValidator {
+        return createSpecValidator(
+            it => it && typeof it === 'object'
+                && typeof it[Symbol.iterator] === 'function'        
                 ? null
-                : 'Must be a function'
-        ));
+                : `Must be iterable`
+        );
     }
 
-    static get integer(): SpecValidator {
-        return cache.func || (cache.func = createSpecValidator(
-            it => Number.isSafeInteger(it)
-                ? null
-                : 'Must be an integer'
-        ));
+    static get unique(): SpecValidator {
+        return cache.unique || (cache.unique =
+            createSpecValidator((it, path) => {
+                let ret: any = Spec.iterable(it, path);
+
+                if (ret === null) {
+                    let itemCount = 0;
+
+                    if (Array.isArray(it)) {
+                        itemCount = it.length;
+                    } else {
+                        // eslint-disable-next-line no-unused-vars
+                        for (let item of it) {
+                            ++itemCount;
+                        }
+                    }
+                    
+                    if (itemCount > new Set(it).size) {
+                        ret = 'Must be unique';
+                    }
+                }
+
+                return ret;
+            }));
     }
 
     static get date(): SpecValidator {
@@ -97,119 +226,6 @@ export default class Spec {
                 ? null
                 : 'Must be a date'
         ))
-    }
-
-    static get positiveInteger(): SpecValidator {
-        return cache.positiveInteger || 
-            (cache.positiveInteger = createSpecValidator(
-                it => Number.isSafeInteger(it) && it > 0
-                    ? null
-                    : 'Must be a positive integer'
-            ));
-    }
-
-    static get negativeInteger(): SpecValidator {
-        return cache.negativeInteger || 
-            (cache.negativeInteger = createSpecValidator(
-                it => Number.isSafeInteger(it) && it < 0
-                    ? null
-                    : 'Must be a negative integer',
-            ));
-    }
-
-    static get nonNegativeInteger(): SpecValidator {
-        return cache.nonNegativeInteger || 
-            (cache.nonNegativeInteger = createSpecValidator(
-                it => Number.isSafeInteger(it) && it >= 0
-                    ? null
-                    : 'Must be a non-negative integer'
-            ));
-    }
-
-    static get nonPositiveInteger(): SpecValidator {
-        return cache.nonPositiveInteger || 
-            (cache.nonPositiveInteger = createSpecValidator(
-                it => Number.isSafeInteger(it) && it <= 0
-                    ? null
-                    : 'Must be a non-positive integer',
-            ));
-    }
-
-    static get something(): SpecValidator {
-        return cache.something || (cache.something = createSpecValidator(
-            it => it !== undefined && it !== null
-                ? null
-                : 'Must not be undefined or null'
-        ));
-    }
-
-    static get nothing(): SpecValidator {
-        return cache.nothing || (cache.nothing = createSpecValidator(
-            it => it === undefined && it === null
-                ? null
-                : 'Must be undefined or null'
-        ));
-    }
-
-    static optional(constraint: Function): SpecValidator {
-        return createSpecValidator(
-            (it, path) => it === undefined
-                ? null
-                : constraint(it, path));
-    }
-
-    static nullable(constraint: Function): SpecValidator {
-        return createSpecValidator(
-            (it, path) => it === null
-                ? null
-                : constraint(it, path));
-    }
-
-    static orNothing(constraint: Function): SpecValidator {
-        return createSpecValidator((it, path) =>
-            it === undefined || it === null
-                ? null
-                : constraint(it, path));
-    }
-
-    static oneOf(items: any[]): SpecValidator {
-        return createSpecValidator(it =>
-            !items.every(item => item !== it)
-                ? null
-                : 'Must be one of: ' + items.join(', '));
-    }
-
-    static match(regex: RegExp): SpecValidator {
-        return createSpecValidator(it => {
-            let ret = null;
-
-            if (typeof it !== 'string') {
-                ret = 'Must be a string';
-            } else if (!it.match(regex)) {
-                ret = 'Must match regex ' + regex;
-            }
-
-            return ret;
-        });
-    }
-
-    static valid(condition: (it: any) => boolean): SpecValidator {
-        return createSpecValidator((it, path = null) => {
-             return condition(it)
-                ? null
-                : 'Invalid value'
-        });
-    }
-
-    static instanceOf(type: Function): SpecValidator {
-        if (typeof type !== 'function') {
-            throw new Error(
-                "[Spec.instanceOf] First paramter 'type' must be a function");
-        }
-
-        return createSpecValidator((it, path = null) => it instanceof type
-            ? null
-            : 'Must be instance of ' + type.name);
     }
 
     static is(value: any): SpecValidator {
@@ -244,6 +260,84 @@ export default class Spec {
         );
     }
 
+    static get something(): SpecValidator {
+        return cache.something || (cache.something = createSpecValidator(
+            it => it !== undefined && it !== null
+                ? null
+                : 'Must not be undefined or null'
+        ));
+    }
+
+    static get nothing(): SpecValidator {
+        return cache.nothing || (cache.nothing = createSpecValidator(
+            it => it === undefined && it === null
+                ? null
+                : 'Must be undefined or null'
+        ));
+    }
+
+
+    static optional(constraint: Function): SpecValidator {
+        return createSpecValidator(
+            (it, path) => it === undefined
+                ? null
+                : constraint(it, path));
+    }
+
+    static nullable(constraint: Function): SpecValidator {
+        return createSpecValidator(
+            (it, path) => it === null
+                ? null
+                : constraint(it, path));
+    }
+
+    static orNothing(constraint: Function): SpecValidator {
+        return createSpecValidator((it, path) =>
+            it === undefined || it === null
+                ? null
+                : constraint(it, path));
+    }
+
+    static oneOf(items: any[]): SpecValidator {
+        return createSpecValidator(it =>
+            !items.every(item => item !== it)
+                ? null
+                : 'Must be one of: ' + items.join(', '));
+    }
+
+    static instanceOf(type: Function): SpecValidator {
+        if (typeof type !== 'function') {
+            throw new Error(
+                "[Spec.instanceOf] First paramter 'type' must be a function");
+        }
+
+        return createSpecValidator((it, path = null) => it instanceof type
+            ? null
+            : 'Must be instance of ' + type.name);
+    }
+
+    static match(regex: RegExp): SpecValidator {
+        return createSpecValidator(it => {
+            let ret = null;
+
+            if (typeof it !== 'string') {
+                ret = 'Must be a string';
+            } else if (!it.match(regex)) {
+                ret = 'Must match regex ' + regex;
+            }
+
+            return ret;
+        });
+    }
+
+    static valid(condition: (it: any) => boolean): SpecValidator {
+        return createSpecValidator((it, path = null) => {
+             return condition(it)
+                ? null
+                : 'Invalid value'
+        });
+    }
+
     static size(constraint: Function): SpecValidator {
         return createSpecValidator((it, path) => {
             let ret = null;
@@ -252,7 +346,7 @@ export default class Spec {
                 ret = 'Must be an object';
             } else {
                 const
-                    propName = it.length !== undefined ? 'length' : 'size',
+                    propName = Array.isArray(it) ? 'length' : 'size',
                     size = it[propName];
 
                 if (!Number.isSafeInteger(size) || size <= 0) {
@@ -306,14 +400,6 @@ export default class Spec {
         );
     }
 
-    static get iterable(): SpecValidator {
-        return createSpecValidator(
-            it => it && typeof it === 'object'
-                && typeof it[Symbol.iterator] === 'function'        
-                ? null
-                : `Must be iterable`
-        );
-    }
 
     static keys(constraint: Function): SpecValidator {
         return createSpecValidator((it, path) => {
@@ -362,32 +448,6 @@ export default class Spec {
         });
     }
 
-    static get unique() {
-        return cache.unique || (cache.unique =
-            createSpecValidator((it, path) => {
-                let ret: any = Spec.iterable(it, path);
-
-                if (ret === null) {
-                    let itemCount = 0;
-
-                    if (Array.isArray(it)) {
-                        itemCount = it.length;
-                    } else {
-                        // eslint-disable-next-line no-unused-vars
-                        for (let item of it) {
-                            ++itemCount;
-                        }
-                    }
-                    
-                    if (itemCount > new Set(it).size) {
-                        ret = 'Must be unique';
-                    }
-                }
-
-                return ret;
-            }));
-    }
-
     // TODO - what about additional properties?
     static shape(shape: { [key: string]: Function }): SpecValidator {
         return createSpecValidator((it, path) => {
@@ -412,7 +472,7 @@ export default class Spec {
         });
     }
 
-    static statics(shape: {[key: string] : Function }): SpecValidator {
+    static statics(shape: { [key: string] : Function }): SpecValidator {
         return createSpecValidator((it, path) => {
             let ret = null;
 
@@ -433,10 +493,6 @@ export default class Spec {
 
             return ret;
         });
-    }
-
-    static get any(): SpecValidator {
-        return cache.any || (cache.any = createSpecValidator(() => null));
     }
 
     static and(...constraints: Function[]): SpecValidator {

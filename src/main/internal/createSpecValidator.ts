@@ -8,7 +8,7 @@ import createSpecError from './createSpecError';
 export default function createSpecValidator(
     fn: (it: any, path: string | null) => any): SpecValidator {
     
-    const validator = ((it: any, path: string | null) => {
+    const validator = ((it: any, path: string | null = null) => {
         let ret = null;
 
         const result = fn(it, path);
