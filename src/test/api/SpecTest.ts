@@ -128,15 +128,15 @@ describe('Spec.finite', () => {
     runSimpleSpecTest({
         spec: Spec.finite,
         validValues: [1, -1, 2, -2, 3, '1', '-1', '2', '-2', true, false, null, [], [1]],
-        invalidValues: [undefined, Infinity, -Infinity, {}]
+        invalidValues: [undefined, Infinity, -Infinity, NaN, {}]
     });
 });
 
 describe('Spec.infinite', () => {
     runSimpleSpecTest({
         spec: Spec.infinite,
-        validValues: [undefined, Infinity, -Infinity, {}]
-        invalidValues: [1, -1, 2, -2, 3, '1', '-1', '2', '-2', true, false, null, [], [1]],
+        validValues: [Infinity, -Infinity],
+        invalidValues: [undefined, null, true, false, 1, -1, 2, -2, 3, '1', '-1', '2', '-2', NaN, {}, [], [1]]
     });
 });
 
@@ -191,194 +191,130 @@ describe('Spec.unique', () => {
 describe('Spec.date', () => {
     runSimpleSpecTest({
         spec: Spec.date,
-        validValues: [new Date()],
-        invalidValues: [undefined, null, true, false, 0, 1, -1, {}, '1989-11-09']
+        validValues: [new Date(), new Date('1989-11-09')],
+        invalidValues: [undefined, null, true, false, 0, 1, -1, {}, '1989-11-09', new Date('xxx')]
     });
 });
 
-/*
-    it('should work properly in success case', () => {
-        const result = Spec.boolean(true);
-
-        expect(result)
-            .to.eql(null);
-    });
-    
-    it('should work properly in error case', () => {
-        const paths = [null, 'some.path'];
-
-        paths.forEach(path => {
-            const result = Spec.boolean(42, path);
-
-            expect(result)
-                .to.not.eql(null);
-            
-            expect(result.path)
-                .to.eql(path === null ? null : path);
-        });
-    });
-*/
-});
-
-describe('Testing Spec.number', () => {
-    it('should work properly in success case', () => {
-        const result = Spec.number(12.34);
-
-        expect(result)
-            .to.eql(null);
-    });
-    
-    it('should work properly in error case', () => {
-        const paths = [null, 'some.path'];
-
-        paths.forEach(path => {
-            const result = Spec.number('some text', path);
-
-            expect(result)
-                .to.not.eql(null);
-            
-            expect(result.path)
-                .to.eql(path === null ? null : path);
-        });
+describe('Spec.something', () => {
+    runSimpleSpecTest({
+        spec: Spec.something,
+        validValues: [true, false, 0, 1, 42, [], [0], {}, { x: 12.3 }],
+        invalidValues: [undefined, null]
     });
 });
 
-describe('Testing Spec.integer', () => {
-    it('should work properly in success case', () => {
-        const result = Spec.integer(42);
-
-        expect(result)
-            .to.eql(null);
-    });
-    
-    it('should work properly in error case', () => {
-        const paths = [null, 'some.path'];
-
-        paths.forEach(path => {
-            const result = Spec.integer(12.34, path);
-
-            expect(result)
-                .to.not.eql(null);
-            
-            expect(result.path)
-                .to.eql(path === null ? null : path);
-        });
+describe('Spec.nothing', () => {
+    runSimpleSpecTest({
+        spec: Spec.nothing,
+        validValues: [undefined, null],
+        invalidValues: [true, false, 0, 1, 42, [], [0], {}, { x: 12.3 }]
     });
 });
 
-describe('Testing Spec.string', () => {
-    it('should work properly in success case', () => {
-        const result = Spec.string('some text');
+describe('Spec.is', () => {
+    runSimpleSpecTest({
+        spec: Spec.is(42),
+        validValues: [42],
+        invalidValues: [undefined, null, true, false, 0, 1, 41, "42", {}]
+    })
+});
 
-        expect(result)
-            .to.eql(null);
-    });
+describe('Spec.isNot', () => {
+    runSimpleSpecTest({
+        spec: Spec.isNot(42),
+        validValues: [undefined, null, true, false, 0, 1, 41, "42", {}],
+        invalidValues: [42]
+    })
+})
+
+describe('Spec.equal', () => {
+    runSimpleSpecTest({
+        spec: Spec.equal(42),
+        validValues: [42, "42", "42 "],
+        invalidValues: [undefined, null, true, false, 0, 1, 41, {}]
+    })
     
-    it('should work properly in error case', () => {
-        const paths = [null, 'some.path'];
+    runSimpleSpecTest({
+        spec: Spec.equal(0),
+        validValues: [0, false, '0', [], [0]],
+        invalidValues: [undefined, null, true, 1, 41, {}, [1], [0, 0]]
+    })
+});
 
-        paths.forEach(path => {
-            const result = Spec.string(42, path);
-
-            expect(result)
-                .to.not.eql(null);
-            
-            expect(result.path)
-                .to.eql(path === null ? null : path);
-        });
+describe('Spec.notEqual', () => {
+    runSimpleSpecTest({
+        spec: Spec.notEqual(42),
+        validValues: [undefined, null, true, false, 0, 1, 41, {}],
+        invalidValues: [42, "42", "42 "]
+    })
+    
+    runSimpleSpecTest({
+        spec: Spec.notEqual(0),
+        validValues: [undefined, null, true, 1, 41, {}, [1], [0, 0]],
+        invalidValues: [0, false, '0', [], [0]]
     });
 });
 
-describe('Testing Spec.object', () => {
-    it('should work properly in success case', () => {
-        const result = Spec.object({ something: 42 });
-
-        expect(result)
-            .to.eql(null);
-    });
-    
-    it('should work properly in error case', () => {
-        const paths = [null, 'some.path'];
-
-        paths.forEach(path => {
-            const result = Spec.object(42, path);
-
-            expect(result)
-                .to.not.eql(null);
-            
-            expect(result.path)
-                .to.eql(path === null ? null : path);
-        });
+describe('Spec.optional', () => {
+    runSimpleSpecTest({
+        spec: Spec.optional(Spec.number),
+        validValues: [undefined, 0, 1, -1, 12.23, -42],
+        invalidValues: [null, true, false, '', '0', 'some text', {}, []]
     });
 });
 
-describe('Testing Spec.date', () => {
-    it('should work properly in success case', () => {
-        const result = Spec.date(new Date());
-
-        expect(result)
-            .to.eql(null);
-    });
-    
-    it('should work properly in error case', () => {
-        const paths = [null, 'some.path'];
-
-        paths.forEach(path => {
-            const result = Spec.date(42, path);
-
-            expect(result)
-                .to.not.eql(null);
-            
-            expect(result.path)
-                .to.eql(path === null ? null : path);
-        });
+describe('Spec.optional', () => {
+    runSimpleSpecTest({
+        spec: Spec.nullable(Spec.number),
+        validValues: [null, 0, 1, -1, 12.23, -42],
+        invalidValues: [undefined, true, false, '', '0', 'some text', {}, []]
     });
 });
 
-describe('Testing Spec.array', () => {
-    it('should work properly in success case', () => {
-        const result = Spec.array([1, 2, 3]);
+describe('Spec.orNothing', () => {
+    runSimpleSpecTest({
+        spec: Spec.orNothing(Spec.number),
+        validValues: [undefined, null, 0, 1, -1, 12.23, -42],
+        invalidValues: [true, false, '', '0', 'some text', {}, []]
+    });
+});
 
-        expect(result)
-            .to.eql(null);
+describe('Spec.oneOf', () => {
+    runSimpleSpecTest({
+        spec: Spec.oneOf([1, 2, "42", false]),
+        validValues: [1, 2, "42", false],
+        invalidValues: [true, 42, '', '0', 'some text', {}, []]
+    });
+});
+
+describe('Spec.instanceOf', () => {
+    runSimpleSpecTest({
+        spec: Spec.instanceOf(Object),
+        validValues: [[], {}, new Date],
+        invalidValues: [true, 42, '', '0', 'some text']
     });
     
-    it('should work properly in error case', () => {
-        const paths = [null, 'some.path'];
-
-        paths.forEach(path => {
-            const result = Spec.array(42, path);
-
-            expect(result)
-                .to.not.eql(null);
-            
-            expect(result.path)
-                .to.eql(path === null ? null : path);
-        });
+    runSimpleSpecTest({
+        spec: Spec.instanceOf(Date),
+        validValues: [new Date, new Date('1945-05-08')],
+        invalidValues: [true, 42, '', '0', 'some text']
     });
 });
 
 describe('Testing Spec.arrayOf', () => {
-    it('should work properly in success case', () => {
-        const result = Spec.arrayOf(Spec.integer)([1, 2, 3]);
-
-        expect(result)
-            .to.eql(null);
+    runSimpleSpecTest({
+        spec: Spec.arrayOf(Spec.integer),
+        validValues: [[], [1, 2, 3], [-1, -2, -3], [1, -1, 2, -2]],
+        invalidValues: [undefined, null, true, false, 0, '', ['1'], [true], [1, 2, null]]
     });
-    
-    it('should work properly in error case', () => {
-        const paths = [null, 'some.path'];
+});
 
-        paths.forEach(path => {
-            const result = Spec.arrayOf(Spec.integer)([1, 2, 3, new Date], path);
-
-            expect(result)
-                .to.not.eql(null);
-            
-            expect(result.path)
-                .to.eql(path === null ? null : path + '.3');
-
-        });
+describe('Testing Spec.match', () => {
+    runSimpleSpecTest({
+        spec: Spec.match(/^[a-z]+$/),
+        validValues: ['a', 'abc', 'x', 'xxx', 'az'],
+        invalidValues: [undefined, null, true, false, 0, '', '0', 'A', 'aZ', ' az']
     });
 });
 
@@ -414,6 +350,9 @@ function runSimpleSpecTest(config: any) {
             const result = config.spec(value);
 
             if (result) {
+                console.log('Error:', result);
+                console.log('Subject:', value);
+                process.exit(0);
                 throw result;
             }
         }
@@ -428,7 +367,8 @@ function runSimpleSpecTest(config: any) {
 
                 if (!(result instanceof SpecError)) {
                     throw new Error(
-                        'Result of spec test should have been a SpecError');
+                        'Result of spec test should have been a SpecError '
+                        + 'for value ' + value);
                 } else if (path !== null && typeof result.path !== 'string') {
                     throw new Error(
                         'Path property of SpecError should be a string');

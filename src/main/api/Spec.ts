@@ -27,7 +27,7 @@ export default class Spec {
         return cache.number || (cache.number = createSpecValidator(
             it => typeof it === 'number' && isFinite(it)
                 ? null
-                : 'Must be a number'
+                : 'Must be a finite number'
         ));
     }
 
@@ -36,7 +36,7 @@ export default class Spec {
             (cache.positiveNumber = createSpecValidator(
                 it => typeof it === 'number' && isFinite(it) && it > 0
                     ? null
-                    : 'Must be a positive number'
+                    : 'Must be a positive finite number'
             ));
     }
 
@@ -45,7 +45,7 @@ export default class Spec {
             (cache.nonPositiveNumber = createSpecValidator(
                 it => typeof it === 'number' && isFinite(it) && it <= 0
                     ? null
-                    : 'Must be a non-positive number'
+                    : 'Must be a non-positive finite number'
             ));
     }
 
@@ -54,7 +54,7 @@ export default class Spec {
             (cache.negativeNumber = createSpecValidator(
                 it => typeof it === 'number' && isFinite(it) && it < 0
                     ? null
-                    : 'Must be a negative number'
+                    : 'Must be a negative finite number'
             ));
     }
 
@@ -63,15 +63,15 @@ export default class Spec {
             (cache.nonNegativeNumber = createSpecValidator(
                 it => typeof it === 'number' && isFinite(it) && it >= 0
                     ? null
-                    : 'Must be a non-negative number'
+                    : 'Must be a non-negative finite number'
             ));
     }
 
     static get integer(): SpecValidator {
-        return cache.func || (cache.func = createSpecValidator(
+        return cache.integer || (cache.integer = createSpecValidator(
             it => Number.isSafeInteger(it)
                 ? null
-                : 'Must be an integer'
+                : 'Must be a finite integer'
         ));
     }
 
@@ -80,7 +80,7 @@ export default class Spec {
             (cache.positiveInteger = createSpecValidator(
                 it => Number.isSafeInteger(it) && it > 0
                     ? null
-                    : 'Must be a positive integer'
+                    : 'Must be a positive finite integer'
             ));
     }
 
@@ -89,7 +89,7 @@ export default class Spec {
             (cache.nonPositiveInteger = createSpecValidator(
                 it => Number.isSafeInteger(it) && it <= 0
                     ? null
-                    : 'Must be a non-positive integer',
+                    : 'Must be a non-positive finite integer',
             ));
     }
 
@@ -98,7 +98,7 @@ export default class Spec {
             (cache.negativeInteger = createSpecValidator(
                 it => Number.isSafeInteger(it) && it < 0
                     ? null
-                    : 'Must be a negative integer',
+                    : 'Must be a negative finite integer',
             ));
     }
 
@@ -107,7 +107,7 @@ export default class Spec {
             (cache.nonNegativeInteger = createSpecValidator(
                 it => Number.isSafeInteger(it) && it >= 0
                     ? null
-                    : 'Must be a non-negative integer'
+                    : 'Must be a non-negative finite integer'
             ));
     }
 
@@ -123,7 +123,7 @@ export default class Spec {
     static get infinite(): SpecValidator {
         return cache.infinite || 
             (cache.infinite = createSpecValidator(
-                it => it === Number.POSITIVE_INFINITY || Number.NEGATIVE_INFINITY 
+                it => it === Number.POSITIVE_INFINITY || it === Number.NEGATIVE_INFINITY
                     ? null
                     : 'Must be infinite'
             ));
@@ -161,36 +161,14 @@ export default class Spec {
         ));
     }
 
-    static arrayOf(constraint: Function): SpecValidator {
-        return createSpecValidator(
-            (it, path = null) => {
-                let ret = Spec.array(it, path);
-
-                if (ret === null) {
-                    for (let i = 0; i < it.length; ++i) {
-                        const
-                            subPath = _buildSubPath(path, String(i)),
-                            result = _checkConstraint(constraint, it[i], subPath);
-
-                        if (result) {
-                            ret = result;
-
-                            break;
-                        } 
-                    }
-                }
-
-                return ret;
-            }
-        );
-    }
-
     static get iterable(): SpecValidator {
         return createSpecValidator(
-            it => it && typeof it === 'object'
-                && typeof it[Symbol.iterator] === 'function'        
+            it => typeof it === 'string'
+                || (it
+                    && typeof it === 'object'
+                    && typeof it[Symbol.iterator] === 'function') 
                 ? null
-                : `Must be iterable`
+                : 'Must be iterable'
         );
     }
 
@@ -222,10 +200,26 @@ export default class Spec {
 
     static get date(): SpecValidator {
         return cache.date || (cache.date = createSpecValidator(
-            it => it instanceof Date 
+            it => it instanceof Date && !isNaN(it.getDate()) 
                 ? null
-                : 'Must be a date'
+                : 'Must be a valid date'
         ))
+    }
+    
+    static get something(): SpecValidator {
+        return cache.something || (cache.something = createSpecValidator(
+            it => it !== undefined && it !== null
+                ? null
+                : 'Must not be undefined or null'
+        ));
+    }
+
+    static get nothing(): SpecValidator {
+        return cache.nothing || (cache.nothing = createSpecValidator(
+            it => it === undefined || it === null
+                ? null
+                : 'Must be undefined or null'
+        ));
     }
 
     static is(value: any): SpecValidator {
@@ -259,23 +253,6 @@ export default class Spec {
                 : 'Must not be equal to ' + value
         );
     }
-
-    static get something(): SpecValidator {
-        return cache.something || (cache.something = createSpecValidator(
-            it => it !== undefined && it !== null
-                ? null
-                : 'Must not be undefined or null'
-        ));
-    }
-
-    static get nothing(): SpecValidator {
-        return cache.nothing || (cache.nothing = createSpecValidator(
-            it => it === undefined && it === null
-                ? null
-                : 'Must be undefined or null'
-        ));
-    }
-
 
     static optional(constraint: Function): SpecValidator {
         return createSpecValidator(
@@ -315,6 +292,32 @@ export default class Spec {
             ? null
             : 'Must be instance of ' + type.name);
     }
+    
+    static arrayOf(constraint: Function): SpecValidator {
+        return createSpecValidator(
+            (it, path = null) => {
+                let ret = Spec.array(it, path);
+
+                if (ret === null) {
+                    for (let i = 0; i < it.length; ++i) {
+                        const
+                            subPath = _buildSubPath(path, String(i)),
+                            result = _checkConstraint(constraint, it[i], subPath);
+
+                        if (result) {
+                            ret = result;
+
+                            break;
+                        } 
+                    }
+                }
+
+                return ret;
+            }
+        );
+    }
+
+
 
     static match(regex: RegExp): SpecValidator {
         return createSpecValidator(it => {
