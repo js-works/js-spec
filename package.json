@@ -9,12 +9,15 @@
     "url": "https://github.com/js-works/js-spec.git"
   },
   "devDependencies": {
+    "@types/chai": "^4.0.1",
+    "@types/mocha": "^2.2.41",
     "browserify": "^14.4.0",
     "chai": "~3.4.1",
     "cross-conf-env": "^1.1.2",
     "mocha": "^2.3.4",
     "ngzip": "^1.1.3",
     "shx": "^0.2.2",
+    "ts-node": "^3.2.0",
     "typedoc": "^0.7.1",
     "uglify-js": "^3.0.24"
   },
@@ -25,7 +28,9 @@
     "bundle": "npm run compile && node node_modules/shx/lib/cli.js mkdir -p dist && node node_modules/browserify/bin/cmd.js build/js-spec.js -s js-spec -o dist/js-spec.js",
     "minimize": "npm run bundle && node node_modules/uglify-js/bin/uglifyjs dist/js-spec.js -o dist/js-spec.min.js --compress --mangle",
     "compress": "npm run minimize && ngzip -9 dist/js-spec.min.js > dist/js-spec.min.js.gz",
+    "test": "mocha -r ts-node/register src/test/**/*.ts",
+    "test-watch": "mocha -w -r ts-node/register src/test/**/*.ts",
     "docs": "node node_modules/shx/lib/cli.js rm -rf ./dist/docs && cross-conf-env typedoc --options typedoc.json src/main/api/ -name \"js-spec vnpm_package_version\"",
-    "all": "npm run compress && npm run docs && node node_modules/shx/lib/cli.js echo Finished successfully."
+    "all": "npm run compress && npm run test && npm run docs && node node_modules/shx/lib/cli.js echo Finished successfully."
   }
 }

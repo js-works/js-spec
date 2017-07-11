@@ -51,7 +51,7 @@ export default class Spec {
         ));
     }
 
-    static arrayOf(constraint: Function) {
+    static arrayOf(constraint: Function): SpecValidator {
         return createSpecValidator(
             (it, path = null) => {
                 let ret = Spec.array(it, path);
@@ -60,7 +60,7 @@ export default class Spec {
                     for (let i = 0; i < it.length; ++i) {
                         const
                             subPath = _buildSubPath(path, String(i)),
-                            result = constraint(it[i], subPath);
+                            result = _checkConstraint(constraint, it[i], subPath);
 
                         if (result) {
                             ret = result;
@@ -91,7 +91,15 @@ export default class Spec {
         ));
     }
 
-    static get positiveInteger(): SpecValidator{
+    static get date(): SpecValidator {
+        return cache.date || (cache.date = createSpecValidator(
+            it => it instanceof Date 
+                ? null
+                : 'Must be a date'
+        ))
+    }
+
+    static get positiveInteger(): SpecValidator {
         return cache.positiveInteger || 
             (cache.positiveInteger = createSpecValidator(
                 it => Number.isSafeInteger(it) && it > 0
@@ -453,7 +461,7 @@ export default class Spec {
         return createSpecValidator(
             it => !constraints.every(constraint =>
                 // XXX
-                !!_checkConstraint(constraint, it, null))
+                _checkConstraint(constraint, it, null) !== null)
                 ? null
                 : 'Invalid value'
         );

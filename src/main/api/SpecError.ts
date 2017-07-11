@@ -1,8 +1,8 @@
 
 export default class SpecError {
-    private message: string
-    private shortMessage: string
-    private path: string
+    public message: string
+    public shortMessage: string
+    public path: string
 
     constructor(message: string, shortMessage: string = null, path: string = null) {
         this.message = message;

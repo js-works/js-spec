@@ -1,11 +1,9 @@
-import { describe, it } from 'mocha';
+//import { describe, it } from 'mocha';
+
 import { expect } from 'chai';
 
 import SpecError from '../../main/api/SpecError';
 
-/**
- * @test {SpecError}
- */
 describe('Testing SpecError construction and reading properties', () => {
     const
         longMessage = 'long message',

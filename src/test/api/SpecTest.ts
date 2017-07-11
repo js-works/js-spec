@@ -1,4 +1,4 @@
-import { describe, it } from 'mocha';
+// import { describe, it } from 'mocha';
 import { expect } from 'chai';
 
 import Spec from '../../main/api/Spec';
@@ -25,9 +25,6 @@ const data = {
 };
 
 
-/**
- * @test {Spec.arrayOf}
- */
 describe('Testing Spec.arrayOf', () => {
     it('should work properly in success case', () => {
         const result = Spec.arrayOf(Spec.integer)(data.someIntegers);
@@ -47,20 +44,18 @@ describe('Testing Spec.arrayOf', () => {
             
             expect(result.path)
                 .to.eql(path === null ? null : path + '.3');
+
         });
     });
 });
 
-/**
- * @test {Spec.or}
- */
 describe('Testing Spec.or', () => {
     it('should work properly in success case', () => {
         const result =
             Spec.arrayOf(
                 Spec.or(
                     Spec.integer,
-                    Spec.string))(data.someArray, 'someArray');
+                    Spec.date))(data.someArray, 'someArray');
 
         expect(result)
             .to.eql(null);
