@@ -3,7 +3,7 @@
   "version": "0.1.1",
   "license": "LGPL-3.0",
   "homepage": "https://github.com/js-works/js-spec",
-  "main": "dist/js-spec/js-spec.min.js",
+  "main": "dist/js-spec.min.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/js-works/js-spec.git"
@@ -25,7 +25,7 @@
     "initialize": "npm install && npm install -g shx && npm install -g browserify && npm install -g uglify-js",
     "clean": "node node_modules/shx/lib/cli.js rm -rf ./build ./dist",
     "compile": "npm run clean && tsc",
-    "bundle": "npm run compile && node node_modules/shx/lib/cli.js mkdir -p dist && node node_modules/browserify/bin/cmd.js build/js-spec.js -s js-spec -o dist/js-spec.js",
+    "bundle": "npm run compile && node node_modules/shx/lib/cli.js mkdir -p dist && node node_modules/browserify/bin/cmd.js build/main/js-spec.js -s js-spec -o dist/js-spec.js",
     "minimize": "npm run bundle && node node_modules/uglify-js/bin/uglifyjs dist/js-spec.js -o dist/js-spec.min.js --compress --mangle",
     "compress": "npm run minimize && ngzip -9 dist/js-spec.min.js > dist/js-spec.min.js.gz",
     "test": "mocha -r ts-node/register src/test/**/*.ts",
