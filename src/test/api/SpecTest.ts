@@ -318,6 +318,30 @@ describe('Testing Spec.match', () => {
     });
 });
 
+describe('Testing Spec.valid', () => {
+    runSimpleSpecTest({
+        spec: Spec.valid(it => it > 5),
+        validValues: [6, 7, 8, 42, Infinity, '6', '66 '],
+        invalidValues: [undefined, null, true, false, 0, '', '0', '5', 'a', 'A']
+    });
+});
+
+describe('Testing Spec.size', () => {
+    runSimpleSpecTest({
+        spec: Spec.size((it: any) => it > 3),
+        validValues: ['1234', [1, 2, 3, 4], new Set([1, 2, 3, 4])],
+        invalidValues: [undefined, null, true, false, 0, '', '0', '123', [], [1,2 ,3], new Set([1, 2, 3])]
+    });
+});
+
+describe('Testing Spec.greater', () => {
+    runSimpleSpecTest({
+        spec: Spec.greater('5'),
+        validValues: [5.1, 6, 7, 42, '6', '50', '5x', 'x4'],
+        invalidValues: [undefined, null, true, false, 0, 5, '', '5', '4x']
+    });
+});
+
 describe('Testing Spec.or', () => {
     it('should work properly in success case', () => {
         const result =

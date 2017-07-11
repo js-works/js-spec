@@ -345,17 +345,22 @@ export default class Spec {
         return createSpecValidator((it, path) => {
             let ret = null;
 
-            if (!it || typeof it !== 'object') {
-                ret = 'Must be an object';
+            if (it === null
+                || typeof it !== 'object' && typeof it !== 'string') {
+            
+                ret = 'Must be something with size/length';
             } else {
                 const
-                    propName = Array.isArray(it) ? 'length' : 'size',
+                    propName = Array.isArray(it) || typeof it === 'string'
+                        ? 'length'
+                        : 'size',
+                    
                     size = it[propName];
 
                 if (!Number.isSafeInteger(size) || size <= 0) {
                     ret = `Must have a adequate '${propName}' property`;
                 } else {
-                    ret = constraint(it, _buildSubPath(path, propName));
+                    ret = _checkConstraint(constraint, size, _buildSubPath(path, propName));
                 }
             }
 
@@ -613,7 +618,7 @@ function _checkConstraint(constraint: Function, it: any, path: string | null = n
 
     return result === false
         ? createSpecError('Invalid value', path)
-        : (!result ? null : createSpecError(result, path));
+        : (!result || result === true ? null : createSpecError(result, path));
 }
 
 /**
