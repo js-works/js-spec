@@ -1,7 +1,7 @@
 import SpecError from './SpecError';
 import SpecValidator from './SpecValidator';
+import createSpecValidator from './createSpecValidator';
 import createSpecError from '../internal/createSpecError';
-import createSpecValidator from '../internal/createSpecValidator';
 
 export default class Spec {
     /**
@@ -242,6 +242,14 @@ export default class Spec {
         ));
     }
 
+    static get hasKeys(): SpecValidator {
+        return cache.hasKeys || (cache.hasKeys = createSpecValidator(
+            it => it === undefined || it === null || Object.keys(it).length === 0
+                ? 'Must have Keys'
+                : null
+        ));
+    }
+
     static is(value: any): SpecValidator {
         return createSpecValidator(
             it => it === value        
@@ -427,7 +435,6 @@ export default class Spec {
                 : `Must be between ${left} and ${right}`
         );
     }
-
 
     static keys(constraint: Function): SpecValidator {
         return createSpecValidator((it, path) => {

@@ -212,6 +212,14 @@ describe('Spec.nothing', () => {
     });
 });
 
+describe('Spec.hasKeys', () => {
+    runSimpleSpecTest({
+        spec: Spec.hasKeys,
+        validValues: ['x', '123', [0], { n: 42 }],
+        invalidValues: [undefined, null, true, false, 0, 42, '', [], {}, new Set([1, 2, 3])]
+    });
+});
+
 describe('Spec.is', () => {
     runSimpleSpecTest({
         spec: Spec.is(42),

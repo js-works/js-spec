@@ -1,6 +1,7 @@
 import SpecValidator from '../api/SpecValidator';
 import SpecError from '../api/SpecError';
-import createSpecError from './createSpecError';
+import createSpecError from '../internal/createSpecError';
+import symbolIsSpecValidator from '../internal/symbolIsSpecValidator';
 
 /**
  * @hidden
@@ -46,6 +47,10 @@ export default function createSpecValidator(
                 : null
         );
     };
+
+    (validator as any)[symbolIsSpecValidator as any] = true;
+
+    Object.freeze(validator);
 
     return validator;
 }
