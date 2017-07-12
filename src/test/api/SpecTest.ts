@@ -382,17 +382,17 @@ describe('Spec.between', () => {
     });
 });
 
-describe('Spec.keys', () => {
+describe('Spec.keysOf', () => {
     runSimpleSpecTest({
-        spec: Spec.keys(Spec.match(/^[a-z]+$/)),
+        spec: Spec.keysOf(Spec.match(/^[a-z]+$/)),
         validValues: [{}, { a: 1, b: 2 }, { abc: 123, xyz: 789 }],
         invalidValues: [undefined, null, true, false, 0, 1, '', 'some text', { A: 1, b: 2}]
     });
 });
 
-describe('Spec.values', () => {
+describe('Spec.valuesOf', () => {
     runSimpleSpecTest({
-        spec: Spec.values(Spec.number),
+        spec: Spec.valuesOf(Spec.number),
         validValues: [{}, { a: 1, b: 2 }, { A: 123.4, B: 678.9 }],
         invalidValues: [undefined, null, true, false, 0, 1, '', 'some text', { a: 1, b: '2'}]
     });

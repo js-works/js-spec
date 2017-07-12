@@ -436,7 +436,7 @@ export default class Spec {
         );
     }
 
-    static keys(constraint: Function): SpecValidator {
+    static keysOf(constraint: Function): SpecValidator {
         return createSpecValidator((it, path) => {
             let ret = null;
 
@@ -457,7 +457,7 @@ export default class Spec {
         });
     }
 
-    static values(constraint: Function): SpecValidator {
+    static valuesOf(constraint: Function): SpecValidator {
         return createSpecValidator((it, path) => {
             let ret = null;
 
