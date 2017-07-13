@@ -12,29 +12,6 @@ const validateSimpleSpecTestConfig = Spec.shape({
     invalidValues: Spec.array
 });
 
-const data = {
-    level1: {
-        someShape: {
-            someInteger: 42,
-            someNumber: 1.23,
-            someIntegers: [1, 2, 3]
-        },
-        someArray: [0, 1, 2, 'some string', 4],
-        level2: {
-            someArray: [0, 1, 2, 'some string', 4],
-        }
-    },
-
-    true: true,
-    fourtyTwo: 42,
-    twelveDotThree: 12.3,
-    minusOne: -1,
-    zero: 0,
-    text: 'text',
-    arrayOfIntegersAndDates: [0, 1, 2, 3, new Date, 4], 
-    arrayOfIntegers: [100, 200, 300]
-}
-
 describe('Spec.boolean', () => {
     runSimpleSpecTest({
         spec: Spec.boolean,
@@ -543,7 +520,7 @@ describe('Spec', () => {
             "Constraint violation at 'level1.level2.arr.1': "
             + 'Must be an integer');
 
-        expect(result.shortMessage).to.eql('Must be an integer');
+        expect(result.hint).to.eql('Must be an integer');
 
         expect(result.path).to.eql('level1.level2.arr.1');
     });
@@ -555,9 +532,9 @@ describe('Spec', () => {
 
         expect(result.message).to.eql(
             "Constraint violation: "
-            + 'Must be an integer');
+            + 'Invalid value');
 
-        expect(result.shortMessage).to.eql('Must be an integer');
+        expect(result.hint).to.eql('Invalid value');
 
         expect(result.path).to.eql(null);
     });
@@ -573,7 +550,7 @@ describe('Spec', () => {
             "Constraint violation: "
             + 'Please provide valid configuration');
 
-        expect(result.shortMessage).to.eql('Please provide valid configuration');
+        expect(result.hint).to.eql('Please provide valid configuration');
 
         expect(result.path).to.eql(null);
     });
@@ -621,4 +598,18 @@ function runSimpleSpecTest(config: any) {
             }
         }
     });
-} 
+}
+
+/*
+describe('Just a test', () => {
+    it('should work', () => {
+
+        // Insert here
+
+        console.log(spec(data, ''));
+
+        console.log('--- done ---')
+        process.exit(0);
+    });
+});
+*/

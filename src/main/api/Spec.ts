@@ -447,7 +447,7 @@ export default class Spec {
                     const error = constraint(key);
 
                     if (error) { /// XXX
-                        ret = `Key '${key}' is invalid: ${error.shortMessage}`;
+                        ret = `Key '${key}' is invalid => ${error.hint}`;
                         break;
                     }
                 }
@@ -469,7 +469,7 @@ export default class Spec {
                         value = it[key],
                         subPath = _buildSubPath(path, key);
 // XXX
-                    const result = constraint(value, subPath);
+                    const result = _checkConstraint(constraint, value, subPath);
 
                     if (result) {
                         // TODO
@@ -498,6 +498,10 @@ export default class Spec {
                     ret = shape[key]((it as any)[key], subPath);
 
                     if (ret) {
+                        if (path === null) {
+                            ret = 'Invalid value';
+                        }
+
                         break;
                     }
                 }
@@ -521,6 +525,10 @@ export default class Spec {
                     ret = shape[key]((it as any)[key], subPath);
 
                     if (ret) {
+                        if (!path) {
+                            ret = 'Invalid value';
+                        }
+
                         break;
                     }
                 }
@@ -647,8 +655,8 @@ function _checkConstraint(constraint: Function, it: any, path: string | null = n
 
     if (result === false) {
         ret = createSpecError('Invalid value', path);
-    } else if (result instanceof SpecError && result.shortMessage) {
-        ret = createSpecError(result.shortMessage, path)
+    } else if (result instanceof SpecError && result.hint) {
+        ret = createSpecError(result.hint, path)
     } else if (result !== true && result !== null) {
         ret = createSpecError(String(result), path);
     }

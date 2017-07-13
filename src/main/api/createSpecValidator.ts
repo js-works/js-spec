@@ -21,8 +21,8 @@ export default function createSpecValidator(
 
             if (typeof result === 'string') {
                 errMsg = result;
-            } else if (result.shortMessage && typeof result.shortMessage === 'string') {
-                errMsg = result.shortMessage;
+            } else if (result.hint && typeof result.hint === 'string') {
+                errMsg = result.hint;
             } else if (result.message && typeof result.message === 'string') {
                 errMsg = result.message;
             } else {

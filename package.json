@@ -1,9 +1,9 @@
 {
   "name": "js-spec",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "license": "LGPL-3.0",
   "homepage": "https://github.com/js-works/js-spec",
-  "main": "dist/js-spec.min.js",
+  "main": "dist/js-spec.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/js-works/js-spec.git"

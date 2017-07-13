@@ -1,12 +1,12 @@
 
 export default class SpecError {
     public message: string
-    public shortMessage: string
+    public hint: string
     public path: string
 
-    constructor(message: string, shortMessage: string = null, path: string = null) {
+    constructor(message: string, hint: string = null, path: string = null) {
         this.message = message;
-        this.shortMessage = shortMessage;
+        this.hint = hint;
         this.path = path;
         Object.freeze(this);
     }

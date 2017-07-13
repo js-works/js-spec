@@ -6,9 +6,9 @@ import SpecError from '../../main/api/SpecError';
 describe('Testing SpecError construction and reading properties', () => {
     const
         longMessage = 'long message',
-        shortMessage = 'short message',
+        hint = 'short message',
         path = 'some.test.path',
-        specError = new SpecError(longMessage, shortMessage, path);
+        specError = new SpecError(longMessage, hint, path);
 
     it('should read long message properly', () => {
         expect(specError.message)
@@ -16,8 +16,8 @@ describe('Testing SpecError construction and reading properties', () => {
     });
 
     it('should read short message properly', () => {
-        expect(specError.shortMessage)
-            .to.eql(shortMessage);
+        expect(specError.hint)
+            .to.eql(hint);
     });
     
     it('should read path properly', () => {
