@@ -1,6 +1,6 @@
 {
   "name": "js-spec",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "license": "LGPL-3.0",
   "homepage": "https://github.com/js-works/js-spec",
   "main": "dist/js-spec.js",
@@ -24,7 +24,7 @@
   "scripts": {
     "clean": "node_modules/.bin/shx rm -rf ./build ./dist",
     "compile": "npm run clean && tsc",
-    "bundle": "npm run compile && \"node_modules/.bin/shx\" mkdir -p dist && \"node_modules/.bin/browserify\" build/main/js-spec.js -s js-spec -o dist/js-spec.js",
+    "bundle": "npm run compile && \"node_modules/.bin/shx\" mkdir -p dist && \"node_modules/.bin/browserify\" build/main/js-spec.js -s jsSpec -o dist/js-spec.js",
     "minimize": "npm run bundle && \"node_modules/.bin/uglifyjs\" dist/js-spec.js -o dist/js-spec.min.js --compress --mangle",
     "compress": "npm run minimize && \"node_modules/.bin/ngzip\" -9 dist/js-spec.min.js > dist/js-spec.min.js.gz",
     "test": "node_modules/.bin/mocha -r ts-node/register src/test/**/*.ts",
