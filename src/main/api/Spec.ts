@@ -157,7 +157,7 @@ export default class Spec {
         ));
     }
 
-    static get func(): SpecValidator {
+    static get function(): SpecValidator {
         return cache.func || (cache.func = createSpecValidator(
             it => typeof it === 'function'
                 ? null
@@ -242,8 +242,8 @@ export default class Spec {
         ));
     }
 
-    static get hasKeys(): SpecValidator {
-        return cache.hasKeys || (cache.hasKeys = createSpecValidator(
+    static get hasSomeKeys(): SpecValidator {
+        return cache.hasSomeKeys || (cache.hasSomeKeys = createSpecValidator(
             it => it === undefined || it === null || Object.keys(it).length === 0
                 ? 'Must have Keys'
                 : null
@@ -499,7 +499,7 @@ export default class Spec {
 
                     if (ret) {
                         if (path === null) {
-                            ret = 'Invalid value';
+                            ret = 'Invalid shape';
                         }
 
                         break;
@@ -548,6 +548,7 @@ export default class Spec {
 
                 if (error) {
                     ret = error;
+
                     break;
                 }
             }
@@ -558,9 +559,9 @@ export default class Spec {
 
     static or(...constraints: Function[]): SpecValidator {
         return createSpecValidator(
-            it => !constraints.every(constraint =>
+            (it, path) => !constraints.every(constraint =>
                 // XXX
-                _checkConstraint(constraint, it, null) !== null)
+                _checkConstraint(constraint, it, path) !== null)
                 ? null
                 : 'Invalid value'
         );
@@ -623,6 +624,30 @@ export default class Spec {
             return ret;
         });
     }
+
+    static lazy(getValidator: Function) {
+        let validator: Function = null;
+
+        return createSpecValidator((it, path) => {
+            if (!validator) {
+                try {
+                    const result = getValidator();
+
+                    if (typeof result !== 'function') {
+                        throw new Error('Must provide a function');
+                    }
+
+                    validator = result;
+                } catch (err) {
+                    throw new Error(
+                        '[Spec.lazy] Error while retrieving spec validator: '
+                            + err);
+                }
+            }
+
+            return validator(it, path);
+        });
+    }
 };
 
 
@@ -653,12 +678,20 @@ function _checkConstraint(constraint: Function, it: any, path: string | null = n
 
     const result = constraint(it, path);
 
+    const errPath =
+        path && result && result.path
+            && result.path.length > path.length
+            && result.path.startsWith(path)
+
+        ? result.path
+        : path;
+
     if (result === false) {
-        ret = createSpecError('Invalid value', path);
+        ret = createSpecError('Invalid value', errPath);
     } else if (result instanceof SpecError && result.hint) {
-        ret = createSpecError(result.hint, path)
+        ret = createSpecError(result.hint, errPath)
     } else if (result !== true && result !== null) {
-        ret = createSpecError(String(result), path);
+        ret = createSpecError(String(result), errPath);
     }
     
     return ret;

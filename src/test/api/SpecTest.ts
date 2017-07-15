@@ -125,9 +125,9 @@ describe('Spec.string', () => {
     });
 });
 
-describe('Spec.func', () => {
+describe('Spec.function', () => {
     runSimpleSpecTest({
-        spec: Spec.func,
+        spec: Spec.function,
         validValues: [() => {}, Object, Array, Date],
         invalidValues: [undefined, null, true, false, 0, 1, -1, "", {}, []]
     });
@@ -189,9 +189,9 @@ describe('Spec.nothing', () => {
     });
 });
 
-describe('Spec.hasKeys', () => {
+describe('Spec.hasSomeKeys', () => {
     runSimpleSpecTest({
-        spec: Spec.hasKeys,
+        spec: Spec.hasSomeKeys,
         validValues: ['x', '123', [0], { n: 42 }],
         invalidValues: [undefined, null, true, false, 0, 42, '', [], {}, new Set([1, 2, 3])]
     });
@@ -501,6 +501,29 @@ describe('Spec.statics', () => {
     });
 });
 
+describe('Spec.lazy', () => {
+    it('must handle recursive specs properly', () => {
+        const spec =
+            Spec.shape({
+                child:
+                    Spec.or(
+                        Spec.nothing,
+                        Spec.lazy(() => spec))
+                }),
+            
+            data: any = {
+                child: {
+                    child: {
+                        child: null
+                    }
+                }
+            };
+
+        expect(spec(data))
+            .to.eql(null);    
+    });
+})
+
 describe('Spec', () => {
     const 
         spec = Spec.shape({
@@ -532,9 +555,9 @@ describe('Spec', () => {
 
         expect(result.message).to.eql(
             "Constraint violation: "
-            + 'Invalid value');
+            + 'Invalid shape');
 
-        expect(result.hint).to.eql('Invalid value');
+        expect(result.hint).to.eql('Invalid shape');
 
         expect(result.path).to.eql(null);
     });
