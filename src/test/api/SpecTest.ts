@@ -36,9 +36,9 @@ describe('Spec.positiveNumber', () => {
     });
 });
 
-describe('Spec.nonPositiveNumber', () => {
+describe('Spec.nonpositiveNumber', () => {
     runSimpleSpecTest({
-        spec: Spec.nonPositiveNumber,
+        spec: Spec.nonpositiveNumber,
         validValues: [0, -1, -2, -12.34],
         invalidValues: [undefined, null, true, false, {}, '0', 2, 3, '-1', -Infinity]
     });
@@ -52,9 +52,9 @@ describe('Spec.negativeNumber', () => {
     });
 });
 
-describe('Spec.nonNegativeNumber', () => {
+describe('Spec.nonnegativeNumber', () => {
     runSimpleSpecTest({
-        spec: Spec.nonNegativeNumber,
+        spec: Spec.nonnegativeNumber,
         validValues: [0, 1, 2, 12.34, 42],
         invalidValues: [undefined, null, true, false, {}, -1, -12.34, '1', Infinity]
     });
@@ -76,9 +76,9 @@ describe('Spec.positiveInteger', () => {
     });
 });
 
-describe('Spec.nonPositiveInteger', () => {
+describe('Spec.nonpositiveInteger', () => {
     runSimpleSpecTest({
-        spec: Spec.nonPositiveInteger,
+        spec: Spec.nonpositiveInteger,
         validValues: [0, -1, -2, -42],
         invalidValues: [undefined, null, true, false, {}, 1, 2, -1.23, '-1', -Infinity]
     });
@@ -92,9 +92,9 @@ describe('Spec.negativeInteger', () => {
     });
 });
 
-describe('Spec.nonNegativeInteger', () => {
+describe('Spec.nonnegativeInteger', () => {
     runSimpleSpecTest({
-        spec: Spec.nonNegativeInteger,
+        spec: Spec.nonnegativeInteger,
         validValues: [0, 1, 2, 42],
         invalidValues: [undefined, null, true, false, {}, -1, -2, 1.23, '1', Infinity]
     });

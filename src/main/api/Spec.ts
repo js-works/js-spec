@@ -44,14 +44,14 @@ export default class Spec {
             ));
     }
 
-    static get nonPositiveNumber(): SpecValidator {
-        return cache.nonPositiveNumber || 
-            (cache.nonPositiveNumber = SpecValidator.from(
+    static get nonpositiveNumber(): SpecValidator {
+        return cache.nonpositiveNumber || 
+            (cache.nonpositiveNumber = SpecValidator.from(
                 it => typeof it === 'number' && isFinite(it) && it <= 0
                     ? null
                     : (Math.abs(it) === Infinity
-                        ? 'Must be a finite non-positive number'
-                        : 'Must be a non-positive number')
+                        ? 'Must be a finite nonpositive number'
+                        : 'Must be a nonpositive number')
             ));
     }
 
@@ -66,14 +66,14 @@ export default class Spec {
             ));
     }
 
-    static get nonNegativeNumber(): SpecValidator {
-        return cache.nonNegativeNumber || 
-            (cache.nonNegativeNumber = SpecValidator.from(
+    static get nonnegativeNumber(): SpecValidator {
+        return cache.nonnegativeNumber || 
+            (cache.nonnegativeNumber = SpecValidator.from(
                 it => typeof it === 'number' && isFinite(it) && it >= 0
                     ? null
                     : (Math.abs(it) === Infinity
-                        ? 'Must be a finite non-negative number'
-                        : 'Must be a non-negative number')
+                        ? 'Must be a finite nonnegative number'
+                        : 'Must be a nonnegative number')
             ));
     }
 
@@ -98,14 +98,14 @@ export default class Spec {
             ));
     }
 
-    static get nonPositiveInteger(): SpecValidator {
-        return cache.nonPositiveInteger || 
-            (cache.nonPositiveInteger = SpecValidator.from(
+    static get nonpositiveInteger(): SpecValidator {
+        return cache.nonpositiveInteger || 
+            (cache.nonpositiveInteger = SpecValidator.from(
                 it => Number.isSafeInteger(it) && it <= 0
                     ? null
                     : (Math.abs(it) === Infinity
-                        ? 'Must be a finite non-positive integer'
-                        : 'Must be a non-positive integer')
+                        ? 'Must be a finite nonpositive integer'
+                        : 'Must be a nonpositive integer')
             ));
     }
 
@@ -120,14 +120,14 @@ export default class Spec {
             ));
     }
 
-    static get nonNegativeInteger(): SpecValidator {
-        return cache.nonNegativeInteger || 
-            (cache.nonNegativeInteger = SpecValidator.from(
+    static get nonnegativeInteger(): SpecValidator {
+        return cache.nonnegativeInteger || 
+            (cache.nonnegativeInteger = SpecValidator.from(
                 it => Number.isSafeInteger(it) && it >= 0
                     ? null
                     : (Math.abs(it) === Infinity
-                        ? 'Must be a finite non-negative integer'
-                        : 'Must be a non-negative integer')
+                        ? 'Must be a finite nonnegative integer'
+                        : 'Must be a nonnegative integer')
             ));
     }
 
