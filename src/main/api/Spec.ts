@@ -12,11 +12,11 @@ export default class Spec {
     }
 
     static get any(): SpecValidator {
-        return cache.any || (cache.any = SpecValidator.create(() => null));
+        return cache.any || (cache.any = SpecValidator.from(() => null));
     }
 
     static get boolean(): SpecValidator {
-        return cache.boolean || (cache.boolean = SpecValidator.create(
+        return cache.boolean || (cache.boolean = SpecValidator.from(
             it => it === true || it === false
                 ? null
                 : 'Must be boolean'
@@ -24,7 +24,7 @@ export default class Spec {
     }
 
     static get number(): SpecValidator {
-        return cache.number || (cache.number = SpecValidator.create(
+        return cache.number || (cache.number = SpecValidator.from(
             it => typeof it === 'number' && isFinite(it)
                 ? null
                 : (Math.abs(it) === Infinity
@@ -35,7 +35,7 @@ export default class Spec {
 
     static get positiveNumber(): SpecValidator {
         return cache.positiveNumber || 
-            (cache.positiveNumber = SpecValidator.create(
+            (cache.positiveNumber = SpecValidator.from(
                 it => typeof it === 'number' && isFinite(it) && it > 0
                     ? null
                     : (Math.abs(it) === Infinity
@@ -46,7 +46,7 @@ export default class Spec {
 
     static get nonPositiveNumber(): SpecValidator {
         return cache.nonPositiveNumber || 
-            (cache.nonPositiveNumber = SpecValidator.create(
+            (cache.nonPositiveNumber = SpecValidator.from(
                 it => typeof it === 'number' && isFinite(it) && it <= 0
                     ? null
                     : (Math.abs(it) === Infinity
@@ -57,7 +57,7 @@ export default class Spec {
 
     static get negativeNumber(): SpecValidator {
         return cache.negativeNumber || 
-            (cache.negativeNumber = SpecValidator.create(
+            (cache.negativeNumber = SpecValidator.from(
                 it => typeof it === 'number' && isFinite(it) && it < 0
                     ? null
                     : (Math.abs(it) === Infinity
@@ -68,7 +68,7 @@ export default class Spec {
 
     static get nonNegativeNumber(): SpecValidator {
         return cache.nonNegativeNumber || 
-            (cache.nonNegativeNumber = SpecValidator.create(
+            (cache.nonNegativeNumber = SpecValidator.from(
                 it => typeof it === 'number' && isFinite(it) && it >= 0
                     ? null
                     : (Math.abs(it) === Infinity
@@ -78,7 +78,7 @@ export default class Spec {
     }
 
     static get integer(): SpecValidator {
-        return cache.integer || (cache.integer = SpecValidator.create(
+        return cache.integer || (cache.integer = SpecValidator.from(
             it => Number.isSafeInteger(it)
                 ? null
                 : (Math.abs(it) === Infinity
@@ -89,7 +89,7 @@ export default class Spec {
 
     static get positiveInteger(): SpecValidator {
         return cache.positiveInteger || 
-            (cache.positiveInteger = SpecValidator.create(
+            (cache.positiveInteger = SpecValidator.from(
                 it => Number.isSafeInteger(it) && it > 0
                     ? null
                     : (Math.abs(it) === Infinity
@@ -100,7 +100,7 @@ export default class Spec {
 
     static get nonPositiveInteger(): SpecValidator {
         return cache.nonPositiveInteger || 
-            (cache.nonPositiveInteger = SpecValidator.create(
+            (cache.nonPositiveInteger = SpecValidator.from(
                 it => Number.isSafeInteger(it) && it <= 0
                     ? null
                     : (Math.abs(it) === Infinity
@@ -111,7 +111,7 @@ export default class Spec {
 
     static get negativeInteger(): SpecValidator {
         return cache.negativeInteger || 
-            (cache.negativeInteger = SpecValidator.create(
+            (cache.negativeInteger = SpecValidator.from(
                 it => Number.isSafeInteger(it) && it < 0
                     ? null
                     : (Math.abs(it) === Infinity
@@ -122,7 +122,7 @@ export default class Spec {
 
     static get nonNegativeInteger(): SpecValidator {
         return cache.nonNegativeInteger || 
-            (cache.nonNegativeInteger = SpecValidator.create(
+            (cache.nonNegativeInteger = SpecValidator.from(
                 it => Number.isSafeInteger(it) && it >= 0
                     ? null
                     : (Math.abs(it) === Infinity
@@ -133,7 +133,7 @@ export default class Spec {
 
     static get finite(): SpecValidator {
         return cache.finite || 
-            (cache.finite = SpecValidator.create(
+            (cache.finite = SpecValidator.from(
                 it => isFinite(it) 
                     ? null
                     : 'Must be finite'
@@ -142,7 +142,7 @@ export default class Spec {
 
     static get infinite(): SpecValidator {
         return cache.infinite || 
-            (cache.infinite = SpecValidator.create(
+            (cache.infinite = SpecValidator.from(
                 it => it === Number.POSITIVE_INFINITY || it === Number.NEGATIVE_INFINITY
                     ? null
                     : 'Must be infinite'
@@ -150,7 +150,7 @@ export default class Spec {
     }
 
     static get string(): SpecValidator {
-        return cache.string || (cache.srring = SpecValidator.create(
+        return cache.string || (cache.srring = SpecValidator.from(
             it => typeof it === 'string'
                 ? null
                 : 'Must be a string'
@@ -158,7 +158,7 @@ export default class Spec {
     }
 
     static get function(): SpecValidator {
-        return cache.func || (cache.func = SpecValidator.create(
+        return cache.func || (cache.func = SpecValidator.from(
             it => typeof it === 'function'
                 ? null
                 : 'Must be a function'
@@ -166,7 +166,7 @@ export default class Spec {
     }
 
     static get object(): SpecValidator {
-        return cache.object || (cache.object = SpecValidator.create(
+        return cache.object || (cache.object = SpecValidator.from(
             it => it !== null && typeof it === 'object'
                 ? null
                 : 'Must be an object'
@@ -174,7 +174,7 @@ export default class Spec {
     }
 
     static get array(): SpecValidator {
-        return cache.array || (cache.array = SpecValidator.create(
+        return cache.array || (cache.array = SpecValidator.from(
             it => Array.isArray(it)
                 ? null
                 : 'Must be an array'
@@ -182,7 +182,7 @@ export default class Spec {
     }
 
     static get iterable(): SpecValidator {
-        return SpecValidator.create(
+        return SpecValidator.from(
             it => typeof it === 'string'
                 || (it
                     && typeof it === 'object'
@@ -194,7 +194,7 @@ export default class Spec {
 
     static get unique(): SpecValidator {
         return cache.unique || (cache.unique =
-            SpecValidator.create((it, path) => {
+            SpecValidator.from((it, path) => {
                 let ret: any = Spec.iterable.validate(it, path);
 
                 if (ret === null) {
@@ -219,7 +219,7 @@ export default class Spec {
     }
 
     static get date(): SpecValidator {
-        return cache.date || (cache.date = SpecValidator.create(
+        return cache.date || (cache.date = SpecValidator.from(
             it => it instanceof Date && !isNaN(it.getDate()) 
                 ? null
                 : 'Must be a valid date'
@@ -227,7 +227,7 @@ export default class Spec {
     }
     
     static get something(): SpecValidator {
-        return cache.something || (cache.something = SpecValidator.create(
+        return cache.something || (cache.something = SpecValidator.from(
             it => it !== undefined && it !== null
                 ? null
                 : 'Must not be undefined or null'
@@ -235,7 +235,7 @@ export default class Spec {
     }
 
     static get nothing(): SpecValidator {
-        return cache.nothing || (cache.nothing = SpecValidator.create(
+        return cache.nothing || (cache.nothing = SpecValidator.from(
             it => it === undefined || it === null
                 ? null
                 : 'Must be undefined or null'
@@ -243,7 +243,7 @@ export default class Spec {
     }
 
     static get hasSomeKeys(): SpecValidator {
-        return cache.hasSomeKeys || (cache.hasSomeKeys = SpecValidator.create(
+        return cache.hasSomeKeys || (cache.hasSomeKeys = SpecValidator.from(
             it => it === undefined || it === null || Object.keys(it).length === 0
                 ? 'Must have Keys'
                 : null
@@ -251,7 +251,7 @@ export default class Spec {
     }
 
     static is(value: any): SpecValidator {
-        return SpecValidator.create(
+        return SpecValidator.from(
             it => it === value        
                 ? null
                 : 'Must be identical to ' + value,
@@ -259,7 +259,7 @@ export default class Spec {
     }
 
     static isNot(value: any): SpecValidator {
-        return SpecValidator.create(
+        return SpecValidator.from(
             it => it !== value        
                 ? null
                 : 'Must not be identical to ' + value
@@ -267,7 +267,7 @@ export default class Spec {
     }
 
     static equal(value: any): SpecValidator {
-        return SpecValidator.create(
+        return SpecValidator.from(
             it => it == value        
                 ? null
                 : 'Must be equal to ' + value,
@@ -275,7 +275,7 @@ export default class Spec {
     }
 
     static notEqual(value: any): SpecValidator {
-        return SpecValidator.create(
+        return SpecValidator.from(
             it => it != value        
                 ? null
                 : 'Must not be equal to ' + value
@@ -283,28 +283,28 @@ export default class Spec {
     }
 
     static optional(constraint: Validator): SpecValidator {
-        return SpecValidator.create(
+        return SpecValidator.from(
             (it, path) => it === undefined
                 ? null
                 : _checkConstraint(constraint, it, path));
     }
 
     static nullable(constraint: Validator): SpecValidator {
-        return SpecValidator.create(
+        return SpecValidator.from(
             (it, path) => it === null
                 ? null
                 : _checkConstraint(constraint, it, path));
     }
 
     static orNothing(constraint: Validator): SpecValidator {
-        return SpecValidator.create((it, path) =>
+        return SpecValidator.from((it, path) =>
             it === undefined || it === null
                 ? null
                 : _checkConstraint(constraint, it, path));
     }
 
     static oneOf(...items: any[]): SpecValidator {
-        return SpecValidator.create(it =>
+        return SpecValidator.from(it =>
             !items.every(item => item !== it)
                 ? null
                 : 'Must be one of: ' + items.join(', '));
@@ -316,13 +316,13 @@ export default class Spec {
                 "[Spec.instanceOf] First paramter 'type' must be a function");
         }
 
-        return SpecValidator.create((it, path = null) => it instanceof type
+        return SpecValidator.from((it, path = null) => it instanceof type
             ? null
             : 'Must be instance of ' + type.name);
     }
     
     static arrayOf(constraint: Validator): SpecValidator {
-        return SpecValidator.create(
+        return SpecValidator.from(
             (it, path = null) => {
                 let ret = Spec.array.validate(it, path);
 
@@ -348,7 +348,7 @@ export default class Spec {
 
 
     static match(regex: RegExp): SpecValidator {
-        return SpecValidator.create(it => {
+        return SpecValidator.from(it => {
             let ret = null;
 
             if (typeof it !== 'string') {
@@ -362,7 +362,7 @@ export default class Spec {
     }
 
     static valid(condition: (it: any) => boolean): SpecValidator {
-        return SpecValidator.create((it, path = null) => {
+        return SpecValidator.from((it, path = null) => {
              return condition(it)
                 ? null
                 : 'Invalid value'
@@ -370,7 +370,7 @@ export default class Spec {
     }
 
     static size(constraint: Validator): SpecValidator {
-        return SpecValidator.create((it, path) => {
+        return SpecValidator.from((it, path) => {
             let ret = null;
 
             if (it === null
@@ -397,7 +397,7 @@ export default class Spec {
     }
 
     static greater(value: any): SpecValidator {
-        return SpecValidator.create(
+        return SpecValidator.from(
             it => it > value        
                 ? null
                 : 'Must be greater than ' + value
@@ -405,7 +405,7 @@ export default class Spec {
     }
 
     static greaterOrEqual(value: any): SpecValidator {
-        return SpecValidator.create(
+        return SpecValidator.from(
             it => it >= value        
                 ? null
                 : 'Must be greater or equal ' + value
@@ -413,7 +413,7 @@ export default class Spec {
     }
 
     static less(value: any): SpecValidator {
-        return SpecValidator.create(
+        return SpecValidator.from(
             it => it < value        
                 ? null
                 : 'Must be less than ' + value
@@ -421,7 +421,7 @@ export default class Spec {
     }
 
     static lessOrEqual(value: any): SpecValidator {
-        return SpecValidator.create(
+        return SpecValidator.from(
             it => it <= value        
                 ? null
                 : 'Must be less or equal ' + value
@@ -429,7 +429,7 @@ export default class Spec {
     }
 
     static between(left: any, right: any): SpecValidator {
-        return SpecValidator.create(
+        return SpecValidator.from(
             it => it >= left && it <= right        
                 ? null
                 : `Must be between ${left} and ${right}`
@@ -437,7 +437,7 @@ export default class Spec {
     }
 
     static keysOf(constraint: Validator): SpecValidator {
-        return SpecValidator.create((it, path) => {
+        return SpecValidator.from((it, path) => {
             let ret = null;
 
             if (it === null || typeof it !== 'object') {
@@ -458,7 +458,7 @@ export default class Spec {
     }
 
     static valuesOf(constraint: Validator): SpecValidator {
-        return SpecValidator.create((it, path) => {
+        return SpecValidator.from((it, path) => {
             let ret = null;
 
             if (it === null || typeof it !== 'object') {
@@ -485,7 +485,7 @@ export default class Spec {
 
     // TODO - what about additional properties?
     static shape(shape: { [key: string]: Validator }): SpecValidator {
-        return SpecValidator.create((it, path) => {
+        return SpecValidator.from((it, path) => {
             let ret = null;
 
             if (it === null || typeof it !== 'object') {
@@ -512,7 +512,7 @@ export default class Spec {
     }
 
     static statics(shape: { [key: string] : Validator }): SpecValidator {
-        return SpecValidator.create((it, path) => {
+        return SpecValidator.from((it, path) => {
             let ret = null;
 
             if (it === null || typeof it !== 'function') {
@@ -539,7 +539,7 @@ export default class Spec {
     }
 
     static and(...constraints: Validator[]): SpecValidator {
-        return SpecValidator.create((it, path = null) => {
+        return SpecValidator.from((it, path = null) => {
             let ret = null;
 
             for (let constraint of constraints) {
@@ -558,7 +558,7 @@ export default class Spec {
     }
 
     static or(...constraints: Validator[]): SpecValidator {
-        return SpecValidator.create(
+        return SpecValidator.from(
             (it, path) => !constraints.every(constraint =>
                 // XXX
                 _checkConstraint(constraint, it, path) !== null)
@@ -568,7 +568,7 @@ export default class Spec {
     }
     
     static in(collection: any): SpecValidator {
-        return SpecValidator.create((it, path) => {
+        return SpecValidator.from((it, path) => {
             let ret = null;
             
             if (collection instanceof Set) {
@@ -597,7 +597,7 @@ export default class Spec {
     }
 
     static notIn(collection: any): SpecValidator {
-        return SpecValidator.create((it, path) => {
+        return SpecValidator.from((it, path) => {
             let ret = null;
  // XXX           
             if (collection instanceof Set) {
@@ -628,7 +628,7 @@ export default class Spec {
     static lazy(getValidator: () => Validator) {
         let validator: Function = null;
 
-        return SpecValidator.create((it, path) => {
+        return SpecValidator.from((it, path) => {
             if (!validator) {
                 try {
                     const result = getValidator();

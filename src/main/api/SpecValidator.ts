@@ -1,30 +1,39 @@
 import SpecError from './SpecError';
+import Validator from './Validator';
 
 import createSpecError from '../internal/createSpecError';
 
 class SpecValidator {
-    static create(validate: { (it: any, path?: null | string):  boolean | string | SpecError | null }): SpecValidator {
-        if (typeof validate !== 'function') {
-            throw new Error("[SpecValidator.create] First argument 'validate' must be a function");
+    static from(validator: Validator) {
+        let ret: SpecValidator;
+
+        if (validator instanceof SpecValidator) {
+            ret = validator;
+        } else if (validator
+            && typeof validator === 'object'
+            && typeof validator.validate === 'function') {
+
+            ret = Object.create(SpecValidator.prototype);
+            ret.__validate = validator.validate.bind(validator);
+        } else if (typeof validator === 'function') {
+            ret = Object.create(SpecValidator.prototype);
+            ret.__validate = validator;            
+        } else {
+            throw new Error('[SpecValidator.from] '
+                + "First argument must either be a function or an object with method 'validate'");
         }
-
-        const ret: SpecValidator = Object.create(SpecValidator.prototype);
-
-        ret.__validate = validate;
-        ret.validate = ret.validate.bind(ret);
-        Object.freeze(ret);
 
         return ret;
     }
-
+    
     private __validate: Function;
 
     constructor() {
         throw new Error(
             '[SpecValidator.constructor] SpecValidator is not instantiable via constructor '
-            + '- please use static method SpecValidator.create instead');
+            + '- please use static method SpecValidator.create or SpecValidator.from instead');
     }
-    
+
     validate(it: any, path: string | null = null): SpecError | null {
         let ret = null;
 
@@ -59,7 +68,7 @@ class SpecValidator {
             throw new Error("[SpecValidator#usingHint] First argument 'hint' must be a string");
         }
 
-        return SpecValidator.create((it: any, path?: null | string) =>
+        return SpecValidator.from((it: any, path?: null | string) =>
             this.__validate(it, path) !== null
                 ? createSpecError(hint, path)
                 : null

@@ -624,17 +624,3 @@ function runSimpleSpecTest(config: { spec: SpecValidator, validValues: any[], in
         }
     });
 }
-
-/*
-describe('Just a test', () => {
-    it('should work', () => {
-
-        // Insert here
-
-        console.log(spec(data, ''));
-
-        console.log('--- done ---')
-        process.exit(0);
-    });
-});
-*/
