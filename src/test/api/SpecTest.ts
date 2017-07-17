@@ -2,12 +2,11 @@
 import { expect } from 'chai';
 
 import Spec from '../../main/api/Spec';
+import SpecValidator from '../../main/api/SpecValidator';
 import SpecError from '../../main/api/SpecError';
 
 const validateSimpleSpecTestConfig = Spec.shape({
-    spec: Spec.valid(it => typeof it === 'function'
-        && typeof it.usingHint === 'function'),
-
+    spec: it => it instanceof SpecValidator || typeof it === 'function',
     validValues: Spec.array,
     invalidValues: Spec.array
 });
@@ -519,7 +518,7 @@ describe('Spec.lazy', () => {
                 }
             };
 
-        expect(spec(data))
+        expect(spec.validate(data))
             .to.eql(null);    
     });
 })
@@ -535,7 +534,7 @@ describe('Spec', () => {
         });
         
     it('must return proper error messages with path information', () => {
-        const result = spec({ level1: { level2: { arr: [123, '234'] } } }, '');
+        const result = spec.validate({ level1: { level2: { arr: [123, '234'] } } }, '');
 
         expect(result).to.be.instanceof(SpecError);
 
@@ -549,7 +548,7 @@ describe('Spec', () => {
     });
     
     it('must return proper error messages without path information', () => {
-        const result = spec({ level1: { level2: { arr: [123, '234'] } } });
+        const result = spec.validate({ level1: { level2: { arr: [123, '234'] } } });
 
         expect(result).to.be.instanceof(SpecError);
 
@@ -565,7 +564,7 @@ describe('Spec', () => {
     it('must return proper error messages when using custom hint', () => {
         const result =
             spec.usingHint('Please provide valid configuration')
-                ({ level1: { level2: { arr: [123, '234'] } } });
+                .validate({ level1: { level2: { arr: [123, '234'] } } });
 
         expect(result).to.be.instanceof(SpecError);
 
@@ -581,8 +580,8 @@ describe('Spec', () => {
 
 // --------------------------------------
 
-function runSimpleSpecTest(config: any) {
-    const configCheckResult = validateSimpleSpecTestConfig(config, '');
+function runSimpleSpecTest(config: { spec: SpecValidator, validValues: any[], invalidValues: any[]}) {
+    const configCheckResult = validateSimpleSpecTestConfig.validate(config, '');
 
     if (configCheckResult) {
         throw new Error(
@@ -592,7 +591,7 @@ function runSimpleSpecTest(config: any) {
 
     it('should work properly in success case', () => {
         for (let value of config.validValues) {
-            const result = config.spec(value, '');
+            const result = config.spec.validate(value, '');
 
             if (result) {
                 console.log('Error:', result);
@@ -608,9 +607,12 @@ function runSimpleSpecTest(config: any) {
 
         for (let path of paths) {
             for (let value of config.invalidValues) {
-                const result = config.spec(value, path);
+                const result = config.spec.validate(value, path);
 
                 if (!(result instanceof SpecError)) {
+                    console.log((result as any).hint, result instanceof Error, result instanceof SpecError, result);
+                    process.exit(0)
+
                     throw new Error(
                         'Result of spec test should have been a SpecError '
                         + 'for value ' + value);
