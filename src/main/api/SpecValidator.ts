@@ -11,6 +11,8 @@ class SpecValidator {
         const ret: SpecValidator = Object.create(SpecValidator.prototype);
 
         ret.__validate = validate;
+        ret.validate = ret.validate.bind(ret);
+        Object.freeze(ret);
 
         return ret;
     }
