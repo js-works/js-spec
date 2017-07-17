@@ -196,6 +196,14 @@ describe('Spec.hasSomeKeys', () => {
     });
 });
 
+describe('Spec.validator', () => {
+    runSimpleSpecTest({
+        spec: Spec.validator,
+        validValues: [() => true, Spec.any, Spec.integer, { validate: () => true }],
+        invalidValues: [undefined, null, true, false, 0, 42, '', [], {}, { validate: true }]
+    });
+});
+
 describe('Spec.is', () => {
     runSimpleSpecTest({
         spec: Spec.is(42),

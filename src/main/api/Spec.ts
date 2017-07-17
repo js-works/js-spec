@@ -250,6 +250,15 @@ export default class Spec {
         ));
     }
 
+    static get validator(): SpecValidator {
+        return cache.validator || (cache.validator = SpecValidator.from(
+            it => typeof it === 'function'
+                || it && typeof it.validate === 'function'
+                    ? null
+                    : "Must be a function or an object with funtion 'validate'"
+        ));
+    }
+
     static is(value: any): SpecValidator {
         return SpecValidator.from(
             it => it === value        
@@ -344,8 +353,6 @@ export default class Spec {
             }
         );
     }
-
-
 
     static match(regex: RegExp): SpecValidator {
         return SpecValidator.from(it => {
