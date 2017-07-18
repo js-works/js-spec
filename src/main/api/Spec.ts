@@ -490,23 +490,76 @@ export default class Spec {
         });
     }
 
-    // TODO - what about additional properties?
     static shape(shape: { [key: string]: Validator }): SpecValidator {
+        const shapeKeyObj: { [key: string]: boolean } = {};
+        let numShapeKeys = 0;
+
+        const shapeKeys = Object.keys(shape);
+
+        for (let key of Object.keys(shape)) {
+            shapeKeyObj[key] = true;
+            ++numShapeKeys;
+        }
+
         return SpecValidator.from((it, path) => {
             let ret = null;
 
             if (it === null || typeof it !== 'object') {
                 ret = 'Must be an object';
             } else {
-                for (const key of Object.keys(shape)) {
+                const itsKeys = Object.keys(it);
+
+                for (const key of itsKeys) {
+                    if (shapeKeyObj[key] !== true) {
+                        ret = `Illegal shape key '${key}'`;
+                        break;
+                    }
+                }
+
+                if (!ret) {
+                    for (const key of shapeKeys) {
+                        if (shapeKeyObj[key] !== true) {
+                            ret = `Illegal shape key '${key}'`;
+                            break;
+                        }
+
+                        const subPath = _buildSubPath(path, key);
+
+                        // XXX
+                        ret = _checkConstraint(shape[key], (it as any)[key], subPath);
+
+                        if (ret) {
+                            if (path === null) {
+                                ret = 'Invalid shape';
+                            }
+
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return ret;
+        });
+    }
+    
+    static struct(shape: { [key: string]: Validator }): SpecValidator {
+        const shapeKeys = Object.keys(shape);
+
+        return SpecValidator.from((it, path) => {
+            let ret = null;
+
+            if (it === null || typeof it !== 'object') {
+                ret = 'Must be an object';
+            } else {
+                for (const key of shapeKeys) {
                     const subPath = _buildSubPath(path, key);
 
-                    // XXX
                     ret = _checkConstraint(shape[key], (it as any)[key], subPath);
 
                     if (ret) {
                         if (path === null) {
-                            ret = 'Invalid shape';
+                            ret = 'Invalid structure';
                         }
 
                         break;
@@ -518,7 +571,7 @@ export default class Spec {
         });
     }
 
-    static statics(shape: { [key: string] : Validator }): SpecValidator {
+    static constructorStruct(shape: { [key: string] : Validator }): SpecValidator {
         return SpecValidator.from((it, path) => {
             let ret = null;
 

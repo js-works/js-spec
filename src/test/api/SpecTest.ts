@@ -256,7 +256,7 @@ describe('Spec.optional', () => {
     });
 });
 
-describe('Spec.optional', () => {
+describe('Spec.nullable', () => {
     runSimpleSpecTest({
         spec: Spec.nullable(Spec.number),
         validValues: [null, 0, 1, -1, 12.23, -42],
@@ -416,7 +416,12 @@ describe('Spec.notIn', () => {
 
 describe('Spec.shape', () => {
     const
-        spec = Spec.shape({
+        spec1 = Spec.shape({
+            firstName: Spec.string,
+            lastName: Spec.string
+        }),
+
+        spec2 = Spec.shape({
             id: Spec.positiveInteger,
             firstName: Spec.string,
             lastName: Spec.string,
@@ -432,7 +437,12 @@ describe('Spec.shape', () => {
                 )
         }),
 
-        valid = {
+        valid1 = {
+            firstName: 'Jane',
+            lastName: 'Doe'
+        },
+
+        valid2 = {
             id: 12345,
             firstName: 'Jane',
             lastName: 'Doe',
@@ -449,7 +459,13 @@ describe('Spec.shape', () => {
             }]
         },
 
-        invalid = {
+        invalid1 = {
+            firstName: 'Jane',
+            lastName: 'Doe',
+            city: 'Seattle'
+        },
+
+        invalid2 = {
             id: 12345,
             firstName: 'Jane',
             lastName: 'Doe',
@@ -468,15 +484,103 @@ describe('Spec.shape', () => {
 
 
     runSimpleSpecTest({
-        spec,
-        validValues: [valid],
-        invalidValues: [undefined, null, true, false, 0, 1, '', '1', {}, [], invalid],
+        spec: spec1,
+        validValues: [valid1],
+        invalidValues: [undefined, null, true, false, 0, 1, '', '1', {}, [], invalid1, invalid2],
+    });
+
+    runSimpleSpecTest({
+        spec: spec2,
+        validValues: [valid2],
+        invalidValues: [undefined, null, true, false, 0, 1, '', '1', {}, [], invalid1, invalid2],
     });
 });
 
-describe('Spec.statics', () => {
+describe('Spec.struct', () => {
     const
-        spec = Spec.statics({
+        spec1 = Spec.struct({
+            firstName: Spec.string,
+            lastName: Spec.string
+        }),
+
+        spec2 = Spec.struct({
+            id: Spec.positiveInteger,
+            firstName: Spec.string,
+            lastName: Spec.string,
+
+            addresses:
+                Spec.arrayOf(
+                        Spec.struct({
+                            addressType: Spec.oneOf('home', 'work', 'other'),
+                            street: Spec.string,
+                            zipCode: Spec.string,
+                            city: Spec.string
+                    })
+                )
+        }),
+
+        valid1 = {
+            firstName: 'Jane',
+            lastName: 'Doe',
+            someOtherValue: 123
+        },
+
+        valid2 = {
+            id: 12345,
+            firstName: 'Jane',
+            lastName: 'Doe',
+            addresses: [{
+                addressType: 'home',
+                street: 'Home Street 123',
+                zipCode: '888',
+                city: 'Home Town'
+            }, {
+                addressType: 'work',
+                street: 'Work Street 456',
+                zipCode: '999',
+                city: 'Work city'
+            }]
+        },
+
+        invalid1 = {
+            firstName: 'Jane',
+            city: 'Seattle'
+        },
+
+        invalid2 = {
+            id: 12345,
+            firstName: 'Jane',
+            lastName: 'Doe',
+            addresses: [{
+                addressType: 'home',
+                street: 'Home Street 123',
+                zipCode: '888',
+                city: 'Home Town'
+            }, {
+                addressType: 'work',
+                street: 'Work Street 456',
+                zipCode: 999, // Invalid!!! Zip code must be a strig!
+                city: 'Work city'
+            }]
+        };
+
+
+    runSimpleSpecTest({
+        spec: spec1,
+        validValues: [valid1],
+        invalidValues: [undefined, null, true, false, 0, 1, '', '1', {}, [], invalid1],
+    });
+
+    runSimpleSpecTest({
+        spec: spec2,
+        validValues: [valid2],
+        invalidValues: [undefined, null, true, false, 0, 1, '', '1', {}, [], invalid2],
+    });
+});
+
+describe('Spec.constructorStruct', () => {
+    const
+        spec = Spec.constructorStruct({
             id: Spec.positiveInteger,
             keys: Spec.arrayOf(Spec.string)
         }),
@@ -618,9 +722,6 @@ function runSimpleSpecTest(config: { spec: SpecValidator, validValues: any[], in
                 const result = config.spec.validate(value, path);
 
                 if (!(result instanceof SpecError)) {
-                    console.log((result as any).hint, result instanceof Error, result instanceof SpecError, result);
-                    process.exit(0)
-
                     throw new Error(
                         'Result of spec test should have been a SpecError '
                         + 'for value ' + value);
