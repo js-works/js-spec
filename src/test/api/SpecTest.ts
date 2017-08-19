@@ -403,7 +403,7 @@ describe('Spec.or', () => {
                 when:
                     it => !!it && it.type === 'integer',
 
-                apply:
+                validator:
                     Spec.shape({
                         type: Spec.is('integer'),
                         value: Spec.integer
@@ -414,11 +414,11 @@ describe('Spec.or', () => {
                 when:
                     it => it && it.type === 'string',
 
-                    apply:
-                        Spec.shape({
-                            type: Spec.is('string'),
-                            value: Spec.string
-                        })
+                validator:
+                    Spec.shape({
+                        type: Spec.is('string'),
+                        value: Spec.string
+                    })
             });
 
     runSimpleSpecTest({

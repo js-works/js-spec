@@ -627,7 +627,7 @@ export default class Spec {
         );
     }
 
-    static or(...constraints: (Validator | { when: (it: any) => boolean, apply: Validator })[]): SpecValidator {
+    static or(...constraints: (Validator | { when: (it: any) => boolean, validator: Validator })[]): SpecValidator {
         return SpecValidator.from((it, path) => {
             let ret = undefined;
 
@@ -646,11 +646,11 @@ export default class Spec {
                 } else if (constraint !== null
                     && typeof constraint === 'object'
                     && typeof (constraint as any).when === 'function'
-                    && _isValidator((constraint as any).apply)) {
+                    && _isValidator((constraint as any).validator)) {
             
                     if ((constraint as any).when(it)) {
                         ret = _checkConstraint(
-                            (constraint as any).apply, it, path);
+                            (constraint as any).validator, it, path);
 
                         break;
                     }
