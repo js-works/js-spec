@@ -617,7 +617,7 @@ export default class Spec {
         });
     }
 
-    static or(...constraints: Validator[]): SpecValidator {
+    static orxxx(...constraints: Validator[]): SpecValidator {
         return SpecValidator.from(
             (it, path) => !constraints.every(constraint =>
                 // XXX
@@ -626,7 +626,47 @@ export default class Spec {
                 : 'Invalid value'
         );
     }
-    
+
+    static or(...constraints: (Validator | { when: (it: any) => boolean, apply: Validator })[]): SpecValidator {
+        return SpecValidator.from((it, path) => {
+            let ret = undefined;
+
+            for (let i = 0; i < constraints.length; ++i) {
+                const
+                    constraint = constraints[i];
+                
+                if (_isValidator(constraint)) {
+                    const result = _checkConstraint(
+                        constraint as Validator, it, path);
+
+                    if (result === null) {
+                        ret = null;
+                        break;
+                    } 
+                } else if (constraint !== null
+                    && typeof constraint === 'object'
+                    && typeof (constraint as any).when === 'function'
+                    && _isValidator((constraint as any).apply)) {
+            
+                    if ((constraint as any).when(it)) {
+                        ret = _checkConstraint(
+                            (constraint as any).apply, it, path);
+
+                        break;
+                    }
+                } else {
+                    throw new Error('[Spec.or] Arguments must be either validators or objects of type { when: function, apply: validator }')
+                }
+            }
+
+            if (ret === undefined) {
+                ret = 'Invalid value';
+            }
+
+            return ret;
+        });
+    }    
+
     static in(collection: any): SpecValidator {
         return SpecValidator.from((it, path) => {
             let ret = null;
@@ -720,6 +760,14 @@ Object.freeze(Spec);
 /**
  * @hidden 
  */
+function _isValidator(it: any) {
+    return typeof it === 'function'
+        || it && typeof it.validate === 'function';    
+}
+
+/**
+ * @hidden 
+ */
 function _buildSubPath(path: String | null, key: string): string | null {
     let ret = null;
 
@@ -743,7 +791,8 @@ function _checkConstraint(constraint: Validator, it: any, path: null | string = 
         : (constraint as Function)(it, path);
 
     const errPath =
-        path && result && result.path
+        typeof path === 'string'
+            && result && typeof result.path === 'string'
             && result.path.length > path.length
             && result.path.startsWith(path)
 

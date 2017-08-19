@@ -396,6 +396,44 @@ describe('Spec.or', () => {
         validValues: ['', 'xxx', 'some text', 0, 1, -1, 12.3, -12.3],
         invalidValues: [undefined, null, true, false, [], {}, Infinity, -Infinity]
     });
+
+    const spec =
+        Spec.or(
+            {
+                when:
+                    it => !!it && it.type === 'integer',
+
+                apply:
+                    Spec.shape({
+                        type: Spec.is('integer'),
+                        value: Spec.integer
+                    })
+            },
+
+            {
+                when:
+                    it => it && it.type === 'string',
+
+                    apply:
+                        Spec.shape({
+                            type: Spec.is('string'),
+                            value: Spec.string
+                        })
+            });
+
+    runSimpleSpecTest({
+        spec,
+        validValues: [
+            { type: 'integer', value: 13},
+            { type: 'string', value: 'some text'}
+        ],
+        invalidValues: [
+            undefined, null, true, false, [], {},
+            { type: 'integer', value: 'some text' },
+            { type: 'string', value: 42},
+            { type: 'boolean', value: true }
+        ]
+    });
 });
 
 describe('Spec.in', () => {
