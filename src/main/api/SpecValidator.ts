@@ -9,12 +9,14 @@ class SpecValidator {
 
         if (validator instanceof SpecValidator) {
             ret = validator;
+        /*
         } else if (validator
             && typeof validator === 'object'
             && typeof validator.validate === 'function') {
 
             ret = Object.create(SpecValidator.prototype);
             ret.__validate = validator.validate.bind(validator);
+        */
         } else if (typeof validator === 'function') {
             ret = Object.create(SpecValidator.prototype);
             ret.__validate = validator;            
@@ -34,7 +36,7 @@ class SpecValidator {
             + '- please use static method SpecValidator.create or SpecValidator.from instead');
     }
 
-    validate(it: any, path: string | null = null): SpecError | null {
+    validate(it: any, path: string | null = ''): SpecError | null {
         let ret = null;
 
         const result = this.__validate(it, path);

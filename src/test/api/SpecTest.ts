@@ -199,7 +199,7 @@ describe('Spec.hasSomeKeys', () => {
 describe('Spec.validator', () => {
     runSimpleSpecTest({
         spec: Spec.validator,
-        validValues: [() => true, Spec.any, Spec.integer, { validate: () => true }],
+        validValues: [() => true, Spec.any, Spec.integer, Spec.string],
         invalidValues: [undefined, null, true, false, 0, 42, '', [], {}, { validate: true }]
     });
 });
@@ -318,11 +318,11 @@ describe('Spec.valid', () => {
     });
 });
 
-describe('Spec.size', () => {
+describe('Spec.prop', () => {
     runSimpleSpecTest({
-        spec: Spec.size((it: any) => it > 3),
-        validValues: ['1234', [1, 2, 3, 4], new Set([1, 2, 3, 4])],
-        invalidValues: [undefined, null, true, false, 0, '', '0', '123', [], [1,2 ,3], new Set([1, 2, 3])]
+        spec: Spec.prop('length', (it: any) => it > 3),
+        validValues: ['1234', { length: 12 }],
+        invalidValues: [undefined, null, true, false, 0, '', '0', '123', {}, { length: 1 }]
     });
 });
 
@@ -400,10 +400,14 @@ describe('Spec.or', () => {
     const spec =
         Spec.or(
             {
+                when: Spec.array,
+                check: it => it.length === 2 
+            },
+            {
                 when:
                     it => !!it && it.type === 'integer',
 
-                validator:
+                check:
                     Spec.shape({
                         type: Spec.is('integer'),
                         value: Spec.integer
@@ -414,7 +418,7 @@ describe('Spec.or', () => {
                 when:
                     it => it && it.type === 'string',
 
-                validator:
+                check:
                     Spec.shape({
                         type: Spec.is('string'),
                         value: Spec.string
@@ -425,13 +429,15 @@ describe('Spec.or', () => {
         spec,
         validValues: [
             { type: 'integer', value: 13},
-            { type: 'string', value: 'some text'}
+            { type: 'string', value: 'some text'},
+            [1, 2]
         ],
         invalidValues: [
             undefined, null, true, false, [], {},
             { type: 'integer', value: 'some text' },
             { type: 'string', value: 42},
-            { type: 'boolean', value: true }
+            { type: 'boolean', value: true },
+            [1, 2, 3]
         ]
     });
 });
@@ -616,40 +622,6 @@ describe('Spec.struct', () => {
     });
 });
 
-describe('Spec.constructorStruct', () => {
-    const
-        spec = Spec.constructorStruct({
-            id: Spec.positiveInteger,
-            keys: Spec.arrayOf(Spec.string)
-        }),
-
-        valid = class {
-            static get id() {
-              return 5;
-            }
-
-            static get keys() {
-               return ['key1', 'key2', 'key3']
-           }
-        },
-        
-        invalid = class {
-            static get id() {
-              return 5;
-            }
-
-            static get keys() {
-               return ['key1', 'key2', 333] // Invalid!!! 333 is not a string!
-           }
-        };
-
-    runSimpleSpecTest({
-        spec,
-        validValues: [valid],
-        invalidValues: [undefined, null, true, false, 0, 1, '', '1', {}, [], invalid, Date],
-    });
-});
-
 describe('Spec.lazy', () => {
     it('must handle recursive specs properly', () => {
         const spec =
@@ -698,13 +670,12 @@ describe('Spec', () => {
     });
     
     it('must return proper error messages without path information', () => {
-        const result = spec.validate({ level1: { level2: { arr: [123, '234'] } } });
+        const result = spec.validate({ level1: { level2: { arr: [123, '234'] } } }, null);
 
         expect(result).to.be.instanceof(SpecError);
 
         expect(result.message).to.eql(
-            "Constraint violation: "
-            + 'Invalid shape');
+            'Constraint violation: Invalid shape');
 
         expect(result.hint).to.eql('Invalid shape');
 
@@ -714,7 +685,7 @@ describe('Spec', () => {
     it('must return proper error messages when using custom hint', () => {
         const result =
             spec.usingHint('Please provide valid configuration')
-                .validate({ level1: { level2: { arr: [123, '234'] } } });
+                .validate({ level1: { level2: { arr: [123, '234'] } } }, null);
 
         expect(result).to.be.instanceof(SpecError);
 
@@ -744,9 +715,6 @@ function runSimpleSpecTest(config: { spec: SpecValidator, validValues: any[], in
             const result = config.spec.validate(value, '');
 
             if (result) {
-                console.log('Error:', result);
-                console.log('Subject:', value);
-                process.exit(0);
                 throw result;
             }
         }

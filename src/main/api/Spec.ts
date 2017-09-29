@@ -252,10 +252,13 @@ export default class Spec {
 
     static get validator(): SpecValidator {
         return cache.validator || (cache.validator = SpecValidator.from(
-            it => typeof it === 'function'
-                || it && typeof it.validate === 'function'
-                    ? null
-                    : "Must be a function or an object with funtion 'validate'"
+            it => typeof it === 'function' || it instanceof SpecValidator
+                ? null
+                : 'Must either be a function or a instance of SpecValidator'
+
+         //       || it && typeof it.validate === 'function'
+         //           ? null
+         //           : "Must be a function or an object with funtion 'validate'"
         ));
     }
 
@@ -376,30 +379,16 @@ export default class Spec {
         });
     }
 
-    static size(constraint: Validator): SpecValidator {
+    static prop(propName: string, constraint: Validator): SpecValidator {
         return SpecValidator.from((it, path) => {
             let ret = null;
 
-            if (it === null
-                || typeof it !== 'object' && typeof it !== 'string') {
-            
-                ret = 'Must be something with size/length';
-            } else {
-                const
-                    propName = Array.isArray(it) || typeof it === 'string'
-                        ? 'length'
-                        : 'size',
-                    
-                    size = it[propName];
+            const prop =
+                it === undefined || it === null
+                ? undefined
+                : it[propName];           
 
-                if (!Number.isSafeInteger(size) || size <= 0) {
-                    ret = `Must have a adequate '${propName}' property`;
-                } else {
-                    ret = _checkConstraint(constraint, size, _buildSubPath(path, propName));
-                }
-            }
-
-            return ret;
+            return _checkConstraint(constraint, prop, _buildSubPath(path, propName));
         });
     }
 
@@ -571,33 +560,6 @@ export default class Spec {
         });
     }
 
-    static constructorStruct(shape: { [key: string] : Validator }): SpecValidator {
-        return SpecValidator.from((it, path) => {
-            let ret = null;
-
-            if (it === null || typeof it !== 'function') {
-                ret = 'Must be an constructor function';
-            } else {
-                for (const key of Object.keys(shape)) {
-                    const subPath = _buildSubPath(path, key);
-
-                    // XXX
-                    ret = _checkConstraint(shape[key], (it as any)[key], subPath);
-
-                    if (ret) {
-                        if (!path) {
-                            ret = 'Invalid value';
-                        }
-
-                        break;
-                    }
-                }
-            }
-
-            return ret;
-        });
-    }
-
     static and(...constraints: Validator[]): SpecValidator {
         return SpecValidator.from((it, path = null) => {
             let ret = null;
@@ -617,17 +579,7 @@ export default class Spec {
         });
     }
 
-    static orxxx(...constraints: Validator[]): SpecValidator {
-        return SpecValidator.from(
-            (it, path) => !constraints.every(constraint =>
-                // XXX
-                _checkConstraint(constraint, it, path) !== null)
-                ? null
-                : 'Invalid value'
-        );
-    }
-
-    static or(...constraints: (Validator | { when: (it: any) => boolean, validator: Validator })[]): SpecValidator {
+    static or(...constraints: (Validator | { when: Validator, check: Validator })[]): SpecValidator {
         return SpecValidator.from((it, path) => {
             let ret = undefined;
 
@@ -645,17 +597,25 @@ export default class Spec {
                     } 
                 } else if (constraint !== null
                     && typeof constraint === 'object'
-                    && typeof (constraint as any).when === 'function'
-                    && _isValidator((constraint as any).validator)) {
-            
-                    if ((constraint as any).when(it)) {
+                    
+                    && (typeof (constraint as any).when === 'function'
+                        || (constraint as any).when instanceof SpecValidator)
+                    
+                    && _isValidator((constraint as any).check)) {
+
+                    const whenValid =
+                        (constraint as any).when instanceof SpecValidator
+                        ? (constraint as any).when.validate(it, null) === null
+                        : !!(constraint as any).when(it)
+
+                    if (whenValid) {
                         ret = _checkConstraint(
-                            (constraint as any).validator, it, path);
+                            (constraint as any).check, it, path);
 
                         break;
                     }
                 } else {
-                    throw new Error('[Spec.or] Arguments must be either validators or objects of type { when: function, apply: validator }')
+                    throw new Error('[Spec.or] Arguments must be either validators or objects of type { when: function, check: validator }')
                 }
             }
 
@@ -762,7 +722,8 @@ Object.freeze(Spec);
  */
 function _isValidator(it: any) {
     return typeof it === 'function'
-        || it && typeof it.validate === 'function';    
+        || it instanceof SpecValidator;
+        // || it && typeof it.validate === 'function';    
 }
 
 /**
