@@ -264,9 +264,9 @@ describe('Spec.nullable', () => {
     });
 });
 
-describe('Spec.orNothing', () => {
+describe('Spec.nullableOptional', () => {
     runSimpleSpecTest({
-        spec: Spec.orNothing(Spec.number),
+        spec: Spec.nullableOptional(Spec.number),
         validValues: [undefined, null, 0, 1, -1, 12.23, -42],
         invalidValues: [true, false, '', '0', 'some text', {}, []]
     });

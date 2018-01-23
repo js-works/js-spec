@@ -308,7 +308,7 @@ export default class Spec {
                 : _checkConstraint(constraint, it, path));
     }
 
-    static orNothing(constraint: Validator): SpecValidator {
+    static nullableOptional(constraint: Validator): SpecValidator {
         return SpecValidator.from((it, path) =>
             it === undefined || it === null
                 ? null
