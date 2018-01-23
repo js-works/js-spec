@@ -540,21 +540,21 @@ describe('Spec.shape', () => {
     });
 });
 
-describe('Spec.struct', () => {
+describe('Spec.extensibleShape', () => {
     const
-        spec1 = Spec.struct({
+        spec1 = Spec.extensibleShape({
             firstName: Spec.string,
             lastName: Spec.string
         }),
 
-        spec2 = Spec.struct({
+        spec2 = Spec.extensibleShape({
             id: Spec.positiveInteger,
             firstName: Spec.string,
             lastName: Spec.string,
 
             addresses:
                 Spec.arrayOf(
-                        Spec.struct({
+                        Spec.extensibleShape({
                             addressType: Spec.oneOf('home', 'work', 'other'),
                             street: Spec.string,
                             zipCode: Spec.string,

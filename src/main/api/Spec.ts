@@ -532,7 +532,7 @@ export default class Spec {
         });
     }
     
-    static struct(shape: { [key: string]: Validator }): SpecValidator {
+    static extensibleShape(shape: { [key: string]: Validator }): SpecValidator {
         const shapeKeys = Object.keys(shape);
 
         return SpecValidator.from((it, path) => {
