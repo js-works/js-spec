@@ -22,39 +22,79 @@ describe('Spec.boolean', () => {
 describe('Spec.number', () => {
     runSimpleSpecTest({
         spec: Spec.number,
-        validValues: [0, 1, -1, 42, -42, 12.34, -12.34],
+        validValues: [0, 1, -1, 42, -42, 12.34, -12.34, Infinity, -Infinity],
         
-        invalidValues: [undefined, null, true, false, {}, '0', Infinity, -Infinity]
+        invalidValues: [undefined, null, true, false, {}, '0']
     });
 });
 
 describe('Spec.positiveNumber', () => {
     runSimpleSpecTest({
         spec: Spec.positiveNumber,
-        validValues: [1, 2, 3, 42],
-        invalidValues: [undefined, null, true, false, {}, '0', 0, -1, Infinity, '1']
+        validValues: [1, 2, 3, 42, Infinity],
+        invalidValues: [undefined, null, true, false, {}, '0', 0, -1, -Infinity, '1']
     });
 });
 
 describe('Spec.nonpositiveNumber', () => {
     runSimpleSpecTest({
         spec: Spec.nonpositiveNumber,
-        validValues: [0, -1, -2, -12.34],
-        invalidValues: [undefined, null, true, false, {}, '0', 2, 3, '-1', -Infinity]
+        validValues: [0, -1, -2, -12.34, -Infinity],
+        invalidValues: [undefined, null, true, false, {}, '0', 2, 3, '-1', Infinity]
     });
 });
 
 describe('Spec.negativeNumber', () => {
     runSimpleSpecTest({
         spec: Spec.negativeNumber,
-        validValues: [-1, -12.34, -42],
-        invalidValues: [undefined, null, true, false, {}, 1, 2, 1.2, '-1', -Infinity]
+        validValues: [-1, -12.34, -42, -Infinity],
+        invalidValues: [undefined, null, true, false, {}, 1, 2, 1.2, '-1', Infinity]
     });
 });
 
 describe('Spec.nonnegativeNumber', () => {
     runSimpleSpecTest({
         spec: Spec.nonnegativeNumber,
+        validValues: [0, 1, 2, 12.34, 42, Infinity],
+        invalidValues: [undefined, null, true, false, {}, -1, -12.34, '1', -Infinity]
+    });
+});
+
+describe('Spec.float', () => {
+    runSimpleSpecTest({
+        spec: Spec.float,
+        validValues: [0, 1, -1, 42, -42, 12.34, -12.34],
+        invalidValues: [undefined, null, true, false, {}, '0', Infinity, -Infinity]
+    });
+});
+
+describe('Spec.positiveFloat', () => {
+    runSimpleSpecTest({
+        spec: Spec.positiveFloat,
+        validValues: [1, 2, 3, 42],
+        invalidValues: [undefined, null, true, false, {}, '0', 0, -1, Infinity, '1']
+    });
+});
+
+describe('Spec.nonpositiveFloat', () => {
+    runSimpleSpecTest({
+        spec: Spec.nonpositiveFloat,
+        validValues: [0, -1, -2, -12.34],
+        invalidValues: [undefined, null, true, false, {}, '0', 2, 3, '-1', -Infinity]
+    });
+});
+
+describe('Spec.negativeFloat', () => {
+    runSimpleSpecTest({
+        spec: Spec.negativeFloat,
+        validValues: [-1, -12.34, -42],
+        invalidValues: [undefined, null, true, false, {}, 1, 2, 1.2, '-1', -Infinity]
+    });
+});
+
+describe('Spec.nonnegativeFloat', () => {
+    runSimpleSpecTest({
+        spec: Spec.nonnegativeFloat,
         validValues: [0, 1, 2, 12.34, 42],
         invalidValues: [undefined, null, true, false, {}, -1, -12.34, '1', Infinity]
     });
@@ -393,8 +433,8 @@ describe('Spec.and', () => {
 describe('Spec.or', () => {
     runSimpleSpecTest({
         spec: Spec.or(Spec.string, Spec.number),
-        validValues: ['', 'xxx', 'some text', 0, 1, -1, 12.3, -12.3],
-        invalidValues: [undefined, null, true, false, [], {}, Infinity, -Infinity]
+        validValues: ['', 'xxx', 'some text', 0, 1, -1, 12.3, -12.3, Infinity, -Infinity],
+        invalidValues: [undefined, null, true, false, [], {}]
     });
 
     const spec =

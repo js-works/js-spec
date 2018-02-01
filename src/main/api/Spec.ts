@@ -25,6 +25,50 @@ export default class Spec {
 
     static get number(): SpecValidator {
         return cache.number || (cache.number = SpecValidator.from(
+            it => typeof it === 'number'
+                ? null
+                : 'Must be a number')
+        );
+    }
+
+    static get positiveNumber(): SpecValidator {
+        return cache.positiveNumber || 
+            (cache.positiveNumber = SpecValidator.from(
+                it => typeof it === 'number' && it > 0
+                    ? null
+                    : 'Must be a positive number')
+            );
+    }
+
+    static get nonpositiveNumber(): SpecValidator {
+        return cache.nonpositiveNumber || 
+            (cache.nonpositiveNumber = SpecValidator.from(
+                it => typeof it === 'number' && it <= 0
+                    ? null
+                    : 'Must be a nonpositive number')
+            );
+    }
+
+    static get negativeNumber(): SpecValidator {
+        return cache.negativeNumber || 
+            (cache.negativeNumber = SpecValidator.from(
+                it => typeof it === 'number' && it < 0
+                    ? null
+                    : 'Must be a negative number')
+            );
+    }
+
+    static get nonnegativeNumber(): SpecValidator {
+        return cache.nonnegativeNumber || 
+            (cache.nonnegativeNumber = SpecValidator.from(
+                it => typeof it === 'number' && it >= 0
+                    ? null
+                    : 'Must be a nonnegative number')
+            );
+    }
+
+    static get float(): SpecValidator {
+        return cache.float || (cache.float = SpecValidator.from(
             it => typeof it === 'number' && isFinite(it)
                 ? null
                 : (Math.abs(it) === Infinity
@@ -33,9 +77,9 @@ export default class Spec {
         ));
     }
 
-    static get positiveNumber(): SpecValidator {
-        return cache.positiveNumber || 
-            (cache.positiveNumber = SpecValidator.from(
+    static get positiveFloat(): SpecValidator {
+        return cache.positiveFloat || 
+            (cache.positiveFloat = SpecValidator.from(
                 it => typeof it === 'number' && isFinite(it) && it > 0
                     ? null
                     : (Math.abs(it) === Infinity
@@ -44,9 +88,9 @@ export default class Spec {
             ));
     }
 
-    static get nonpositiveNumber(): SpecValidator {
-        return cache.nonpositiveNumber || 
-            (cache.nonpositiveNumber = SpecValidator.from(
+    static get nonpositiveFloat(): SpecValidator {
+        return cache.nonpositiveFloat || 
+            (cache.nonpositiveFloat = SpecValidator.from(
                 it => typeof it === 'number' && isFinite(it) && it <= 0
                     ? null
                     : (Math.abs(it) === Infinity
@@ -55,9 +99,9 @@ export default class Spec {
             ));
     }
 
-    static get negativeNumber(): SpecValidator {
-        return cache.negativeNumber || 
-            (cache.negativeNumber = SpecValidator.from(
+    static get negativeFloat(): SpecValidator {
+        return cache.negativeFloat || 
+            (cache.negativeFloat = SpecValidator.from(
                 it => typeof it === 'number' && isFinite(it) && it < 0
                     ? null
                     : (Math.abs(it) === Infinity
@@ -66,9 +110,9 @@ export default class Spec {
             ));
     }
 
-    static get nonnegativeNumber(): SpecValidator {
-        return cache.nonnegativeNumber || 
-            (cache.nonnegativeNumber = SpecValidator.from(
+    static get nonnegativeFloat(): SpecValidator {
+        return cache.nonnegativeFloat || 
+            (cache.nonnegativeFloat = SpecValidator.from(
                 it => typeof it === 'number' && isFinite(it) && it >= 0
                     ? null
                     : (Math.abs(it) === Infinity
@@ -79,7 +123,7 @@ export default class Spec {
 
     static get integer(): SpecValidator {
         return cache.integer || (cache.integer = SpecValidator.from(
-            it => Number.isSafeInteger(it)
+            it => Number.isInteger(it)
                 ? null
                 : (Math.abs(it) === Infinity
                     ? 'Must be a finite integer'
@@ -90,7 +134,7 @@ export default class Spec {
     static get positiveInteger(): SpecValidator {
         return cache.positiveInteger || 
             (cache.positiveInteger = SpecValidator.from(
-                it => Number.isSafeInteger(it) && it > 0
+                it => Number.isInteger(it) && it > 0
                     ? null
                     : (Math.abs(it) === Infinity
                         ? 'Must be a finite positive integer'
@@ -101,7 +145,7 @@ export default class Spec {
     static get nonpositiveInteger(): SpecValidator {
         return cache.nonpositiveInteger || 
             (cache.nonpositiveInteger = SpecValidator.from(
-                it => Number.isSafeInteger(it) && it <= 0
+                it => Number.isInteger(it) && it <= 0
                     ? null
                     : (Math.abs(it) === Infinity
                         ? 'Must be a finite nonpositive integer'
@@ -112,7 +156,7 @@ export default class Spec {
     static get negativeInteger(): SpecValidator {
         return cache.negativeInteger || 
             (cache.negativeInteger = SpecValidator.from(
-                it => Number.isSafeInteger(it) && it < 0
+                it => Number.isInteger(it) && it < 0
                     ? null
                     : (Math.abs(it) === Infinity
                         ? 'Must be a finite negative integer'
@@ -123,7 +167,7 @@ export default class Spec {
     static get nonnegativeInteger(): SpecValidator {
         return cache.nonnegativeInteger || 
             (cache.nonnegativeInteger = SpecValidator.from(
-                it => Number.isSafeInteger(it) && it >= 0
+                it => Number.isInteger(it) && it >= 0
                     ? null
                     : (Math.abs(it) === Infinity
                         ? 'Must be a finite nonnegative integer'
