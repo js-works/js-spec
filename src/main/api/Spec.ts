@@ -468,12 +468,27 @@ export default class Spec {
         );
     }
 
-    static between(left: any, right: any): SpecValidator {
-        return SpecValidator.from(
-            it => it >= left && it <= right        
-                ? null
-                : `Must be between ${left} and ${right}`
-        );
+    static between(left: any, right: any, excludeLeft: boolean = false,
+        excludeRight: boolean = false): SpecValidator {
+ 
+        return SpecValidator.from((it, path): any => {
+            let ret: string | null = null;
+
+            const ok =
+                (!excludeLeft && it >= left || excludeLeft && it > left)
+                && (!excludeRight && it <= right || excludeRight && it < right); 
+
+            if (!ok) {
+                const
+                    infoLeft = excludeLeft ? '(excluded)' : '(included)',
+                    infoRight = excludeRight ? '(excluded)' : '(included)';
+
+                ret = `Must be between ${left} ${infoLeft} `
+                    + `and ${right} ${infoRight}`
+            }
+
+            return ret;
+        });
     }
 
     static keysOf(constraint: Validator): SpecValidator {

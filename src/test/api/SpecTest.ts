@@ -404,6 +404,12 @@ describe('Spec.between', () => {
         validValues: [true, false, null, 1, 2, 2.22, 3, 42, 100, '100', [], [0]],
         invalidValues: [undefined, -1, -42, '-42', [0, 0], [101], {}]
     });
+    
+    runSimpleSpecTest({
+        spec: Spec.between(0, 100, true, true),
+        validValues: [0.01, 1, 2, 90, 99, 99.99],
+        invalidValues: [0, 100]
+    });
 });
 
 describe('Spec.keysOf', () => {
