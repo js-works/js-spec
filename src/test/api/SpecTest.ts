@@ -488,6 +488,30 @@ describe('Spec.or', () => {
     });
 });
 
+describe('Spec.when (using function as first argument that returns true)', () => {
+    runSimpleSpecTest({
+        spec: Spec.when(() => true, Spec.positiveNumber, Spec.negativeNumber),
+        validValues: [1, 2, 3, 4, 5],
+        invalidValues: [-1, -2, -3, -4, -5]
+    });
+});
+
+describe('Spec.when (using function as first argument that returns false)', () => {
+    runSimpleSpecTest({
+        spec: Spec.when(() => false, Spec.positiveNumber, Spec.negativeNumber),
+        validValues: [-1, -2, -3, -4, -5],
+        invalidValues: [1, 2, 3, 4, 5]
+    });
+});
+
+describe('Spec.when (using SpecValidator as first argument)', () => {
+    runSimpleSpecTest({
+        spec: Spec.when(Spec.valid(() => false), Spec.positiveNumber, Spec.negativeNumber),
+        validValues: [-1, -2, -3, -4, -5],
+        invalidValues: [1, 2, 3, 4, 5]
+    });
+});
+
 describe('Spec.in', () => {
     runSimpleSpecTest({
         spec: Spec.in(new Set([1, 2, 3, 4, 5])),

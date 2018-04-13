@@ -194,7 +194,7 @@ export default class Spec {
     }
 
     static get string(): SpecValidator {
-        return cache.string || (cache.srring = SpecValidator.from(
+        return cache.string || (cache.string = SpecValidator.from(
             it => typeof it === 'string'
                 ? null
                 : 'Must be a string'
@@ -202,7 +202,7 @@ export default class Spec {
     }
 
     static get function(): SpecValidator {
-        return cache.func || (cache.func = SpecValidator.from(
+        return cache.function || (cache.function = SpecValidator.from(
             it => typeof it === 'function'
                 ? null
                 : 'Must be a function'
@@ -501,7 +501,7 @@ export default class Spec {
                 for (let key of Object.keys(it)) {
                     const error = _checkConstraint(constraint, key, path);
 
-                    if (error) { /// XXX
+                    if (error) {
                         ret = `Key '${key}' is invalid => ${error.hint}`;
                         break;
                     }
@@ -523,7 +523,7 @@ export default class Spec {
                     const
                         value = it[key],
                         subPath = _buildSubPath(path, key);
-// XXX
+
                     const result = _checkConstraint(constraint, value, subPath);
 
                     if (result) {
@@ -684,7 +684,38 @@ export default class Spec {
 
             return ret;
         });
-    }    
+    }
+    
+    static when(
+        condition: Validator,
+        validatorIfTrue: Validator,
+        validatorIfFalse?: Validator) {
+
+        if (!_isValidator(condition)) {
+            throw new Error('[Spec.when] First argument "condition" '
+                + 'must either be a function or a SpecValidator');
+        } else if (!_isValidator(validatorIfTrue)) {
+            throw new Error('[Spec.when] Second argument "validatorIfTrue" '
+                + 'must either be a function or a SpecValidator');
+        } else if (validatorIfFalse !== undefined
+            && !_isValidator(validatorIfFalse)) {
+            
+            throw new Error('[Spec.when] Thrid argument "validatorIfFalse" '
+                + 'must either be a function, a SpecValidator or undefined');
+        }
+
+        return SpecValidator.from((it, path) => {
+            let ret = null;
+
+            if (_checkConstraint(condition, it) === null) {
+                ret = _checkConstraint(validatorIfTrue, it, path);
+            } else if (validatorIfFalse) {
+                ret = _checkConstraint(validatorIfFalse, it, path);
+            }
+
+            return ret;
+        });
+    }
 
     static in(collection: any): SpecValidator {
         return SpecValidator.from((it, path) => {
@@ -782,7 +813,6 @@ Object.freeze(Spec);
 function _isValidator(it: any) {
     return typeof it === 'function'
         || it instanceof SpecValidator;
-        // || it && typeof it.validate === 'function';    
 }
 
 /**
