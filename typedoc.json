@@ -2,7 +2,7 @@
   "mode": "file",
   "out": "dist/docs/api",
   "name": "js-spec",
-  "theme": "default",
+  "theme": "minimal",
   "ignoreCompilerErrors": "true",
   "experimentalDecorators": "true",
   "emitDecoratorMetadata": "true",
