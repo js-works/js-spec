@@ -1,22 +1,22 @@
 {
-    "compilerOptions": {
-        "target": "ES5",
-        "module": "umd",
-        "noImplicitAny": true,
-        "removeComments": true,
-        "preserveConstEnums": true,
-        "sourceMap": true,
-        "lib": ["es7", "dom"],
-        "rootDir": "src",
-        "outDir": "build",
-        "typeRoots": [
-            "node_modules/@types"
-        ],
-        "types": [
-            "node", "mocha", "chai"
-        ]
-    },
-    "files": [
-        "src/main/js-spec.ts"
+  "compilerOptions": {
+    "target": "ES5",
+    "module": "umd",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "declaration": true,
+    "lib": ["es7", "dom"],
+    "declarationDir": "types",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "types": [
+      "node", "mocha", "chai"
     ]
+  },
+  "files": [
+    "src/main/js-spec.ts"
+  ]
 }

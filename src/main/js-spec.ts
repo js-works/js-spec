@@ -3,7 +3,7 @@ import SpecError from './api/SpecError';
 import SpecValidator from './api/SpecValidator';
 
 export {
-    Spec,
-    SpecError,
-    SpecValidator
+  Spec,
+  SpecError,
+  SpecValidator
 }
