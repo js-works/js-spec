@@ -7,6 +7,7 @@ module.exports = {
   entry: './src/main/js-spec.ts',
   devtool: 'inline-source-map',
   module: {
+    unknownContextCritical: false,
     rules: [
       {
         test: /\.ts$/,
@@ -20,7 +21,9 @@ module.exports = {
   },
   output: {
     filename: 'js-spec.development.js',
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, 'dist'),
+    library: 'jsSpec',
+    libraryTarget: 'umd'
   },
   plugins: [
     new CompressionPlugin()
