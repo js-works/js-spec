@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "target": "ES5",
-    "module": "umd",
     "noImplicitAny": true,
     "removeComments": true,
     "preserveConstEnums": true,
