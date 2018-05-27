@@ -317,6 +317,24 @@ const Spec = {
     );
   },
 
+  singleOf(constraint: Validator): SpecValidator {
+    return SpecValidator.from(
+      (it, path = null) => {
+        let ret = null;
+
+        if (!Array.isArray(it)) {
+          ret = 'Must be an array';
+        } else if (it.length !== 1) {
+          ret = 'Must be a single element array';
+        } else {
+          ret = _checkConstraint(constraint, it[0]);
+        }
+
+        return ret;
+      }
+    )
+  },
+
   match(regex: RegExp): SpecValidator {
     return SpecValidator.from(it => {
       let ret = null;

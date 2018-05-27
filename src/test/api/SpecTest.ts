@@ -342,6 +342,14 @@ describe('Spec.arrayOf', () => {
   });
 });
 
+describe('Spec.singleOf', () => {
+  runSimpleSpecTest({
+    spec: Spec.singleOf(Spec.integer),
+    validValues: [[1], [-1], [0], [42]],
+    invalidValues: [undefined, null, true, false, 0, '', [], [1.1], [true], [1, 2]]
+  });
+});
+
 describe('Spec.match', () => {
   runSimpleSpecTest({
     spec: Spec.match(/^[a-z]+$/),
