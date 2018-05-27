@@ -327,7 +327,7 @@ const Spec = {
         } else if (it.length !== 1) {
           ret = 'Must be a single element array';
         } else {
-          ret = _checkConstraint(constraint, it[0]);
+          ret = _checkConstraint(constraint, it[0], _buildSubPath(path, '0'));
         }
 
         return ret;
