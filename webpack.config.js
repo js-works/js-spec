@@ -28,7 +28,11 @@ module.exports = env => {
     output: {
       filename: (typeName === 'umd' ? '' : `${typeName}/`) + `js-spec.${modeName}.js`,
       path: path.resolve(__dirname, 'dist'),
-      library: 'jsSpec',
+      library: {
+        commonjs: 'js-spec',
+        //amd: 'js-spec',
+        root: 'jsSpec'
+      },
       libraryTarget: typeName === 'cjs' ? 'commonjs2' : typeName
     },
     plugins: [

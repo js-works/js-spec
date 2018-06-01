@@ -1,6 +1,6 @@
 {
   "name": "js-spec",
-  "version": "0.1.31",
+  "version": "0.1.32",
   "license": "LGPL-3.0",
   "homepage": "https://github.com/js-works/js-spec",
   "main": "index.js",
@@ -22,9 +22,9 @@
     "ts-node": "^3.3.0",
     "tslint": "^5.5.0",
     "typedoc": "^0.11.1",
-    "typescript": "^2.8.3",
-    "webpack": "^4.6.0",
-    "webpack-cli": "^2.0.15"
+    "typescript": "^2.9.1",
+    "webpack": "^4.10.2",
+    "webpack-cli": "^2.1.4"
   },
   "scripts": {
     "clean": "node_modules/.bin/shx rm -rf ./build ./dist",
@@ -34,8 +34,8 @@
     "build-prod-cjs": "webpack --env.mode=production --env.type=cjs",
     "build-dev-amd": "webpack --env.mode=development --env.type=amd",
     "build-prod-amd": "webpack --env.mode=production --env.type=amd",
-    "build-dev": "npm run build-dev-umd && npm run build-dev-cjs && npm run build-dev-amd",
-    "build-prod": "npm run build-prod-umd && npm run build-prod-cjs && npm run build-prod-amd",
+    "build-dev": "npm run build-dev-umd && npm run build-dev-cjs && npm run build-dev-cjs",
+    "build-prod": "npm run build-prod-umd && npm run build-prod-cjs && npm run build-prod-cjs",
     "test": "node_modules/.bin/mocha -r ts-node/register src/test/**/*.ts",
     "test-watch": "node_modules/.bin/mocha -w -r ts-node/register src/test/**/*.ts",
     "docs": "node_modules/.bin/shx rm -rf ./dist/docs && \"node_modules/.bin/cross-conf-env\" typedoc --options typedoc.json src/main/api/ -name \"js-spec vnpm_package_version\"",
