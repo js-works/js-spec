@@ -3,6 +3,8 @@ import SpecValidator from './SpecValidator';
 import Validator from './Validator';
 import createSpecError from '../internal/createSpecError';
 
+const symbolObservable = (Symbol as any).observable;
+
 const Spec = {
   any:
     SpecValidator.from(() => null),
@@ -167,6 +169,15 @@ const Spec = {
           && typeof it[Symbol.iterator] === 'function') 
         ? null
         : 'Must be iterable'),
+
+  observable:
+    SpecValidator.from(
+      it => it !== null && typeof it === 'object'
+        && Boolean(symbolObservable)
+        && typeof it[symbolObservable] === 'function'
+        && it[symbolObservable]() === it
+        ? null
+        : 'Must be an observable'),
 
   unique:
     SpecValidator.from((it, path) => {

@@ -1,3 +1,7 @@
+// needed for the tests of Spec.observable
+import 'symbol-observable';
+import { from, of, range } from 'rxjs';
+
 //import { describe, it } from 'mocha';
 import { expect } from 'chai';
 
@@ -195,6 +199,16 @@ describe('Spec.iterable', () => {
     invalidValues: [undefined, null, true, false, 0, 1, -1, {}]
   });
 });
+
+describe('Spec.observable', () => {
+  runSimpleSpecTest({
+    spec: Spec.observable,
+    validValues: [of(1, 2, 3), from([2, 3, 4]), range(1, 10)],
+    invalidValues: [undefined, null, true, false, 0, 1, -1, {},
+      { [(Symbol as any).observable]: (): any => null}]
+  });
+});
+
 
 describe('Spec.unique', () => {
   runSimpleSpecTest({

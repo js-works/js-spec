@@ -30,7 +30,7 @@ module.exports = env => {
       path: path.resolve(__dirname, 'dist'),
       library: {
         commonjs: 'js-spec',
-        //amd: 'js-spec',
+        amd: 'js-spec',
         root: 'jsSpec'
       },
       libraryTarget: typeName === 'cjs' ? 'commonjs2' : typeName
