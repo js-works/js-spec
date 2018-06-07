@@ -368,16 +368,55 @@ const Spec = {
     });
   },
 
-  prop(propName: string, constraint: Validator): SpecValidator {
+  prop(
+    selector: number | string | (string | number)[],
+    constraint: Validator
+  ): SpecValidator {
+    const
+      typeOfSelector = typeof selector,
+      selectorIsArray = Array.isArray(selector);
+    
+    if (typeOfSelector !== 'string'
+        && typeOfSelector !== 'number'
+        && !selectorIsArray) {
+      
+      throw new TypeError(
+          "[Spec.selector] First argument 'selector' must either be "
+            + 'a string or a number or an nonempty array');
+    } else if (selectorIsArray && (selector as any).length === 0) {
+      throw new TypeError(
+          "[Spec.selector] First argument 'selector' must not be an "
+            + 'empty array');
+    }
+
     return SpecValidator.from((it, path) => {
-      let ret = null;
+      let value: any;
 
-      const prop =
-        it === undefined || it === null
-        ? undefined
-        : it[propName];       
+      if (it === undefined || it === null) {
+        value = undefined;
+      } else if (!selectorIsArray) {
+        value = it[selector as any];
+      } else {
+        value = it;
+  
+        for (let i = 0; i < (selector as any).length; ++i) {
+          const key = (selector as any)[i];
 
-      return _checkConstraint(constraint, prop, _buildSubPath(path, propName));
+          if (value !== undefined && value !== null) {
+            value = value[key];
+          } else {
+            value = undefined;
+            break;
+          }
+        }
+      }
+
+      const subpath =
+        selectorIsArray
+          ? (selector as any).join('.')
+          : (selector as string);
+
+      return _checkConstraint(constraint, value, _buildSubPath(path, subpath));
     });
   },
 

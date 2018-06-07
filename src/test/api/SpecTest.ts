@@ -386,6 +386,12 @@ describe('Spec.prop', () => {
     validValues: ['1234', { length: 12 }],
     invalidValues: [undefined, null, true, false, 0, '', '0', '123', {}, { length: 1 }]
   });
+
+  runSimpleSpecTest({
+    spec: Spec.prop(['x', 'y'], Spec.is(42)),
+    validValues: [{ x: { y: 42 } }, { x: { y: 42, z: 43 } }],
+    invalidValues: [undefined, null, true, false, 0, '', '0', '123', {}, { x: { y: 43 } }]
+  });
 });
 
 describe('Spec.greater', () => {
