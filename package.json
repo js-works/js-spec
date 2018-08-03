@@ -19,6 +19,7 @@
     "cross-conf-env": "^1.1.2",
     "crypto.js": "^1.1.0",
     "mocha": "^2.3.4",
+    "nyc": "^12.0.2",
     "rxjs": "^6.2.0",
     "shx": "^0.2.2",
     "symbol-observable": "^1.2.0",
@@ -31,7 +32,7 @@
     "webpack-cli": "^3.0.2"
   },
   "scripts": {
-    "clean": "node_modules/.bin/shx rm -rf ./build ./dist",
+    "clean": "shx rm -rf ./build ./dist ./coverage",
     "build-dev-umd": "webpack --env.mode=development --env.type=umd",
     "build-prod-umd": "webpack --env.mode=production --env.type=umd",
     "build-dev-cjs": "webpack --env.mode=development --env.type=cjs",
@@ -40,9 +41,26 @@
     "build-prod-amd": "webpack --env.mode=production --env.type=amd",
     "build-dev": "npm run build-dev-umd && npm run build-dev-cjs",
     "build-prod": "npm run build-prod-umd && npm run build-prod-cjs",
-    "test": "node_modules/.bin/mocha -r ts-node/register src/test/**/*.ts",
-    "test-watch": "node_modules/.bin/mocha -w -r ts-node/register src/test/**/*.ts",
-    "docs": "node_modules/.bin/shx rm -rf ./dist/docs && \"node_modules/.bin/cross-conf-env\" typedoc --options typedoc.json src/main/api/ -name \"js-spec vnpm_package_version\"",
+    "test": "nyc mocha -r ts-node/register src/test/**/*.ts",
+    "test-watch": "mocha -w -r ts-node/register src/test/**/*.ts",
+    "docs": "shx rm -rf ./dist/docs && \"node_modules/.bin/cross-conf-env\" typedoc --options typedoc.json src/main/api/ -name \"js-spec vnpm_package_version\"",
     "dist": "npm run clean && npm run test && npm run build-dev && npm run build-prod && npm run docs"
+  },
+  "nyc": {
+    "temp-directory": "./coverage/.nyc_output",
+    "include": [
+      "src/main"
+    ],
+    "exclude": [
+      "src/main/js-spec.ts"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "reporter": [
+      "lcov",
+      "text"
+    ],
+    "all": true
   }
 }
