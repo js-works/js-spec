@@ -348,6 +348,26 @@ describe('Spec.instanceOf', () => {
   });
 });
 
+describe('Spec.extends', () => {
+  const
+    A = class {},
+    B = class extends A {},
+    C = class {};
+
+  runSimpleSpecTest({
+    spec: Spec.extends(A),
+    validValues: [A, B],
+    invalidValues: [true, 42, '', C]
+  });
+  
+  runSimpleSpecTest({
+    spec: Spec.instanceOf(Date),
+    validValues: [new Date, new Date('1945-05-08')],
+    invalidValues: [true, 42, '', '0', 'some text']
+  });
+});
+
+
 describe('Spec.arrayOf', () => {
   runSimpleSpecTest({
     spec: Spec.arrayOf(Spec.integer),

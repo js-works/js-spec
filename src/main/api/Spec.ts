@@ -303,6 +303,18 @@ const Spec = {
       ? null
       : 'Must be instance of ' + type.name);
   },
+
+  extends(type: Function): SpecValidator {
+    if (typeof type !== 'function') {
+      throw new Error(
+        "[Spec.extends] First paramter 'type' must be a function");
+    }
+
+    return SpecValidator.from((it, path = null) => 
+      typeof it === 'function' && (it === type || it.prototype instanceof type)
+        ? null
+        : 'Must be a subclass of ' + type.name);
+  },
   
   arrayOf(constraint: Validator): SpecValidator {
     return SpecValidator.from(

@@ -19,7 +19,10 @@ class SpecValidator {
     */
     } else if (typeof validator === 'function') {
       ret = Object.create(SpecValidator.prototype);
-      ret.__validate = validator;      
+
+      Object.defineProperty(ret, '__validate', {
+        value: validator
+      })
     } else {
       throw new Error('[SpecValidator.from] '
         + "First argument must either be a function or an object with method 'validate'");
