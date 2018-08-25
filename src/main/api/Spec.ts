@@ -825,7 +825,7 @@ function  _usingHint(hint: string) {
  * @hidden 
  */
 function _specValidator(f: (it: any, path: string | null) => Error | string | boolean | null): SpecValidator {
-  const ret: any = function (it: any, path: string) {
+  const ret: any = function (it: any, path: string | null = '') {
     const result: any = f(it, path);
 
     let
