@@ -3,105 +3,52 @@ import SpecValidator from './SpecValidator';
 import Validator from './Validator';
 import createSpecError from '../internal/createSpecError';
 
-const
-  symbolObservable = (Symbol as any).observable,
-
-  validate = function (it: any, path: string): SpecError | null {
-    return this(it, path)
-  },
-
-  usingHint = function (hint: string) {
-    if (typeof hint != 'string') {
-      throw new Error("[SpecValidator.usingHint] First argument 'hint' must be a string");
-    }
-
-    return specValidator((it: any, path?: null | string) =>
-      this(it, path) !== null
-        ? createSpecError(hint, path)
-        : null
-    );
-  };
-
-function specValidator(f: (it: any, path: string | null) => Error | string | boolean | null): SpecValidator {
-  const ret: any = function (it: any, path: string) {
-    const result: any = f(it, path);
-
-    let
-      errMsg = null,
-      subpath: string | null = path;
-
-    if (result && result !== true) {
-
-      if (typeof result === 'string') {
-        errMsg = result;
-      } else if (result.hint && typeof result.hint === 'string') {
-        errMsg = result.hint;
-      } else if (result.message && typeof result.message === 'string') {
-        errMsg = result.message;
-      } else {
-        errMsg = 'Invalid value';
-      }
-
-      if (typeof result.path === 'string' && result.path.trim() !== '') {
-        subpath = result.path;
-      }
-    }
-
-    return errMsg === null ? null : createSpecError(errMsg, subpath);
-  }
-
-  ret.validate = validate;
-  ret.usingHint = usingHint;
-
-  return ret;
-}
-
 const Spec = {
   from: (f: (it: any, path: String) => SpecError | null) => {
-    return specValidator(f);
+    return _specValidator(f);
   },
 
   any:
-    specValidator(() => null),
+    _specValidator(() => null),
 
   boolean: 
-    specValidator(
+    _specValidator(
       it => it === true || it === false
         ? null
         : 'Must be boolean'),
 
   number:
-    specValidator(
+    _specValidator(
       it => typeof it === 'number'
         ? null
         : 'Must be a number'),
 
   positiveNumber:
-    specValidator(
+    _specValidator(
       it => typeof it === 'number' && it > 0
         ? null
         : 'Must be a positive number'),
 
   nonpositiveNumber:
-    specValidator(
+    _specValidator(
       it => typeof it === 'number' && it <= 0
         ? null
         : 'Must be a nonpositive number'),
 
   negativeNumber:
-    specValidator(
+    _specValidator(
       it => typeof it === 'number' && it < 0
         ? null
         : 'Must be a negative number'),
 
   nonnegativeNumber:
-    specValidator(
+    _specValidator(
       it => typeof it === 'number' && it >= 0
         ? null
         : 'Must be a nonnegative number'),
 
   float:
-    specValidator(
+    _specValidator(
       it => typeof it === 'number' && isFinite(it)
         ? null
         : (Math.abs(it) === Infinity
@@ -109,7 +56,7 @@ const Spec = {
           : 'Must be a number')),
 
   positiveFloat:
-    specValidator(
+    _specValidator(
       it => typeof it === 'number' && isFinite(it) && it > 0
         ? null
         : (Math.abs(it) === Infinity
@@ -117,7 +64,7 @@ const Spec = {
           : 'Must be a positive number')),
 
   nonpositiveFloat:
-    specValidator(
+    _specValidator(
       it => typeof it === 'number' && isFinite(it) && it <= 0
         ? null
         : (Math.abs(it) === Infinity
@@ -125,7 +72,7 @@ const Spec = {
           : 'Must be a nonpositive number')),
 
   negativeFloat:
-    specValidator(
+    _specValidator(
       it => typeof it === 'number' && isFinite(it) && it < 0
         ? null
         : (Math.abs(it) === Infinity
@@ -133,7 +80,7 @@ const Spec = {
           : 'Must be a negative number')),
 
   nonnegativeFloat:
-    specValidator(
+    _specValidator(
       it => typeof it === 'number' && isFinite(it) && it >= 0
         ? null
         : (Math.abs(it) === Infinity
@@ -141,7 +88,7 @@ const Spec = {
           : 'Must be a nonnegative number')),
 
   integer:
-    specValidator(
+    _specValidator(
       it => Number.isInteger(it)
         ? null
         : (Math.abs(it) === Infinity
@@ -149,7 +96,7 @@ const Spec = {
           : 'Must be an integer')),
 
   positiveInteger:
-    specValidator(
+    _specValidator(
       it => Number.isInteger(it) && it > 0
         ? null
         : (Math.abs(it) === Infinity
@@ -157,7 +104,7 @@ const Spec = {
           : 'Must be a positive integer')),
 
   nonpositiveInteger:
-    specValidator(
+    _specValidator(
       it => Number.isInteger(it) && it <= 0
         ? null
         : (Math.abs(it) === Infinity
@@ -165,7 +112,7 @@ const Spec = {
           : 'Must be a nonpositive integer')),
 
   negativeInteger:
-    specValidator(
+    _specValidator(
       it => Number.isInteger(it) && it < 0
         ? null
         : (Math.abs(it) === Infinity
@@ -173,7 +120,7 @@ const Spec = {
           : 'Must be a negative integer')),
 
   nonnegativeInteger:
-    specValidator(
+    _specValidator(
       it => Number.isInteger(it) && it >= 0
         ? null
         : (Math.abs(it) === Infinity
@@ -181,43 +128,43 @@ const Spec = {
           : 'Must be a nonnegative integer')),
 
   finite:
-    specValidator(
+    _specValidator(
       it => isFinite(it) 
         ? null
         : 'Must be finite'),
 
   infinite:
-     specValidator(
+     _specValidator(
       it => it === Number.POSITIVE_INFINITY || it === Number.NEGATIVE_INFINITY
         ? null
         : 'Must be infinite'),
 
   string:
-    specValidator(
+    _specValidator(
       it => typeof it === 'string'
         ? null
         : 'Must be a string'),
 
   function:
-    specValidator(
+    _specValidator(
       it => typeof it === 'function'
         ? null
         : 'Must be a function'),
 
   object:
-     specValidator(
+     _specValidator(
       it => it !== null && typeof it === 'object'
         ? null
         : 'Must be an object'),
 
   array:
-     specValidator(
+     _specValidator(
       it => Array.isArray(it)
         ? null
         : 'Must be an array'),
 
   iterable:
-    specValidator(
+    _specValidator(
       it => typeof it === 'string'
         || (it
           && typeof it === 'object'
@@ -226,16 +173,16 @@ const Spec = {
         : 'Must be iterable'),
 
   observable:
-    specValidator(
+    _specValidator(
       it => it !== null && typeof it === 'object'
-        && Boolean(symbolObservable)
-        && typeof it[symbolObservable] === 'function'
-        && it[symbolObservable]() === it
+        && Boolean(_symbolObservable)
+        && typeof it[_symbolObservable] === 'function'
+        && it[_symbolObservable]() === it
         ? null
         : 'Must be an observable'),
 
   unique:
-    specValidator((it, path) => {
+    _specValidator((it, path) => {
       let ret: any = Spec.iterable.validate(it, path);
 
       if (ret === null) {
@@ -259,31 +206,31 @@ const Spec = {
     }),
 
   date:
-    specValidator(
+    _specValidator(
       it => it instanceof Date && !isNaN(it.getDate()) 
         ? null
         : 'Must be a valid date'),
   
   something:
-    specValidator(
+    _specValidator(
       it => it !== undefined && it !== null
         ? null
         : 'Must not be undefined or null'),
 
   nothing:
-    specValidator(
+    _specValidator(
       it => it === undefined || it === null
         ? null
         : 'Must be undefined or null'),
 
   hasSomeKeys:
-    specValidator(
+    _specValidator(
       it => it === undefined || it === null || Object.keys(it).length === 0
         ? 'Must have Keys'
         : null),
 
   is(value: any): SpecValidator {
-    return specValidator(
+    return _specValidator(
       it => it === value    
         ? null
         : 'Must be identical to ' + value,
@@ -291,7 +238,7 @@ const Spec = {
   },
 
   isNot(value: any): SpecValidator {
-    return specValidator(
+    return _specValidator(
       it => it !== value    
         ? null
         : 'Must not be identical to ' + value
@@ -299,7 +246,7 @@ const Spec = {
   },
 
   equal(value: any): SpecValidator {
-    return specValidator(
+    return _specValidator(
       it => it == value    
         ? null
         : 'Must be equal to ' + value,
@@ -307,7 +254,7 @@ const Spec = {
   },
 
   notEqual(value: any): SpecValidator {
-    return specValidator(
+    return _specValidator(
       it => it != value    
         ? null
         : 'Must not be equal to ' + value
@@ -315,28 +262,28 @@ const Spec = {
   },
 
   optional(constraint: Validator): SpecValidator {
-    return specValidator(
+    return _specValidator(
       (it, path) => it === undefined
         ? null
         : _checkConstraint(constraint, it, path));
   },
 
   nullable(constraint: Validator): SpecValidator {
-    return specValidator(
+    return _specValidator(
       (it, path) => it === null
         ? null
         : _checkConstraint(constraint, it, path));
   },
 
   nullableOptional(constraint: Validator): SpecValidator {
-    return specValidator((it, path) =>
+    return _specValidator((it, path) =>
       it === undefined || it === null
         ? null
         : _checkConstraint(constraint, it, path));
   },
 
   oneOf(...items: any[]): SpecValidator {
-    return specValidator(it =>
+    return _specValidator(it =>
       !items.every(item => item !== it)
         ? null
         : 'Must be one of: ' + items.join(', '));
@@ -348,7 +295,7 @@ const Spec = {
         "[Spec.instanceOf] First paramter 'type' must be a function");
     }
 
-    return specValidator((it, path = null) => it instanceof type
+    return _specValidator((it, path = null) => it instanceof type
       ? null
       : 'Must be instance of ' + type.name);
   },
@@ -359,14 +306,14 @@ const Spec = {
         "[Spec.extends] First paramter 'type' must be a function");
     }
 
-    return specValidator((it, path = null) => 
+    return _specValidator((it, path = null) => 
       typeof it === 'function' && (it === type || it.prototype instanceof type)
         ? null
         : 'Must be a subclass of ' + type.name);
   },
   
   arrayOf(constraint: Validator): SpecValidator {
-    return specValidator(
+    return _specValidator(
       (it, path = null) => {
         let ret = Spec.array.validate(it, path);
 
@@ -390,7 +337,7 @@ const Spec = {
   },
 
   singleOf(constraint: Validator): SpecValidator {
-    return specValidator(
+    return _specValidator(
       (it, path = null) => {
         let ret = null;
 
@@ -408,7 +355,7 @@ const Spec = {
   },
 
   match(regex: RegExp): SpecValidator {
-    return specValidator(it => {
+    return _specValidator(it => {
       let ret = null;
 
       if (typeof it !== 'string') {
@@ -422,7 +369,7 @@ const Spec = {
   },
 
   valid(condition: (it: any) => boolean): SpecValidator {
-    return specValidator((it, path = null) => {
+    return _specValidator((it, path = null) => {
        return condition(it)
         ? null
         : 'Invalid value'
@@ -450,7 +397,7 @@ const Spec = {
             + 'empty array');
     }
 
-    return specValidator((it, path) => {
+    return _specValidator((it, path) => {
       let value: any;
 
       if (it === undefined || it === null) {
@@ -482,7 +429,7 @@ const Spec = {
   },
 
   greater(value: any): SpecValidator {
-    return specValidator(
+    return _specValidator(
       it => it > value    
         ? null
         : 'Must be greater than ' + value
@@ -490,7 +437,7 @@ const Spec = {
   },
 
   greaterOrEqual(value: any): SpecValidator {
-    return specValidator(
+    return _specValidator(
       it => it >= value    
         ? null
         : 'Must be greater or equal ' + value
@@ -498,7 +445,7 @@ const Spec = {
   },
 
   less(value: any): SpecValidator {
-    return specValidator(
+    return _specValidator(
       it => it < value    
         ? null
         : 'Must be less than ' + value
@@ -506,7 +453,7 @@ const Spec = {
   },
 
   lessOrEqual(value: any): SpecValidator {
-    return specValidator(
+    return _specValidator(
       it => it <= value    
         ? null
         : 'Must be less or equal ' + value
@@ -516,7 +463,7 @@ const Spec = {
   between(left: any, right: any, excludeLeft: boolean = false,
     excludeRight: boolean = false): SpecValidator {
  
-    return specValidator((it, path): any => {
+    return _specValidator((it, path): any => {
       let ret: string | null = null;
 
       const ok =
@@ -537,7 +484,7 @@ const Spec = {
   },
 
   keysOf(constraint: Validator): SpecValidator {
-    return specValidator((it, path) => {
+    return _specValidator((it, path) => {
       let ret = null;
 
       if (it === null || typeof it !== 'object') {
@@ -558,7 +505,7 @@ const Spec = {
   },
 
   valuesOf(constraint: Validator): SpecValidator {
-    return specValidator((it, path) => {
+    return _specValidator((it, path) => {
       let ret = null;
 
       if (it === null || typeof it !== 'object') {
@@ -594,7 +541,7 @@ const Spec = {
       ++numShapeKeys;
     }
 
-    return specValidator((it, path) => {
+    return _specValidator((it, path) => {
       let ret = null;
 
       if (it === null || typeof it !== 'object') {
@@ -639,7 +586,7 @@ const Spec = {
   extensibleShape(shape: { [key: string]: Validator }): SpecValidator {
     const shapeKeys = Object.keys(shape);
 
-    return specValidator((it, path) => {
+    return _specValidator((it, path) => {
       let ret = null;
 
       if (it === null || typeof it !== 'object') {
@@ -665,7 +612,7 @@ const Spec = {
   },
 
   and(...constraints: Validator[]): SpecValidator {
-    return specValidator((it, path = null) => {
+    return _specValidator((it, path = null) => {
       let ret = null;
 
       for (let constraint of constraints) {
@@ -684,7 +631,7 @@ const Spec = {
   },
 
   or(...constraints: (Validator | { when: Validator, check: Validator })[]): SpecValidator {
-    return specValidator((it, path) => {
+    return _specValidator((it, path) => {
       let ret = undefined;
 
       for (let i = 0; i < constraints.length; ++i) {
@@ -746,7 +693,7 @@ const Spec = {
         + 'must either be a function, a SpecValidator or undefined');
     }
 
-    return specValidator((it, path) => {
+    return _specValidator((it, path) => {
       let ret = null;
 
       if (_checkConstraint(condition, it) === null) {
@@ -760,7 +707,7 @@ const Spec = {
   },
 
   in(collection: any): SpecValidator {
-    return specValidator((it, path) => {
+    return _specValidator((it, path) => {
       let ret = null;
       
       if (collection instanceof Set) {
@@ -789,7 +736,7 @@ const Spec = {
   },
 
   notIn(collection: any): SpecValidator {
-    return specValidator((it, path) => {
+    return _specValidator((it, path) => {
       let ret = null;
 
       if (collection instanceof Set) {
@@ -820,7 +767,7 @@ const Spec = {
   lazy(getValidator: () => Validator) {
     let validator: Function = null;
 
-    return specValidator((it, path) => {
+    return _specValidator((it, path) => {
       if (!validator) {
         try {
           const result = getValidator();
@@ -829,7 +776,7 @@ const Spec = {
             throw new Error('Lazy validator provider must return a function');
           }
 
-          validator = specValidator(result as ((it: any, path: string | null) => null | Error | string))
+          validator = _specValidator(result as ((it: any, path: string | null) => null | Error | string))
         } catch (err) {
           throw new Error(
             '[Spec.lazy] Error while retrieving spec validator: '
@@ -847,6 +794,70 @@ Object.freeze(Spec);
 export default Spec;
 
 // --- Local ----------------------------------------------
+/**
+ * @hidden 
+ */
+const _symbolObservable = (Symbol as any).observable;
+
+/**
+ * @hidden 
+ */
+function  _validate(it: any, path: string): SpecError | null {
+  return this(it, path)
+}
+
+/**
+ * @hidden 
+ */
+function  _usingHint(hint: string) {
+  if (typeof hint != 'string') {
+    throw new Error("[SpecValidator.usingHint] First argument 'hint' must be a string");
+  }
+
+  return _specValidator((it: any, path?: null | string) =>
+    this(it, path) !== null
+      ? createSpecError(hint, path)
+      : null
+  );
+}
+
+/**
+ * @hidden 
+ */
+function _specValidator(f: (it: any, path: string | null) => Error | string | boolean | null): SpecValidator {
+  const ret: any = function (it: any, path: string) {
+    const result: any = f(it, path);
+
+    let
+      errMsg = null,
+      subpath: string | null = path;
+
+    if (result && result !== true) {
+
+      if (typeof result === 'string') {
+        errMsg = result;
+      } else if (result.hint && typeof result.hint === 'string') {
+        errMsg = result.hint;
+      } else if (result.message && typeof result.message === 'string') {
+        errMsg = result.message;
+      } else {
+        errMsg = 'Invalid value';
+      }
+
+      if (typeof result.path === 'string' && result.path.trim() !== '') {
+        subpath = result.path;
+      }
+    }
+
+    return errMsg === null ? null : createSpecError(errMsg, subpath);
+  }
+
+  ret.validate = _validate;
+  ret.usingHint = _usingHint;
+
+  return ret;
+}
+
 
 /**
  * @hidden 
@@ -877,7 +888,9 @@ function _buildSubPath(path: String | null, key: string): string | null {
 function _checkConstraint(constraint: Validator, it: any, path: null | string = null): null | SpecError {
   let ret = null;
 
-  const result = (constraint as Function)(it, path);
+  const
+    validator = constraint && (<any>constraint)['js-spec:validate'] || constraint,
+    result = (validator as Function)(it, path);
 
   const errPath =
     typeof path === 'string'
