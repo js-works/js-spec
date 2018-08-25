@@ -1,6 +1,6 @@
 {
   "name": "js-spec",
-  "version": "0.1.39",
+  "version": "0.1.41",
   "license": "LGPL-3.0",
   "homepage": "https://github.com/js-works/js-spec",
   "unpkg": "dist/js-spec.production.js",
@@ -10,12 +10,17 @@
     "type": "git",
     "url": "https://github.com/js-works/js-spec.git"
   },
+  "files": [
+    "dist"
+  ],
   "devDependencies": {
     "@types/chai": "^4.1.3",
     "@types/mocha": "^2.2.48",
     "@types/node": "^8.0.0",
+    "bestzip": "^1.1.6",
     "chai": "~3.4.1",
     "compression-webpack-plugin": "^1.1.11",
+    "copyfiles": "^2.0.0",
     "cross-conf-env": "^1.1.2",
     "crypto.js": "^1.1.0",
     "mocha": "^2.3.4",
@@ -44,7 +49,8 @@
     "test": "nyc mocha -r ts-node/register src/test/**/*.ts",
     "test-watch": "mocha -w -r ts-node/register src/test/**/*.ts",
     "docs": "shx rm -rf ./dist/docs && \"node_modules/.bin/cross-conf-env\" typedoc --options typedoc.json src/main/api/ -name \"js-spec vnpm_package_version\"",
-    "dist": "npm run clean && npm run test && npm run build-dev && npm run build-prod && npm run docs"
+    "zipsource": "shx rm -rf ./build/source && shx mkdir -p ./build/source && copyfiles -a ./* ./build/source && shx cp -r ./src ./build/source && shx mkdir -p ./dist/source && cd build/source && bestzip ../../dist/source/source.zip . && cd ../..",
+    "dist": "npm run clean && npm run test && npm run build-dev && npm run build-prod && npm run docs && npm run zipsource"
   },
   "nyc": {
     "temp-directory": "./coverage/.nyc_output",
