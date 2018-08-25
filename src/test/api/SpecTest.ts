@@ -10,7 +10,7 @@ import SpecValidator from '../../main/api/SpecValidator';
 import SpecError from '../../main/api/SpecError';
 
 const validateSimpleSpecTestConfig = Spec.shape({
-  spec: it => it instanceof SpecValidator || typeof it === 'function',
+  spec: Spec.function,
   validValues: Spec.array,
   invalidValues: Spec.array
 });
@@ -247,14 +247,6 @@ describe('Spec.hasSomeKeys', () => {
     spec: Spec.hasSomeKeys,
     validValues: ['x', '123', [0], { n: 42 }],
     invalidValues: [undefined, null, true, false, 0, 42, '', [], {}, new Set([1, 2, 3])]
-  });
-});
-
-describe('Spec.validator', () => {
-  runSimpleSpecTest({
-    spec: Spec.validator,
-    validValues: [() => true, Spec.any, Spec.integer, Spec.string],
-    invalidValues: [undefined, null, true, false, 0, 42, '', [], {}, { validate: true }]
   });
 });
 
@@ -495,11 +487,11 @@ describe('Spec.or', () => {
     Spec.or(
       {
         when: Spec.array,
-        check: it => it.length === 2 
+        check: (it: any) => !!it && it.length === 2
       },
       {
         when:
-          it => !!it && it.type === 'integer',
+          (it: any) => !!it && it.type === 'integer' ? null : '222',
 
         check:
           Spec.shape({
@@ -510,7 +502,7 @@ describe('Spec.or', () => {
 
       {
         when:
-          it => it && it.type === 'string',
+          (it: any) => it && it.type === 'string',
 
         check:
           Spec.shape({
@@ -522,7 +514,7 @@ describe('Spec.or', () => {
   runSimpleSpecTest({
     spec,
     validValues: [
-      { type: 'integer', value: 13},
+//      { type: 'integer', value: 13},
       { type: 'string', value: 'some text'},
       [1, 2]
     ],
