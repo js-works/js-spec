@@ -905,6 +905,8 @@ function _checkConstraint(constraint: Validator, it: any, path: null | string = 
     ret = createSpecError('Invalid value', errPath);
   } else if (result instanceof SpecError && result.hint) {
     ret = createSpecError(result.hint, errPath)
+  } else if (result instanceof Error) {
+    ret = createSpecError(result.message, errPath);
   } else if (result !== true && result !== null) {
     ret = createSpecError(String(result), errPath);
   }
