@@ -5,6 +5,8 @@ import { from, of, range } from 'rxjs';
 //import { describe, it } from 'mocha';
 import { expect } from 'chai';
 
+import * as StandardModule from '../../main/js-spec'
+import * as DevOnlyModule from '../../main/js-spec.dev-only'
 import Spec from '../../main/api/Spec';
 import SpecValidator from '../../main/api/SpecValidator';
 import SpecError from '../../main/api/SpecError';
@@ -490,8 +492,7 @@ describe('Spec.or', () => {
         check: (it: any) => !!it && it.length === 2
       },
       {
-        when:
-          (it: any) => !!it && it.type === 'integer' ? null : '222',
+        when: Spec.integer,
 
         check:
           Spec.shape({
@@ -807,6 +808,37 @@ describe('Spec', () => {
 
     expect(result.path).to.eql(null);
   });
+});
+
+describe('Check whether standard module and dev-only module have the same API', () => {
+  it('should export the same functions and objects', () => {
+    const
+      standardExports = Object.keys(StandardModule).sort(),
+      devOnlyExports = Object.keys(DevOnlyModule).sort();
+
+    expect(standardExports).to.eql(devOnlyExports);
+  })
+
+  it('should be asserted that the conjunction of the keys sets of both Spec objects is empty', () => {
+    const
+      standardKeys = Object.keys(StandardModule.Spec),
+      devOnlyKeys = Object.keys(DevOnlyModule.Spec),
+      diff = new Set<string>()
+
+    for (const x of standardKeys) {
+      if (!devOnlyKeys.includes(x)) {
+        diff.add(x)
+      }
+    }
+
+    for (const x of devOnlyKeys) {
+      if (!standardKeys.includes(x)) {
+        diff.add(x)
+      }
+    }
+    
+    expect(Array.from(diff)).to.eql([]);
+  })
 });
 
 // --------------------------------------

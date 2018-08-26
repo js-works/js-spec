@@ -5,10 +5,8 @@
     "removeComments": true,
     "preserveConstEnums": true,
     "sourceMap": true,
-    "declaration": true,
     "lib": ["es7"],
     "esModuleInterop": true,
-    "declarationDir": "types",
     "typeRoots": [
       "node_modules/@types"
     ],

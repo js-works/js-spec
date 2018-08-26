@@ -7,7 +7,7 @@ function createBuildConfig(moduleFormat, environment, devOnly) {
 
   return {
     mode: environment,
-    entry: './src/main/js-spec.ts',
+    entry: devOnly ? './src/main/js-spec.dev-only.ts' : './src/main/js-spec.ts',
     devtool: environment === 'production' ? false : 'inline-source-map',
     module: {
       unknownContextCritical: false,
@@ -17,6 +17,11 @@ function createBuildConfig(moduleFormat, environment, devOnly) {
           use: [
             {
               loader: 'ts-loader',
+              options: {
+                compilerOptions: {
+                  ...(!devOnly ? { declaration: true, declarationDir: 'types' } : {}),
+                }
+              }
             }
           ],
           exclude: /node_modules/
@@ -27,7 +32,9 @@ function createBuildConfig(moduleFormat, environment, devOnly) {
       extensions: ['.ts']
     },
     output: {
-      filename: (moduleFormat === 'umd' ? '' : `${moduleFormat}/`) + `js-spec.${environment}.js`,
+      filename: devOnly
+        ? `js-spec.dev-only.${moduleFormat}.${environment}.js`
+        : `js-spec.${moduleFormat}.${environment}.js`,
       path: path.resolve(__dirname, 'dist'),
       library: 'jsSpec',
       libraryTarget: moduleFormat === 'cjs' ? 'commonjs2' : moduleFormat
@@ -44,7 +51,9 @@ const buildConfigs = [];
 
 for (const moduleFormat of ['umd', 'cjs', 'amd']) {
   for (const environment of ['development', 'production']) {
-    buildConfigs.push(createBuildConfig(moduleFormat, environment));
+    for (const devOnly of [false, true]) {
+      buildConfigs.push(createBuildConfig(moduleFormat, environment, devOnly));
+    }
   }
 }
 
