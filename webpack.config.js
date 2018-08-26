@@ -2,16 +2,11 @@ const
   path = require('path'),
   CompressionPlugin = require('compression-webpack-plugin');
 
-module.exports = env => {
-  const
-    { mode, type } = env || {},
-    modeName = mode === 'production' ? 'production' : 'development',
-    typeName = ['cjs', 'amd'].includes(type) ? type : 'umd';
-
+function createBuildConfig(moduleFormat, environment) {
   return {
-    mode: modeName,
-    entry: './src/main/js-spec.ts',
-    devtool: modeName === 'production' ? false : 'inline-source-map',
+    mode: environment,
+    entry: './src/main/js-spec',
+    devtool: environment === 'production' ? false : 'inline-source-map',
     module: {
       unknownContextCritical: false,
       rules: [
@@ -26,17 +21,23 @@ module.exports = env => {
       extensions: ['.ts']
     },
     output: {
-      filename: (typeName === 'umd' ? '' : `${typeName}/`) + `js-spec.${modeName}.js`,
+      filename: (moduleFormat === 'umd' ? '' : `${moduleFormat}/`) + `js-spec.${environment}.js`,
       path: path.resolve(__dirname, 'dist'),
-      library: {
-        commonjs: 'js-spec',
-        amd: 'js-spec',
-        root: 'jsSpec'
-      },
-      libraryTarget: typeName === 'cjs' ? 'commonjs2' : typeName
+      library: 'jsSpec',
+      libraryTarget: moduleFormat === 'cjs' ? 'commonjs2' : moduleFormat
     },
-    plugins: [
-      new CompressionPlugin()
+    plugins: [ 
+      ...environment === 'production' ? [new CompressionPlugin()] : []
     ]
   };
-};
+}
+
+const buildConfigs = [];
+
+for (const moduleFormat of ['umd', 'cjs', 'amd']) {
+  for (const environment of ['development', 'production']) {
+    buildConfigs.push(createBuildConfig(moduleFormat, environment));
+  }
+}
+
+module.exports = buildConfigs;

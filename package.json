@@ -38,19 +38,12 @@
   },
   "scripts": {
     "clean": "shx rm -rf ./build ./dist ./coverage",
-    "build-dev-umd": "webpack --env.mode=development --env.type=umd",
-    "build-prod-umd": "webpack --env.mode=production --env.type=umd",
-    "build-dev-cjs": "webpack --env.mode=development --env.type=cjs",
-    "build-prod-cjs": "webpack --env.mode=production --env.type=cjs",
-    "build-dev-amd": "webpack --env.mode=development --env.type=amd",
-    "build-prod-amd": "webpack --env.mode=production --env.type=amd",
-    "build-dev": "npm run build-dev-umd && npm run build-dev-cjs",
-    "build-prod": "npm run build-prod-umd && npm run build-prod-cjs",
+    "build": "webpack",
     "test": "nyc mocha -r ts-node/register src/test/**/*.ts",
     "test-watch": "mocha -w -r ts-node/register src/test/**/*.ts",
     "docs": "shx rm -rf ./dist/docs && \"node_modules/.bin/cross-conf-env\" typedoc --options typedoc.json src/main/api/ -name \"js-spec vnpm_package_version\"",
     "zipsource": "shx rm -rf ./build/source && shx mkdir -p ./build/source && copyfiles -a ./* ./build/source && shx cp -r ./src ./build/source && shx mkdir -p ./dist/source && cd build/source && bestzip ../../dist/source/source.zip . && cd ../..",
-    "dist": "npm run clean && npm run test && npm run build-dev && npm run build-prod && npm run docs && npm run zipsource"
+    "dist": "npm run clean && npm run test && npm run build && npm run docs && npm run zipsource"
   },
   "nyc": {
     "temp-directory": "./coverage/.nyc_output",
