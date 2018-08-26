@@ -51,10 +51,11 @@ const buildConfigs = [];
 
 for (const moduleFormat of ['umd', 'cjs', 'amd']) {
   for (const environment of ['development', 'production']) {
-    for (const devOnly of [false, true]) {
-      buildConfigs.push(createBuildConfig(moduleFormat, environment, devOnly));
-    }
+    buildConfigs.push(createBuildConfig(moduleFormat, environment, false));
   }
+
+  buildConfigs.push(createBuildConfig(moduleFormat, 'production', true));
 }
+
 
 module.exports = buildConfigs;
