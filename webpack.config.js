@@ -2,12 +2,10 @@ const
   path = require('path'),
   CompressionPlugin = require('compression-webpack-plugin');
 
-function createBuildConfig(moduleFormat, environment, devOnly) {
-  const productive = environment === 'production'
-
+function createBuildConfig(moduleFormat, environment, noop) {
   return {
     mode: environment,
-    entry: devOnly ? './src/main/js-spec.dev-only.ts' : './src/main/js-spec.ts',
+    entry: noop ? './src/main/js-spec.noop.ts' : './src/main/js-spec.ts',
     devtool: environment === 'production' ? false : 'inline-source-map',
     module: {
       unknownContextCritical: false,
@@ -19,7 +17,7 @@ function createBuildConfig(moduleFormat, environment, devOnly) {
               loader: 'ts-loader',
               options: {
                 compilerOptions: {
-                  ...(!devOnly ? { declaration: true, declarationDir: 'types' } : {}),
+                  ...(!noop ? { declaration: true, declarationDir: 'types' } : {}),
                 }
               }
             }
@@ -32,8 +30,8 @@ function createBuildConfig(moduleFormat, environment, devOnly) {
       extensions: ['.ts']
     },
     output: {
-      filename: devOnly
-        ? `js-spec.dev-only.${moduleFormat}.${environment}.js`
+      filename: noop
+        ? `js-spec.noop.${moduleFormat}.${environment}.js`
         : `js-spec.${moduleFormat}.${environment}.js`,
       path: path.resolve(__dirname, 'dist'),
       library: 'jsSpec',
