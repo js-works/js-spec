@@ -2,17 +2,23 @@ const
   path = require('path'),
   CompressionPlugin = require('compression-webpack-plugin');
 
-function createBuildConfig(moduleFormat, environment) {
+function createBuildConfig(moduleFormat, environment, devOnly) {
+  const productive = environment === 'production'
+
   return {
     mode: environment,
-    entry: './src/main/js-spec',
+    entry: './src/main/js-spec.ts',
     devtool: environment === 'production' ? false : 'inline-source-map',
     module: {
       unknownContextCritical: false,
       rules: [
         {
           test: /\.ts$/,
-          use: 'ts-loader',
+          use: [
+            {
+              loader: 'ts-loader',
+            }
+          ],
           exclude: /node_modules/
         }
       ]
@@ -27,7 +33,9 @@ function createBuildConfig(moduleFormat, environment) {
       libraryTarget: moduleFormat === 'cjs' ? 'commonjs2' : moduleFormat
     },
     plugins: [ 
-      ...environment === 'production' ? [new CompressionPlugin()] : []
+      new CompressionPlugin({
+        test: /production.*\.js/,
+      })
     ]
   };
 }
