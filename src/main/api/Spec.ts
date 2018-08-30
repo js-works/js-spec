@@ -228,7 +228,7 @@ const Spec = {
       it => it === undefined || it === null || Object.keys(it).length === 0
         ? 'Must have Keys'
         : null),
-
+  
   is(value: any): SpecValidator {
     return _specValidator(
       it => it === value    
@@ -426,6 +426,13 @@ const Spec = {
 
       return _checkConstraint(constraint, value, _buildSubPath(path, subpath));
     });
+  },
+  
+  hasOwnProp(propName: string): SpecValidator {
+    return _specValidator(
+      it => it === undefined || it === null || !it.hasOwnProperty(propName)
+        ? `Must have own property "${propName}"`
+        : null)
   },
 
   greater(value: any): SpecValidator {

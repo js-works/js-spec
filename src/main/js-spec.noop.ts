@@ -58,6 +58,7 @@ function getValidatorNames(): string[] {
     'nothing',
     'hasSomeKeys',
     'prop',
+    'hasOwnProp',
     'between',
     'when',
     'lazy',
