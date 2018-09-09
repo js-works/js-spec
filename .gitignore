@@ -5,6 +5,7 @@
 /.codio
 /.settings
 /.grunt
+/.rpt2_cache
 /nbproject
 /node_modules
 /build

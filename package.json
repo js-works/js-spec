@@ -1,9 +1,9 @@
 {
   "name": "js-spec",
-  "version": "0.1.48",
+  "version": "0.1.49",
   "license": "LGPL-3.0",
   "homepage": "https://github.com/js-works/js-spec",
-  "main": "index.js",
+  "main": "dist/main",
   "module": "dist/js-spec.esm.production.js",
   "unpkg": "dist/js-spec.umd.production.js",
   "jsdelivr": "dist/js-spec.umd.production.js",
@@ -48,7 +48,6 @@
     "webpack-cli": "^3.0.2"
   },
   "scripts": {
-    "install": "npm install --strict-ssl=false",
     "clean": "shx rm -rf ./build ./dist ./coverage",
     "build": "rollup --config rollup.config.js",
     "test": "nyc mocha -r ts-node/register src/test/**/*.ts",

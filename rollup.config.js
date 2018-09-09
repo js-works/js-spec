@@ -2,7 +2,7 @@
 import resolve from 'rollup-plugin-node-resolve'
 import replace from 'rollup-plugin-replace'
 import typescript from 'rollup-plugin-typescript2'
-import { uglify as uglifyJS} from 'rollup-plugin-uglify'
+import { uglify as uglifyJS } from 'rollup-plugin-uglify'
 import uglifyES from 'rollup-plugin-uglify-es'
 import gzip from 'rollup-plugin-gzip'
 import copy from 'rollup-plugin-copy'
@@ -13,15 +13,17 @@ for (const format of ['umd', 'cjs', 'amd', 'esm']) {
   for (const productive of [false, true]) {
     const copyAssets = format === 'esm' && productive === true
 
-    configs.push(createRollupConfig(format, productive, copyAssets))
+    configs.push(createStandardConfig(format, productive, copyAssets))
   }
+
+  configs.push(createNoopConfig(format))
 }
 
 export default configs
 
 // --- locals -------------------------------------------------------
 
-function createRollupConfig(moduleFormat, productive, copyAssets) {
+function createStandardConfig(moduleFormat, productive, copyAssets) {
   return {
     input: 'src/main/js-spec.ts',
 
@@ -62,6 +64,42 @@ function createRollupConfig(moduleFormat, productive, copyAssets) {
       productive && (moduleFormat === 'esm' ? uglifyES() : uglifyJS()),
       productive && gzip(),
       copyAssets && copy({ 'assets': 'dist' })
+    ],
+  }
+}
+
+function createNoopConfig(moduleFormat) {
+  return {
+    input: 'src/main/js-spec.noop.ts',
+
+    output: {
+      file: `dist/noop/js-spec.noop.${moduleFormat}.production.js`,
+
+      format: moduleFormat,
+      name: 'jsSpec', 
+      sourcemap: false
+    },
+
+    plugins: [
+      resolve({
+        jsnext: true,
+        main: true,
+        browser: true,
+      }),
+      // tslint({
+      //}),
+      replace({
+        exclude: 'node_modules/**',
+
+        values: {
+          'process.env.NODE_ENV': "'production'",
+        }
+      }),
+      typescript({
+        exclude: 'node_modules/**',
+      }),
+      moduleFormat === 'esm' ? uglifyES() : uglifyJS(),
+      gzip()
     ],
   }
 }
