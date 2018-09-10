@@ -14,7 +14,7 @@ npm install --save js-spec
 
 ## Usage
 
-tbd.
+(to be done)
 
 ## License
 
