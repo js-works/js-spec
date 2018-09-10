@@ -52,6 +52,7 @@
     "build": "rollup --config rollup.config.js",
     "test": "nyc mocha -r ts-node/register src/test/**/*.ts",
     "test-watch": "mocha -w -r ts-node/register src/test/**/*.ts",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
     "docs": "shx rm -rf ./dist/docs && \"node_modules/.bin/cross-conf-env\" typedoc --options typedoc.json src/main/api/ -name \"js-spec vnpm_package_version\"",
     "zipsource": "shx rm -rf ./build/source && shx mkdir -p ./build/source && copyfiles -a ./* ./build/source && shx cp -r ./src ./build/source && shx mkdir -p ./dist/source && cd build/source && bestzip ../../dist/source/source.zip . && cd ../..",
     "dist": "npm run clean && npm run test && npm run build && npm run docs && npm run zipsource"
@@ -73,5 +74,7 @@
     ],
     "all": true
   },
-  "dependencies": {}
+  "dependencies": {
+    "coveralls": "^3.0.2"
+  }
 }
