@@ -60,6 +60,7 @@ function createStandardConfig(moduleFormat, productive, copyAssets) {
       }),
       typescript({
         exclude: 'node_modules/**',
+        useTsconfigDeclarationDir: true
       }),
       productive && (moduleFormat === 'esm' ? uglifyES() : uglifyJS()),
       productive && gzip(),
