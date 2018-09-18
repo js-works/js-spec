@@ -10,6 +10,10 @@ const Spec = {
 
   any:
     _specValidator(() => null),
+  
+  never:
+    _specValidator(it =>
+      _checkConstraint(() => false, it)),
 
   boolean: 
     _specValidator(
@@ -279,7 +283,14 @@ const Spec = {
     return _specValidator((it, path) =>
       it === undefined || it === null
         ? null
-        : _checkConstraint(constraint, it, path));
+        : _checkConstraint(constraint, it, path))
+  },
+
+  fail(message: string = 'Invald value'): SpecValidator {
+    const validate = () => new Error(message)
+
+    return _specValidator((it, path) =>
+      _checkConstraint(validate, it, path))
   },
 
   oneOf(...items: any[]): SpecValidator {
@@ -637,7 +648,7 @@ const Spec = {
     });
   },
 
-  or(...constraints: (Validator | { when: Validator, check: Validator })[]): SpecValidator {
+  or(...constraints: (Validator | { when: Validator, validate: Validator })[]): SpecValidator {
     return _specValidator((it, path) => {
       let ret = undefined;
 
@@ -658,19 +669,19 @@ const Spec = {
           
           && (typeof (constraint as any).when === 'function')
           
-          && _isValidator((constraint as any).check)) {
+          && _isValidator((constraint as any).validate)) {
 
           const whenValid =
             _checkConstraint((constraint as any).when, it, null) === null;
 
           if (whenValid) {
             ret = _checkConstraint(
-              (constraint as any).check, it, path);
+              (constraint as any).validate, it, path);
 
             break;
           }
         } else {
-          throw new Error('[Spec.or] Arguments must be validators or objects of type { when: validator, check: validator }')
+          throw new Error('[Spec.or] Arguments must be validators or objects of type { when: validator, validate: validator }')
         }
       }
 

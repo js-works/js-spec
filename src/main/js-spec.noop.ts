@@ -28,6 +28,7 @@ function getValidatorNames(): string[] {
   return [
     'from',
     'any',
+    'never',
     'boolean',
     'number',
     'positiveNumber',
@@ -69,6 +70,7 @@ function getValidatorNames(): string[] {
     'optional',
     'nullable',
     'nullableOptional',
+    'fail',
     'oneOf',
     'instanceOf',
     'extends',

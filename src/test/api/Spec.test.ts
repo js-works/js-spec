@@ -17,6 +17,14 @@ const validateSimpleSpecTestConfig = Spec.shape({
   invalidValues: Spec.array
 })
 
+describe('Spec.any', () => {
+  runSimpleSpecTest({
+    spec: Spec.any,
+    validValues: [undefined, null, true, false, 42, -42, 'some text', {}, [], new Date],
+    invalidValues: []
+  })
+})
+
 describe('Spec.boolean', () => {
   runSimpleSpecTest({
     spec: Spec.boolean,
@@ -320,6 +328,14 @@ describe('Spec.nullableOptional', () => {
   })
 })
 
+describe('Spec.fail', () => {
+  runSimpleSpecTest({
+    spec: Spec.fail(),
+    validValues: [],
+    invalidValues: [undefined, null, true, false, 0, -1, 1, -42, 42, 123.45, -123.45, '', '0', 'some text', {}, [], new Date]
+  })
+})
+
 describe('Spec.oneOf', () => {
   runSimpleSpecTest({
     spec: Spec.oneOf(1, 2, "42", false),
@@ -360,7 +376,6 @@ describe('Spec.extends', () => {
     invalidValues: [true, 42, '', '0', 'some text']
   })
 })
-
 
 describe('Spec.arrayOf', () => {
   runSimpleSpecTest({
@@ -497,12 +512,12 @@ describe('Spec.or', () => {
     Spec.or(
       {
         when: Spec.array,
-        check: (it: any) => !!it && it.length === 2
+        validate: (it: any) => !!it && it.length === 2
       },
       {
         when: Spec.integer,
 
-        check:
+        validate:
           Spec.shape({
             type: Spec.is('integer'),
             value: Spec.integer
@@ -513,7 +528,7 @@ describe('Spec.or', () => {
         when:
           (it: any) => it && it.type === 'string',
 
-        check:
+        validate:
           Spec.shape({
             type: Spec.is('string'),
             value: Spec.string
