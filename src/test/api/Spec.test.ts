@@ -512,12 +512,12 @@ describe('Spec.or', () => {
     Spec.or(
       {
         when: Spec.array,
-        validate: (it: any) => !!it && it.length === 2
+        then: (it: any) => !!it && it.length === 2
       },
       {
         when: Spec.integer,
 
-        validate:
+        then:
           Spec.shape({
             type: Spec.is('integer'),
             value: Spec.integer
@@ -528,7 +528,7 @@ describe('Spec.or', () => {
         when:
           (it: any) => it && it.type === 'string',
 
-        validate:
+        then:
           Spec.shape({
             type: Spec.is('string'),
             value: Spec.string

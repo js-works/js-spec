@@ -648,7 +648,7 @@ const Spec = {
     });
   },
 
-  or(...constraints: (Validator | { when: Validator, validate: Validator })[]): SpecValidator {
+  or(...constraints: (Validator | { when: Validator, then: Validator })[]): SpecValidator {
     return _specValidator((it, path) => {
       let ret = undefined;
 
@@ -669,19 +669,19 @@ const Spec = {
           
           && (typeof (constraint as any).when === 'function')
           
-          && _isValidator((constraint as any).validate)) {
+          && _isValidator((constraint as any).then)) {
 
           const whenValid =
             _checkConstraint((constraint as any).when, it, null) === null;
 
           if (whenValid) {
             ret = _checkConstraint(
-              (constraint as any).validate, it, path);
+              (constraint as any).then, it, path);
 
             break;
           }
         } else {
-          throw new Error('[Spec.or] Arguments must be validators or objects of type { when: validator, validate: validator }')
+          throw new Error('[Spec.or] Arguments must be validators or objects of type { when: validator, then: validator }')
         }
       }
 
