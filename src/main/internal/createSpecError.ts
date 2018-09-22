@@ -1,4 +1,4 @@
-import SpecError from '../api/SpecError';
+import SpecError from '../api/SpecError'
 
 /**
  * @hidden
@@ -8,7 +8,7 @@ export default function createSpecError(errMsg: string, path: string | null): Sp
     fullErrMsg =
       'Constraint violation'
         + (path ? ` at '${path}'` : '')
-        + `: ${errMsg}`;
+        + `: ${errMsg}`
 
-  return new SpecError(fullErrMsg, errMsg, path);
+  return new SpecError(fullErrMsg, errMsg, path)
 }

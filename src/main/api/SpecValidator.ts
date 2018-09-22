@@ -1,4 +1,4 @@
-import SpecError from './SpecError';
+import SpecError from './SpecError'
 
 export default interface SpecValidator {
   (it: any, path: string | null): SpecError | null

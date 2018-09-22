@@ -11,7 +11,7 @@ import Spec from '../../main/api/Spec'
 import SpecValidator from '../../main/api/SpecValidator'
 import SpecError from '../../main/api/SpecError'
 
-const validateSimpleSpecTestConfig = Spec.shape({
+const validateSimpleSpecTestConfig = Spec.strictShape({
   spec: Spec.function,
   validValues: Spec.array,
   invalidValues: Spec.array
@@ -477,6 +477,14 @@ describe('Spec.between', () => {
   })
 })
 
+describe('Spec.all', () => {
+  runSimpleSpecTest({
+    spec: Spec.all(Spec.number),
+    validValues: [undefined, null, [], [1, 2, 3], new Set([123.45, -42])],
+    invalidValues: [true, false, 0, 1, ['x', 'y']]
+  })
+})
+
 describe('Spec.keysOf', () => {
   runSimpleSpecTest({
     spec: Spec.keysOf(Spec.match(/^[a-z]+$/)),
@@ -518,7 +526,7 @@ describe('Spec.or', () => {
         when: Spec.integer,
 
         then:
-          Spec.shape({
+          Spec.strictShape({
             type: Spec.is('integer'),
             value: Spec.integer
           })
@@ -529,7 +537,7 @@ describe('Spec.or', () => {
           (it: any) => it && it.type === 'string',
 
         then:
-          Spec.shape({
+          Spec.strictShape({
             type: Spec.is('string'),
             value: Spec.string
           })
@@ -617,88 +625,6 @@ describe('Spec.shape', () => {
 
     valid1 = {
       firstName: 'Jane',
-      lastName: 'Doe'
-    },
-
-    valid2 = {
-      id: 12345,
-      firstName: 'Jane',
-      lastName: 'Doe',
-      addresses: [{
-        addressType: 'home',
-        street: 'Home Street 123',
-        zipCode: '888',
-        city: 'Home Town'
-      }, {
-        addressType: 'work',
-        street: 'Work Street 456',
-        zipCode: '999',
-        city: 'Work city'
-      }]
-    },
-
-    invalid1 = {
-      firstName: 'Jane',
-      lastName: 'Doe',
-      city: 'Seattle'
-    },
-
-    invalid2 = {
-      id: 12345,
-      firstName: 'Jane',
-      lastName: 'Doe',
-      addresses: [{
-        addressType: 'home',
-        street: 'Home Street 123',
-        zipCode: '888',
-        city: 'Home Town'
-      }, {
-        addressType: 'work',
-        street: 'Work Street 456',
-        zipCode: 999, // Invalid!!! Zip code must be a strig!
-        city: 'Work city'
-      }]
-    }
-
-
-  runSimpleSpecTest({
-    spec: spec1,
-    validValues: [valid1],
-    invalidValues: [undefined, null, true, false, 0, 1, '', '1', {}, [], invalid1, invalid2],
-  })
-
-  runSimpleSpecTest({
-    spec: spec2,
-    validValues: [valid2],
-    invalidValues: [undefined, null, true, false, 0, 1, '', '1', {}, [], invalid1, invalid2],
-  })
-})
-
-describe('Spec.extensibleShape', () => {
-  const
-    spec1 = Spec.extensibleShape({
-      firstName: Spec.string,
-      lastName: Spec.string
-    }),
-
-    spec2 = Spec.extensibleShape({
-      id: Spec.positiveInteger,
-      firstName: Spec.string,
-      lastName: Spec.string,
-
-      addresses:
-        Spec.arrayOf(
-            Spec.extensibleShape({
-              addressType: Spec.oneOf('home', 'work', 'other'),
-              street: Spec.string,
-              zipCode: Spec.string,
-              city: Spec.string
-          })
-        )
-    }),
-
-    valid1 = {
-      firstName: 'Jane',
       lastName: 'Doe',
       someOtherValue: 123
     },
@@ -756,10 +682,92 @@ describe('Spec.extensibleShape', () => {
   })
 })
 
+describe('Spec.strictShape', () => {
+  const
+    spec1 = Spec.strictShape({
+      firstName: Spec.string,
+      lastName: Spec.string
+    }),
+
+    spec2 = Spec.strictShape({
+      id: Spec.positiveInteger,
+      firstName: Spec.string,
+      lastName: Spec.string,
+
+      addresses:
+        Spec.arrayOf(
+            Spec.strictShape({
+              addressType: Spec.oneOf('home', 'work', 'other'),
+              street: Spec.string,
+              zipCode: Spec.string,
+              city: Spec.string
+          })
+        )
+    }),
+
+    valid1 = {
+      firstName: 'Jane',
+      lastName: 'Doe'
+    },
+
+    valid2 = {
+      id: 12345,
+      firstName: 'Jane',
+      lastName: 'Doe',
+      addresses: [{
+        addressType: 'home',
+        street: 'Home Street 123',
+        zipCode: '888',
+        city: 'Home Town'
+      }, {
+        addressType: 'work',
+        street: 'Work Street 456',
+        zipCode: '999',
+        city: 'Work city'
+      }]
+    },
+
+    invalid1 = {
+      firstName: 'Jane',
+      lastName: 'Doe',
+      city: 'Seattle'
+    },
+
+    invalid2 = {
+      id: 12345,
+      firstName: 'Jane',
+      lastName: 'Doe',
+      addresses: [{
+        addressType: 'home',
+        street: 'Home Street 123',
+        zipCode: '888',
+        city: 'Home Town'
+      }, {
+        addressType: 'work',
+        street: 'Work Street 456',
+        zipCode: 999, // Invalid!!! Zip code must be a strig!
+        city: 'Work city'
+      }]
+    }
+
+
+  runSimpleSpecTest({
+    spec: spec1,
+    validValues: [valid1],
+    invalidValues: [undefined, null, true, false, 0, 1, '', '1', {}, [], invalid1, invalid2],
+  })
+
+  runSimpleSpecTest({
+    spec: spec2,
+    validValues: [valid2],
+    invalidValues: [undefined, null, true, false, 0, 1, '', '1', {}, [], invalid1, invalid2],
+  })
+})
+
 describe('Spec.lazy', () => {
   it('must handle recursive specs properly', () => {
     const spec =
-      Spec.shape({
+      Spec.strictShape({
         child:
           Spec.or(
             Spec.nothing,
@@ -781,9 +789,9 @@ describe('Spec.lazy', () => {
 
 describe('Spec', () => {
   const 
-    spec = Spec.shape({
-      level1: Spec.shape({
-        level2: Spec.shape({
+    spec = Spec.strictShape({
+      level1: Spec.strictShape({
+        level2: Spec.strictShape({
           arr: Spec.arrayOf(Spec.integer)
         })
       })

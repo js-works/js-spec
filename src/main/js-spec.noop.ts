@@ -1,18 +1,18 @@
-import SpecError from './api/SpecError';
-import SpecValidator from './api/SpecValidator';
-import Validator from './api/Validator';
+import SpecError from './api/SpecError'
+import SpecValidator from './api/SpecValidator'
+import Validator from './api/Validator'
 
 const Spec: any = {}
 
 const
   validatorNames = getValidatorNames(),
-  validator: any = ():any => null;
+  validator: any = ():any => null
 
-validator.validate = (): any => null;
-validator.usingHint = (): any => validator;
+validator.validate = (): any => null
+validator.usingHint = (): any => validator
 
 for (let i = 0; i < validatorNames.length; ++i) {
-  Spec[validatorNames[i]] = validator;
+  Spec[validatorNames[i]] = validator
 }
 
 Object.freeze(Spec)
@@ -61,6 +61,7 @@ function getValidatorNames(): string[] {
     'prop',
     'hasOwnProp',
     'between',
+    'all',
     'when',
     'lazy',
     'is',
@@ -85,10 +86,10 @@ function getValidatorNames(): string[] {
     'keysOf',
     'valuesOf',
     'shape',
-    'extensibleShape',
+    'strictShape',
     'and',
     'or',
     'in',
     'notIn',
-  ];
+  ]
 }
