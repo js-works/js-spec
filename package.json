@@ -1,13 +1,13 @@
 {
   "name": "js-spec",
-  "version": "0.1.55",
+  "version": "0.1.56",
   "license": "LGPL-3.0",
   "homepage": "https://github.com/js-works/js-spec",
   "main": "index.js",
   "module": "dist/js-spec.esm.production.js",
   "unpkg": "dist/js-spec.umd.production.js",
   "jsdelivr": "dist/js-spec.umd.production.js",
-  "typings": "dist/types/js-spec.d.ts",
+  "types": "index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/js-works/js-spec.git"
