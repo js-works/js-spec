@@ -5,15 +5,12 @@ import typescript from 'rollup-plugin-typescript2'
 import { uglify as uglifyJS } from 'rollup-plugin-uglify'
 import uglifyES from 'rollup-plugin-uglify-es'
 import gzip from 'rollup-plugin-gzip'
-import copy from 'rollup-plugin-copy'
 
 const configs = []
 
 for (const format of ['umd', 'cjs', 'amd', 'esm']) {
   for (const productive of [false, true]) {
-    const copyAssets = format === 'esm' && productive === true
-
-    configs.push(createStandardConfig(format, productive, copyAssets))
+    configs.push(createStandardConfig(format, productive))
   }
 
   configs.push(createNoopConfig(format))
@@ -23,7 +20,7 @@ export default configs
 
 // --- locals -------------------------------------------------------
 
-function createStandardConfig(moduleFormat, productive, copyAssets) {
+function createStandardConfig(moduleFormat, productive) {
   return {
     input: 'src/main/js-spec.ts',
 
@@ -63,8 +60,7 @@ function createStandardConfig(moduleFormat, productive, copyAssets) {
         useTsconfigDeclarationDir: true
       }),
       productive && (moduleFormat === 'esm' ? uglifyES() : uglifyJS()),
-      productive && gzip(),
-      copyAssets && copy({ 'assets': 'dist' })
+      productive && gzip()
     ],
   }
 }
