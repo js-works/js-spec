@@ -93,7 +93,7 @@ function createNoopConfig(moduleFormat) {
         }
       }),
       typescript({
-        exclude: 'node_modules/**',
+        exclude: 'node_modules/**'
       }),
       moduleFormat === 'esm' ? uglifyES() : uglifyJS(),
       gzip()
