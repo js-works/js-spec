@@ -57,7 +57,6 @@ function createStandardConfig(moduleFormat, productive) {
       }),
       typescript({
         exclude: 'node_modules/**',
-        useTsconfigDeclarationDir: true
       }),
       productive && (moduleFormat === 'esm' ? uglifyES() : uglifyJS()),
       productive && gzip()
@@ -93,7 +92,7 @@ function createNoopConfig(moduleFormat) {
         }
       }),
       typescript({
-        exclude: 'node_modules/**'
+        exclude: 'node_modules/**',
       }),
       moduleFormat === 'esm' ? uglifyES() : uglifyJS(),
       gzip()

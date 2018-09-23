@@ -4,8 +4,6 @@
     "noImplicitAny": true,
     "removeComments": true,
     "preserveConstEnums": true,
-    "declaration": true,
-    "declarationDir": "dist/types",
     "sourceMap": true,
     "lib": ["es7"],
     "esModuleInterop": true,

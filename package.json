@@ -1,6 +1,6 @@
 {
   "name": "js-spec",
-  "version": "0.1.58",
+  "version": "0.1.59",
   "license": "LGPL-3.0",
   "homepage": "https://github.com/js-works/js-spec",
   "main": "index.js",
@@ -53,7 +53,7 @@
   },
   "scripts": {
     "clean": "shx rm -rf ./build ./dist ./coverage",
-    "build": "rollup --config rollup.config.js",
+    "build": "rollup --config rollup.config.js && tsc -d --emitDeclarationOnly --declarationDir dist/types",
     "test": "nyc mocha -r ts-node/register src/test/**/*.ts",
     "test-watch": "mocha -w -r ts-node/register src/test/**/*.ts",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
