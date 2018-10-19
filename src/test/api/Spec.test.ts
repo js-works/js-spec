@@ -219,15 +219,6 @@ describe('Spec.observable', () => {
   })
 })
 
-
-describe('Spec.unique', () => {
-  runSimpleSpecTest({
-    spec: Spec.unique,
-    validValues: [[], [1, 2, 3]],
-    invalidValues: [undefined, null, true, false, 0, 1, -1, {}, [1, 2, 1]]
-  })
-})
-
 describe('Spec.date', () => {
   runSimpleSpecTest({
     spec: Spec.date,
@@ -341,6 +332,20 @@ describe('Spec.oneOf', () => {
     spec: Spec.oneOf(1, 2, "42", false),
     validValues: [1, 2, "42", false],
     invalidValues: [true, 42, '', '0', 'some text', {}, []]
+  })
+})
+
+describe('Spec.unique', () => {
+  runSimpleSpecTest({
+    spec: Spec.unique(),
+    validValues: [[], [1, 2, 3]],
+    invalidValues: [undefined, null, true, false, 0, 1, -1, {}, [1, 2, 1]]
+  })
+  
+  runSimpleSpecTest({
+    spec: Spec.unique((it: any) => it[0]),
+    validValues: [[], [[1], [2], [3]]],
+    invalidValues: [undefined, null, true, false, 0, 1, -1, {}, [[1], [2], [1]]]
   })
 })
 

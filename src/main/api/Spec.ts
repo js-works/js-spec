@@ -184,30 +184,6 @@ const Spec = {
         ? null
         : 'Must be an observable'),
 
-  unique:
-    _specValidator((it, path) => {
-      let ret: any = Spec.iterable.validate(it, path)
-
-      if (ret === null) {
-        let itemCount = 0
-
-        if (Array.isArray(it)) {
-          itemCount = it.length
-        } else {
-          // eslint-disable-next-line no-unused-vars
-          for (let item of it) {
-            ++itemCount
-          }
-        }
-        
-        if (itemCount > new Set(it).size) {
-          ret = 'Must be unique'
-        }
-      }
-
-      return ret
-    }),
-
   date:
     _specValidator(
       it => it instanceof Date && !isNaN(it.getDate()) 
@@ -297,6 +273,36 @@ const Spec = {
       !items.every(item => item !== it)
         ? null
         : 'Must be one of: ' + items.join(', '))
+  },
+
+  unique(pickValue?: (item: any) => any): SpecValidator {
+    return _specValidator((it, path) => {
+      let ret: any = Spec.iterable.validate(it, path)
+
+      if (ret === null) {
+        let itemCount = 0
+
+        if (Array.isArray(it)) {
+          itemCount = it.length
+        } else {
+          // eslint-disable-next-line no-unused-vars
+          for (let item of it) {
+            ++itemCount
+          }
+        }
+
+        const setToCompare = 
+          pickValue === undefined
+            ? new Set(it)
+            : new Set(Array.from(it).map(pickValue))
+
+        if (itemCount > setToCompare.size) {
+          ret = 'Must be unique'
+        }
+      }
+
+      return ret
+    })
   },
 
   instanceOf(type: Function): SpecValidator {
