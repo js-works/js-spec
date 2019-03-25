@@ -161,6 +161,13 @@ const Spec = {
         ? null
         : 'Must be an object'),
 
+  emptyObject:
+    _specValidator(
+      it => it !== null && typeof it === 'object' && Object.keys(it).length === 0
+        ? null
+        : 'Must be an empty object'
+    ),
+
   array:
      _specValidator(
       it => Array.isArray(it)
@@ -596,8 +603,8 @@ const Spec = {
     })
   },
   
-  shape(strictShape: { [key: string]: Validator }): SpecValidator {
-    const strictShapeKeys = Object.keys(strictShape)
+  shape(shape: { [key: string]: Validator }): SpecValidator {
+    const shapeKeys = Object.keys(shape)
 
     return _specValidator((it, path) => {
       let ret = null
@@ -605,10 +612,10 @@ const Spec = {
       if (it === null || typeof it !== 'object') {
         ret = 'Must be an object'
       } else {
-        for (const key of strictShapeKeys) {
+        for (const key of shapeKeys) {
           const subPath = _buildSubPath(path, key)
 
-          ret = _checkConstraint(strictShape[key], (it as any)[key], subPath)
+          ret = _checkConstraint(shape[key], (it as any)[key], subPath)
 
           if (ret) {
             if (path === null) {
@@ -624,7 +631,7 @@ const Spec = {
     })
   },
 
-  strictShape(shape: { [key: string]: Validator }): SpecValidator {
+  exact(shape: { [key: string]: Validator }): SpecValidator {
     const shapeKeyObj: { [key: string]: boolean } = {}
     let numShapeKeys = 0
 

@@ -11,7 +11,7 @@ import Spec from '../../main/api/Spec'
 import SpecValidator from '../../main/api/SpecValidator'
 import SpecError from '../../main/api/SpecError'
 
-const validateSimpleSpecTestConfig = Spec.strictShape({
+const validateSimpleSpecTestConfig = Spec.exact({
   spec: Spec.function,
   validValues: Spec.array,
   invalidValues: Spec.array
@@ -191,6 +191,14 @@ describe('Spec.object', () => {
     spec: Spec.object,
     validValues: [{}, [], new Date],
     invalidValues: [undefined, null, true, false, 0, 1, -1, ""]
+  })
+})
+
+describe('Spec.emptyObject', () => {
+  runSimpleSpecTest({
+    spec: Spec.emptyObject,
+    validValues: [{}, new Object()],
+    invalidValues: [undefined, null, true, false, 0, 1, -1, "", { a: 1 }, { '': 2}]
   })
 })
 
@@ -531,7 +539,7 @@ describe('Spec.or', () => {
         when: Spec.integer,
 
         then:
-          Spec.strictShape({
+          Spec.exact({
             type: Spec.is('integer'),
             value: Spec.integer
           })
@@ -542,7 +550,7 @@ describe('Spec.or', () => {
           (it: any) => it && it.type === 'string',
 
         then:
-          Spec.strictShape({
+          Spec.exact({
             type: Spec.is('string'),
             value: Spec.string
           })
@@ -687,21 +695,21 @@ describe('Spec.shape', () => {
   })
 })
 
-describe('Spec.strictShape', () => {
+describe('Spec.exact', () => {
   const
-    spec1 = Spec.strictShape({
+    spec1 = Spec.exact({
       firstName: Spec.string,
       lastName: Spec.string
     }),
 
-    spec2 = Spec.strictShape({
+    spec2 = Spec.exact({
       id: Spec.positiveInteger,
       firstName: Spec.string,
       lastName: Spec.string,
 
       addresses:
         Spec.arrayOf(
-            Spec.strictShape({
+            Spec.exact({
               addressType: Spec.oneOf('home', 'work', 'other'),
               street: Spec.string,
               zipCode: Spec.string,
@@ -772,7 +780,7 @@ describe('Spec.strictShape', () => {
 describe('Spec.lazy', () => {
   it('must handle recursive specs properly', () => {
     const spec =
-      Spec.strictShape({
+      Spec.exact({
         child:
           Spec.or(
             Spec.nothing,
@@ -794,9 +802,9 @@ describe('Spec.lazy', () => {
 
 describe('Spec', () => {
   const 
-    spec = Spec.strictShape({
-      level1: Spec.strictShape({
-        level2: Spec.strictShape({
+    spec = Spec.exact({
+      level1: Spec.exact({
+        level2: Spec.exact({
           arr: Spec.arrayOf(Spec.integer)
         })
       })
