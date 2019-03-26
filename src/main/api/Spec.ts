@@ -450,6 +450,44 @@ const Spec = {
       return _checkConstraint(constraint, value, _buildSubPath(path, subpath))
     })
   },
+
+  props({ required, optional, validate }: {
+    required?: Record<string, Validator>,
+    optional?: Record<string, Validator>,
+    validate?: Validator
+  }): SpecValidator {
+    let specValidator: SpecValidator | null = null
+
+    if (required || optional) {
+      const shape: Record<string, Validator> = {}
+
+      if (optional) {
+        const keys = Object.keys(optional)
+
+        for (let i = 0; i < keys.length; ++i) {
+          const key = keys[i]
+
+          shape[key] = Spec.optional(optional[key])
+        }
+      } 
+
+      if (required) {
+        Object.assign(shape, required)
+      }
+
+      specValidator = Spec.shape(shape)
+    }
+
+    if (validate) {
+      if (specValidator) {
+        specValidator = Spec.and(specValidator, validate)
+      } else {
+        specValidator = Spec.and(validate)
+      }
+    }
+
+    return  specValidator!
+  },
   
   hasOwnProp(propName: string): SpecValidator {
     return _specValidator(

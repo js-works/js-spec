@@ -88,6 +88,7 @@ function getValidatorNames(): string[] {
     'valuesOf',
     'shape',
     'exact',
+    'props',
     'and',
     'or',
     'in',
