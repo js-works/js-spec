@@ -809,11 +809,41 @@ describe('Spec.props', () => {
       { a: 1, b: 2, c: 'x', d: 3, e: 'z'}
     ]
   })
+})
 
+describe('Spec.exactProps', () => {
   runSimpleSpecTest({
-    spec: Spec.prop(['x', 'y'], Spec.is(42)),
-    validValues: [{ x: { y: 42 } }, { x: { y: 42, z: 43 } }],
-    invalidValues: [undefined, null, true, false, 0, '', '0', '123', {}, { x: { y: 43 } }]
+    spec:
+      Spec.exactProps({
+        required: {
+          a: Spec.number,
+          b: Spec.number
+        },
+
+        optional: {
+          c: Spec.string,
+          d: Spec.string
+        },
+
+        validate: (it: any) => it && it.a === 1
+      }),
+
+    validValues: [
+      { a: 1, b: 2},
+      { a: 1, b: 2, c: 'x'},
+      { a: 1, b: 2, c: 'x', d: 'y'}
+    ],
+
+    invalidValues: [
+      undefined, null, true, false, 0, '', '0', '123',
+      {},
+      { a: 1 },
+      { a: 2, b: 2 },
+      { a: 1, b: 'w' },
+      { a: 2, b: 2, c: 3 },
+      { a: 1, b: 2, c: 'x', d: 4 },
+      { a: 1, b: 2, c: 'x', d: 'y', e: 'z'}
+    ]
   })
 })
 

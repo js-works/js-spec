@@ -486,9 +486,60 @@ const Spec = {
       }
     }
 
-    return  specValidator!
+    return specValidator || Spec.any
   },
   
+  exactProps({ required, optional, validate }: {
+    required?: Record<string, Validator>,
+    optional?: Record<string, Validator>,
+    validate?: Validator
+  }): SpecValidator {
+    return Spec.and(
+      Spec.props({ required, optional, validate }),
+
+      (it: any) => {
+        let ret: Error  | null = null
+
+        const
+          allowedKeys: Record<string, any> = {},
+          dummy = allowedKeys
+
+        if (required) {
+          const keys = Object.keys(required)
+
+          for (let i = 0; i < keys.length; ++i) {
+            allowedKeys[keys[i]] = dummy
+          }
+        }
+        
+        if (optional) {
+          const keys = Object.keys(optional)
+
+          for (let i = 0; i < keys.length; ++i) {
+            allowedKeys[keys[i]] = dummy
+          }
+        }
+
+        const
+          keys = Object.keys(it),
+          invalidKeys = []
+
+        for (let i = 0; i < keys.length; ++i) {
+          const key = keys[i]
+
+          if (allowedKeys[key] !== dummy) {
+            invalidKeys.push(key)
+          }
+        }
+
+        if (invalidKeys.length > 0) {
+          ret = new SpecError('Invalid keys:' + invalidKeys.join(', '))
+        }
+
+        return ret
+      })
+  },
+
   hasOwnProp(propName: string): SpecValidator {
     return _specValidator(
       it => it === undefined || it === null || !it.hasOwnProperty(propName)
