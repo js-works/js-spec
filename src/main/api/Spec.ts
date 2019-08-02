@@ -489,9 +489,10 @@ const Spec = {
     return specValidator || Spec.any
   },
   
-  exactProps({ required, optional, validate }: {
+  checkProps({ required, optional, extensible = false, validate }: {
     required?: Record<string, Validator>,
     optional?: Record<string, Validator>,
+    extensible?: boolean,
     validate?: Validator
   }): SpecValidator {
     return Spec.and(
@@ -520,20 +521,22 @@ const Spec = {
           }
         }
 
-        const
-          keys = Object.keys(it),
-          invalidKeys = []
+        if (!extensible) {
+          const
+            keys = Object.keys(it),
+            invalidKeys = []
 
-        for (let i = 0; i < keys.length; ++i) {
-          const key = keys[i]
+          for (let i = 0; i < keys.length; ++i) {
+            const key = keys[i]
 
-          if (allowedKeys[key] !== dummy) {
-            invalidKeys.push(key)
+            if (allowedKeys[key] !== dummy) {
+              invalidKeys.push(key)
+            }
           }
-        }
 
-        if (invalidKeys.length > 0) {
-          ret = new SpecError('Invalid keys:' + invalidKeys.join(', '))
+          if (invalidKeys.length > 0) {
+            ret = new SpecError('Invalid keys:' + invalidKeys.join(', '))
+          }
         }
 
         return ret

@@ -811,10 +811,10 @@ describe('Spec.props', () => {
   })
 })
 
-describe('Spec.exactProps', () => {
+describe('Spec.checkProps (not extensible)', () => {
   runSimpleSpecTest({
     spec:
-      Spec.exactProps({
+      Spec.checkProps({
         required: {
           a: Spec.number,
           b: Spec.number
@@ -843,6 +843,44 @@ describe('Spec.exactProps', () => {
       { a: 2, b: 2, c: 3 },
       { a: 1, b: 2, c: 'x', d: 4 },
       { a: 1, b: 2, c: 'x', d: 'y', e: 'z'}
+    ]
+  })
+})
+
+describe('Spec.checkProps (extensible)', () => {
+  runSimpleSpecTest({
+    spec:
+      Spec.checkProps({
+        required: {
+          a: Spec.number,
+          b: Spec.number
+        },
+
+        optional: {
+          c: Spec.string,
+          d: Spec.string
+        },
+
+        extensible: true,
+
+        validate: (it: any) => it && it.a === 1
+      }),
+
+    validValues: [
+      { a: 1, b: 2},
+      { a: 1, b: 2, c: 'x'},
+      { a: 1, b: 2, c: 'x', d: 'y'},
+      { a: 1, b: 2, c: 'x', d: 'y', e: 'z'}
+    ],
+
+    invalidValues: [
+      undefined, null, true, false, 0, '', '0', '123',
+      {},
+      { a: 1 },
+      { a: 2, b: 2 },
+      { a: 1, b: 'w' },
+      { a: 2, b: 2, c: 3 },
+      { a: 1, b: 2, c: 'x', d: 4 },
     ]
   })
 })
