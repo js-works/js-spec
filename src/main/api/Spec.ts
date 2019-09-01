@@ -535,7 +535,7 @@ const Spec = {
           }
 
           if (invalidKeys.length > 0) {
-            ret = new SpecError('Invalid keys:' + invalidKeys.join(', '))
+            ret = new SpecError('Invalid key(s): ' + invalidKeys.join(', '))
           }
         }
 
