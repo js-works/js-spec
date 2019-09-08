@@ -7,7 +7,7 @@ export default function createSpecError(errMsg: string, path: string | null): Sp
   const
     fullErrMsg =
       'Constraint violation'
-        + (path ? ` at '${path}'` : '')
+        + (path ? ` for '${path}'` : '')
         + `: ${errMsg}`
 
   return new SpecError(fullErrMsg, errMsg, path)

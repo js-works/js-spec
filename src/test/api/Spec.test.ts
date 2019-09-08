@@ -924,7 +924,7 @@ describe('Spec', () => {
     expect(result).to.be.instanceof(SpecError)
 
     expect(result.message).to.eql(
-      "Constraint violation at 'level1.level2.arr.1': "
+      "Constraint violation for 'level1.level2.arr.1': "
       + 'Must be an integer')
 
     expect(result.hint).to.eql('Must be an integer')
