@@ -1,4 +1,4 @@
-type Validator =
-  (it: any, path?: string | null) => null | boolean | Error
+type Validator<T = any> =
+  (it: T, path?: string | null) => null | boolean | Error
 
 export default Validator

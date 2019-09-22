@@ -489,12 +489,12 @@ const Spec = {
     return specValidator || Spec.any
   },
   
-  checkProps({ required, optional, extensible = false, validate }: {
-    required?: Record<string, Validator>,
-    optional?: Record<string, Validator>,
-    extensible?: boolean,
-    validate?: Validator
-  }): SpecValidator {
+  checkProps<T extends object = any>({
+    required,
+    optional,
+    extensible,
+    validate
+   }: CheckPropsConfig<T>): SpecValidator {
     return Spec.and(
       Spec.props({ required, optional, validate }),
 
@@ -1087,4 +1087,19 @@ function _checkConstraint(constraint: Validator, it: any, path: null | string = 
   }
   
   return ret
+}
+
+type PickOptionalProps<T extends object> = Pick<T, {
+  [K in keyof T]-?: T extends Record<K, T[K]> ? never : K
+}[keyof T]>
+
+type PickRequiredProps<T extends object> = Pick<T, {
+  [K in keyof T]-?: T extends Record<K, T[K]> ? K : never
+}[keyof T]>
+
+type CheckPropsConfig<T extends object = any> = {
+  required?: { [K in keyof Partial<PickRequiredProps<T>>]: Validator<T[K]> },
+  optional?: { [K in keyof PickOptionalProps<T>]: Validator<Exclude<T[K], undefined>> },
+  extensible?: boolean,
+  validate?: Validator<T>
 }
