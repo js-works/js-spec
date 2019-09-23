@@ -494,7 +494,7 @@ const Spec = {
     optional,
     extensible,
     validate
-   }: CheckPropsConfig<T>): SpecValidator {
+   }: CheckPropsConfig<T>): SpecValidator<T> {
     return Spec.and(
       Spec.props({ required, optional, validate }),
 
