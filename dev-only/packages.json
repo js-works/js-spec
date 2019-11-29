@@ -1,5 +1,0 @@
-{
-  "name": "js-spec/dev-only",
-  "main": "./index.js",
-  "types": "../dist/types/js-spec.d.ts"
-}

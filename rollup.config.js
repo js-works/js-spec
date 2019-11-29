@@ -10,17 +10,15 @@ const configs = []
 
 for (const format of ['umd', 'cjs', 'amd', 'esm']) {
   for (const productive of [false, true]) {
-    configs.push(createStandardConfig(format, productive))
+    configs.push(createConfig(format, productive))
   }
-
-  configs.push(createNoopConfig(format))
 }
 
 export default configs
 
 // --- locals -------------------------------------------------------
 
-function createStandardConfig(moduleFormat, productive) {
+function createConfig(moduleFormat, productive) {
   return {
     input: 'src/main/js-spec.ts',
 
@@ -60,42 +58,6 @@ function createStandardConfig(moduleFormat, productive) {
       }),
       productive && (moduleFormat === 'esm' ? terser() : uglifyJS()),
       productive && gzip()
-    ],
-  }
-}
-
-function createNoopConfig(moduleFormat) {
-  return {
-    input: 'src/main/js-spec.noop.ts',
-
-    output: {
-      file: `dist/noop/js-spec.noop.${moduleFormat}.production.js`,
-
-      format: moduleFormat,
-      name: 'jsSpec', 
-      sourcemap: false
-    },
-
-    plugins: [
-      resolve({
-        jsnext: true,
-        main: true,
-        browser: true,
-      }),
-      // tslint({
-      //}),
-      replace({
-        exclude: 'node_modules/**',
-
-        values: {
-          'process.env.NODE_ENV': "'production'",
-        }
-      }),
-      typescript({
-        exclude: 'node_modules/**',
-      }),
-      moduleFormat === 'esm' ? terser() : uglifyJS(),
-      gzip()
     ],
   }
 }

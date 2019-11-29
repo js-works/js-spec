@@ -1,6 +1,6 @@
 {
   "name": "js-spec",
-  "version": "0.1.72",
+  "version": "0.1.73",
   "license": "LGPL-3.0",
   "homepage": "https://github.com/js-works/js-spec",
   "main": "index.js",
@@ -14,7 +14,6 @@
   },
   "files": [
     "index.js",
-    "dev-only",
     "dist"
   ],
   "devDependencies": {

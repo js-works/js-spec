@@ -6,7 +6,6 @@ import { from, of, range } from 'rxjs'
 import { expect } from 'chai'
 
 import * as StandardModule from '../../main/js-spec'
-import * as NoopModule from '../../main/js-spec.noop'
 import Spec from '../../main/api/Spec'
 import SpecValidator from '../../main/api/SpecValidator'
 import SpecError from '../../main/api/SpecError'
@@ -959,37 +958,6 @@ describe('Spec', () => {
     expect(result.hint).to.eql('Please provide valid configuration')
 
     expect(result.path).to.eql(null)
-  })
-})
-
-describe('Check whether standard module and dev-only module have the same API', () => {
-  it('should export the same functions and objects', () => {
-    const
-      standardExports = Object.keys(StandardModule).sort(),
-      noopExports = Object.keys(NoopModule).sort()
-
-    expect(standardExports).to.eql(noopExports)
-  })
-
-  it('should be asserted that the conjunction of the keys sets of both Spec objects is empty', () => {
-    const
-      standardKeys = Object.keys(StandardModule.Spec),
-      noopKeys = Object.keys(NoopModule.Spec),
-      diff = new Set<string>()
-
-    for (const x of standardKeys) {
-      if (!noopKeys.includes(x)) {
-        diff.add(x)
-      }
-    }
-
-    for (const x of noopKeys) {
-      if (!standardKeys.includes(x)) {
-        diff.add(x)
-      }
-    }
-    
-    expect(Array.from(diff)).to.eql([])
   })
 })
 
