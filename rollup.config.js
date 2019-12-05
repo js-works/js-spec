@@ -8,9 +8,11 @@ import gzip from 'rollup-plugin-gzip'
 
 const configs = []
 
-for (const format of ['umd', 'cjs', 'amd', 'esm']) {
-  for (const productive of [false, true]) {
-    configs.push(createConfig(format, productive))
+for (const pkg of ['core', 'validators']) {
+  for (const format of ['umd', 'cjs', 'amd', 'esm']) {
+    for (const productive of [false, true]) {
+      configs.push(createConfig(pkg, format, productive))
+    }
   }
 }
 
@@ -18,17 +20,29 @@ export default configs
 
 // --- locals -------------------------------------------------------
 
-function createConfig(moduleFormat, productive) {
+function createConfig(pkg, moduleFormat, productive) {
+  let file
+
+  if (pkg === 'core') {
+    file = productive
+      ? `dist/js-spec.${moduleFormat}.production.js`
+      : `dist/js-spec.${moduleFormat}.development.js`
+  } else if (pkg === 'validators')  {
+    file = productive
+      ? `dist/js-spec.validators.${moduleFormat}.production.js`
+      : `dist/js-spec.validators.${moduleFormat}.development.js`
+  }
+
   return {
-    input: 'src/main/js-spec.ts',
+    input:
+      pkg === 'core'
+        ? 'src/main/js-spec.ts'
+        : 'src/main/api/validators.ts',
 
     output: {
-      file: productive
-        ? `dist/js-spec.${moduleFormat}.production.js`
-        : `dist/js-spec.${moduleFormat}.development.js`,
-
+      file,
       format: moduleFormat,
-      name: 'jsSpec', 
+      name: pkg === 'core' ? 'jsSpec' : 'jsSpec.validators', 
       sourcemap: productive ? false : 'inline',
 
       globals: {
@@ -39,11 +53,7 @@ function createConfig(moduleFormat, productive) {
     external: [],
 
     plugins: [
-      resolve({
-        jsnext: true,
-        main: true,
-        browser: true,
-      }),
+      resolve(),
       // tslint({
       //}),
       replace({

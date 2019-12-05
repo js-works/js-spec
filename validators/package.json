@@ -1,0 +1,5 @@
+{
+  "name": "js-spec_validators",
+  "main": "./index.js",
+  "types": "../dist/types/js-spec.d.ts"
+}

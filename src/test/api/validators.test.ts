@@ -6,17 +6,17 @@ import { from, of, range } from 'rxjs'
 import { expect } from 'chai'
 
 import * as StandardModule from '../../main/js-spec'
-import Spec from '../../main/api/Spec'
+import * as Spec from '../../main/api/validators'
 import SpecValidator from '../../main/api/SpecValidator'
 import SpecError from '../../main/api/SpecError'
 
 const validateSimpleSpecTestConfig = Spec.exact({
-  spec: Spec.function,
+  spec: Spec.func,
   validValues: Spec.array,
   invalidValues: Spec.array
 })
 
-describe('Spec.any', () => {
+describe('Validator: any', () => {
   runSimpleSpecTest({
     spec: Spec.any,
     validValues: [undefined, null, true, false, 42, -42, 'some text', {}, [], new Date],
@@ -24,7 +24,7 @@ describe('Spec.any', () => {
   })
 })
 
-describe('Spec.boolean', () => {
+describe('Validator: boolean', () => {
   runSimpleSpecTest({
     spec: Spec.boolean,
     validValues: [true, false],
@@ -32,7 +32,7 @@ describe('Spec.boolean', () => {
   })
 })
 
-describe('Spec.number', () => {
+describe('Validator: number', () => {
   runSimpleSpecTest({
     spec: Spec.number,
     validValues: [0, 1, -1, 42, -42, 12.34, -12.34, Infinity, -Infinity],
@@ -41,7 +41,7 @@ describe('Spec.number', () => {
   })
 })
 
-describe('Spec.positiveNumber', () => {
+describe('Validator: positiveNumber', () => {
   runSimpleSpecTest({
     spec: Spec.positiveNumber,
     validValues: [1, 2, 3, 42, Infinity],
@@ -49,7 +49,7 @@ describe('Spec.positiveNumber', () => {
   })
 })
 
-describe('Spec.nonpositiveNumber', () => {
+describe('Validator: nonpositiveNumber', () => {
   runSimpleSpecTest({
     spec: Spec.nonpositiveNumber,
     validValues: [0, -1, -2, -12.34, -Infinity],
@@ -57,7 +57,7 @@ describe('Spec.nonpositiveNumber', () => {
   })
 })
 
-describe('Spec.negativeNumber', () => {
+describe('Validator: negativeNumber', () => {
   runSimpleSpecTest({
     spec: Spec.negativeNumber,
     validValues: [-1, -12.34, -42, -Infinity],
@@ -65,7 +65,7 @@ describe('Spec.negativeNumber', () => {
   })
 })
 
-describe('Spec.nonnegativeNumber', () => {
+describe('Validator: nonnegativeNumber', () => {
   runSimpleSpecTest({
     spec: Spec.nonnegativeNumber,
     validValues: [0, 1, 2, 12.34, 42, Infinity],
@@ -73,7 +73,7 @@ describe('Spec.nonnegativeNumber', () => {
   })
 })
 
-describe('Spec.float', () => {
+describe('Validator: float', () => {
   runSimpleSpecTest({
     spec: Spec.float,
     validValues: [0, 1, -1, 42, -42, 12.34, -12.34],
@@ -81,7 +81,7 @@ describe('Spec.float', () => {
   })
 })
 
-describe('Spec.positiveFloat', () => {
+describe('Validator: positiveFloat', () => {
   runSimpleSpecTest({
     spec: Spec.positiveFloat,
     validValues: [1, 2, 3, 42],
@@ -89,7 +89,7 @@ describe('Spec.positiveFloat', () => {
   })
 })
 
-describe('Spec.nonpositiveFloat', () => {
+describe('Validator: nonpositiveFloat', () => {
   runSimpleSpecTest({
     spec: Spec.nonpositiveFloat,
     validValues: [0, -1, -2, -12.34],
@@ -97,7 +97,7 @@ describe('Spec.nonpositiveFloat', () => {
   })
 })
 
-describe('Spec.negativeFloat', () => {
+describe('Validator: negativeFloat', () => {
   runSimpleSpecTest({
     spec: Spec.negativeFloat,
     validValues: [-1, -12.34, -42],
@@ -105,7 +105,7 @@ describe('Spec.negativeFloat', () => {
   })
 })
 
-describe('Spec.nonnegativeFloat', () => {
+describe('Validator: nonnegativeFloat', () => {
   runSimpleSpecTest({
     spec: Spec.nonnegativeFloat,
     validValues: [0, 1, 2, 12.34, 42],
@@ -113,7 +113,7 @@ describe('Spec.nonnegativeFloat', () => {
   })
 })
 
-describe('Spec.integer', () => {
+describe('Validator: integer', () => {
   runSimpleSpecTest({
     spec: Spec.integer,
     validValues: [0, 1, -1, 42, -42],
@@ -121,7 +121,7 @@ describe('Spec.integer', () => {
   })
 })
 
-describe('Spec.positiveInteger', () => {
+describe('Validator: positiveInteger', () => {
   runSimpleSpecTest({
     spec: Spec.positiveInteger,
     validValues: [1, 2, 3, 42],
@@ -129,7 +129,7 @@ describe('Spec.positiveInteger', () => {
   })
 })
 
-describe('Spec.nonpositiveInteger', () => {
+describe('Validator: nonpositiveInteger', () => {
   runSimpleSpecTest({
     spec: Spec.nonpositiveInteger,
     validValues: [0, -1, -2, -42],
@@ -137,7 +137,7 @@ describe('Spec.nonpositiveInteger', () => {
   })
 })
 
-describe('Spec.negativeInteger', () => {
+describe('Validator: negativeInteger', () => {
   runSimpleSpecTest({
     spec: Spec.negativeInteger,
     validValues: [-1, -2, -42],
@@ -145,7 +145,7 @@ describe('Spec.negativeInteger', () => {
   })
 })
 
-describe('Spec.nonnegativeInteger', () => {
+describe('Validator: nonnegativeInteger', () => {
   runSimpleSpecTest({
     spec: Spec.nonnegativeInteger,
     validValues: [0, 1, 2, 42],
@@ -153,7 +153,7 @@ describe('Spec.nonnegativeInteger', () => {
   })
 })
 
-describe('Spec.finite', () => {
+describe('Validator: finite', () => {
   runSimpleSpecTest({
     spec: Spec.finite,
     validValues: [1, -1, 2, -2, 3, '1', '-1', '2', '-2', true, false, null, [], [1]],
@@ -161,7 +161,7 @@ describe('Spec.finite', () => {
   })
 })
 
-describe('Spec.infinite', () => {
+describe('Validator: infinite', () => {
   runSimpleSpecTest({
     spec: Spec.infinite,
     validValues: [Infinity, -Infinity],
@@ -169,7 +169,7 @@ describe('Spec.infinite', () => {
   })
 })
 
-describe('Spec.string', () => {
+describe('Validator: string', () => {
   runSimpleSpecTest({
     spec: Spec.string,
     validValues: ['', 'some text'],
@@ -177,15 +177,15 @@ describe('Spec.string', () => {
   })
 })
 
-describe('Spec.function', () => {
+describe('Validator: function', () => {
   runSimpleSpecTest({
-    spec: Spec.function,
+    spec: Spec.func,
     validValues: [() => {}, Object, Array, Date],
     invalidValues: [undefined, null, true, false, 0, 1, -1, "", {}, []]
   })
 })
 
-describe('Spec.object', () => {
+describe('Validator: object', () => {
   runSimpleSpecTest({
     spec: Spec.object,
     validValues: [{}, [], new Date],
@@ -193,7 +193,7 @@ describe('Spec.object', () => {
   })
 })
 
-describe('Spec.emptyObject', () => {
+describe('Validator: emptyObject', () => {
   runSimpleSpecTest({
     spec: Spec.emptyObject,
     validValues: [{}, new Object()],
@@ -201,7 +201,7 @@ describe('Spec.emptyObject', () => {
   })
 })
 
-describe('Spec.array', () => {
+describe('Validator: array', () => {
   runSimpleSpecTest({
     spec: Spec.array,
     validValues: [[], [0], [1, 2, 3], new Array],
@@ -209,7 +209,7 @@ describe('Spec.array', () => {
   })
 })
 
-describe('Spec.iterable', () => {
+describe('Validator: iterable', () => {
   runSimpleSpecTest({
     spec: Spec.iterable,
     validValues: ["123", [1, 2, 3], new Set()],
@@ -217,7 +217,7 @@ describe('Spec.iterable', () => {
   })
 })
 
-describe('Spec.observable', () => {
+describe('Validator: observable', () => {
   runSimpleSpecTest({
     spec: Spec.observable,
     validValues: [of(1, 2, 3), from([2, 3, 4]), range(1, 10)],
@@ -226,7 +226,7 @@ describe('Spec.observable', () => {
   })
 })
 
-describe('Spec.date', () => {
+describe('Validator: date', () => {
   runSimpleSpecTest({
     spec: Spec.date,
     validValues: [new Date(), new Date('1989-11-09')],
@@ -234,7 +234,7 @@ describe('Spec.date', () => {
   })
 })
 
-describe('Spec.something', () => {
+describe('Validator: something', () => {
   runSimpleSpecTest({
     spec: Spec.something,
     validValues: [true, false, 0, 1, 42, [], [0], {}, { x: 12.3 }],
@@ -242,7 +242,7 @@ describe('Spec.something', () => {
   })
 })
 
-describe('Spec.nothing', () => {
+describe('Validator: nothing', () => {
   runSimpleSpecTest({
     spec: Spec.nothing,
     validValues: [undefined, null],
@@ -250,7 +250,7 @@ describe('Spec.nothing', () => {
   })
 })
 
-describe('Spec.hasSomeKeys', () => {
+describe('Validator: hasSomeKeys', () => {
   runSimpleSpecTest({
     spec: Spec.hasSomeKeys,
     validValues: ['x', '123', [0], { n: 42 }],
@@ -258,7 +258,7 @@ describe('Spec.hasSomeKeys', () => {
   })
 })
 
-describe('Spec.is', () => {
+describe('Validator: is', () => {
   runSimpleSpecTest({
     spec: Spec.is(42),
     validValues: [42],
@@ -266,7 +266,7 @@ describe('Spec.is', () => {
   })
 })
 
-describe('Spec.isNot', () => {
+describe('Validator: isNot', () => {
   runSimpleSpecTest({
     spec: Spec.isNot(42),
     validValues: [undefined, null, true, false, 0, 1, 41, "42", {}],
@@ -274,7 +274,7 @@ describe('Spec.isNot', () => {
   })
 })
 
-describe('Spec.equal', () => {
+describe('Validator: equal', () => {
   runSimpleSpecTest({
     spec: Spec.equal(42),
     validValues: [42, "42", "42 "],
@@ -288,7 +288,7 @@ describe('Spec.equal', () => {
   })
 })
 
-describe('Spec.notEqual', () => {
+describe('Validator: notEqual', () => {
   runSimpleSpecTest({
     spec: Spec.notEqual(42),
     validValues: [undefined, null, true, false, 0, 1, 41, {}],
@@ -302,7 +302,7 @@ describe('Spec.notEqual', () => {
   })
 })
 
-describe('Spec.optional', () => {
+describe('Validator: optional', () => {
   runSimpleSpecTest({
     spec: Spec.optional(Spec.number),
     validValues: [undefined, 0, 1, -1, 12.23, -42],
@@ -310,7 +310,7 @@ describe('Spec.optional', () => {
   })
 })
 
-describe('Spec.nullable', () => {
+describe('Validator: nullable', () => {
   runSimpleSpecTest({
     spec: Spec.nullable(Spec.number),
     validValues: [null, 0, 1, -1, 12.23, -42],
@@ -318,7 +318,7 @@ describe('Spec.nullable', () => {
   })
 })
 
-describe('Spec.nullableOptional', () => {
+describe('Validator: nullableOptional', () => {
   runSimpleSpecTest({
     spec: Spec.nullableOptional(Spec.number),
     validValues: [undefined, null, 0, 1, -1, 12.23, -42],
@@ -326,7 +326,7 @@ describe('Spec.nullableOptional', () => {
   })
 })
 
-describe('Spec.fail', () => {
+describe('Validator: fail', () => {
   runSimpleSpecTest({
     spec: Spec.fail(),
     validValues: [],
@@ -334,7 +334,7 @@ describe('Spec.fail', () => {
   })
 })
 
-describe('Spec.oneOf', () => {
+describe('Validator: oneOf', () => {
   runSimpleSpecTest({
     spec: Spec.oneOf(1, 2, "42", false),
     validValues: [1, 2, "42", false],
@@ -342,7 +342,7 @@ describe('Spec.oneOf', () => {
   })
 })
 
-describe('Spec.unique', () => {
+describe('Validator: unique', () => {
   runSimpleSpecTest({
     spec: Spec.unique(),
     validValues: [[], [1, 2, 3]],
@@ -356,7 +356,7 @@ describe('Spec.unique', () => {
   })
 })
 
-describe('Spec.instanceOf', () => {
+describe('Validator: instanceOf', () => {
   runSimpleSpecTest({
     spec: Spec.instanceOf(Object),
     validValues: [[], {}, new Date],
@@ -370,14 +370,14 @@ describe('Spec.instanceOf', () => {
   })
 })
 
-describe('Spec.extends', () => {
+describe('Validator: extends', () => {
   const
     A = class {},
     B = class extends A {},
     C = class {}
 
   runSimpleSpecTest({
-    spec: Spec.extends(A),
+    spec: Spec.extending(A),
     validValues: [A, B],
     invalidValues: [true, 42, '', C]
   })
@@ -389,7 +389,7 @@ describe('Spec.extends', () => {
   })
 })
 
-describe('Spec.arrayOf', () => {
+describe('Validator: arrayOf', () => {
   runSimpleSpecTest({
     spec: Spec.arrayOf(Spec.integer),
     validValues: [[], [1, 2, 3], [-1, -2, -3], [1, -1, 2, -2]],
@@ -397,7 +397,7 @@ describe('Spec.arrayOf', () => {
   })
 })
 
-describe('Spec.singleOf', () => {
+describe('Validator: singleOf', () => {
   runSimpleSpecTest({
     spec: Spec.singleOf(Spec.integer),
     validValues: [[1], [-1], [0], [42]],
@@ -405,7 +405,7 @@ describe('Spec.singleOf', () => {
   })
 })
 
-describe('Spec.match', () => {
+describe('Validator: match', () => {
   runSimpleSpecTest({
     spec: Spec.match(/^[a-z]+$/),
     validValues: ['a', 'abc', 'x', 'xxx', 'az'],
@@ -413,7 +413,7 @@ describe('Spec.match', () => {
   })
 })
 
-describe('Spec.valid', () => {
+describe('Validator: valid', () => {
   runSimpleSpecTest({
     spec: Spec.valid(it => it > 5),
     validValues: [6, 7, 8, 42, Infinity, '6', '66 '],
@@ -421,7 +421,7 @@ describe('Spec.valid', () => {
   })
 })
 
-describe('Spec.prop', () => {
+describe('Validator: prop', () => {
   runSimpleSpecTest({
     spec: Spec.prop('length', (it: any) => it > 3),
     validValues: ['1234', { length: 12 }],
@@ -435,7 +435,7 @@ describe('Spec.prop', () => {
   })
 })
 
-describe('Spec.hasOwnProp', () => {
+describe('Validator: hasOwnProp', () => {
   runSimpleSpecTest({
     spec: Spec.hasOwnProp('x'),
     validValues: [{ x: 1 }, { x: 2, y: 3 }],
@@ -443,7 +443,7 @@ describe('Spec.hasOwnProp', () => {
   })
 })
 
-describe('Spec.greater', () => {
+describe('Validator: greater', () => {
   runSimpleSpecTest({
     spec: Spec.greater('5'),
     validValues: [5.1, 6, 7, 42, '6', '50', '5x', 'x4'],
@@ -451,7 +451,7 @@ describe('Spec.greater', () => {
   })
 })
 
-describe('Spec.greaterOrEqual', () => {
+describe('Validator: greaterOrEqual', () => {
   runSimpleSpecTest({
     spec: Spec.greaterOrEqual('5'),
     validValues: [5, 5.1, 6, 7, 42, '5', '6', '50', '5x', 'x4'],
@@ -459,7 +459,7 @@ describe('Spec.greaterOrEqual', () => {
   })
 })
 
-describe('Spec.less', () => {
+describe('Validator: less', () => {
   runSimpleSpecTest({
     spec: Spec.less('5'),
     validValues: [null, true, false, 0, 1, 2, 4, '', '4.9', []],
@@ -467,7 +467,7 @@ describe('Spec.less', () => {
   })
 })
 
-describe('Spec.lessOrEqual', () => {
+describe('Validator: lessOrEqual', () => {
   runSimpleSpecTest({
     spec: Spec.lessOrEqual('5'),
     validValues: [null, true, false, 0, 1, 2, 4, 4.9, 5, 5.0, '', '4.9', '5', []],
@@ -475,7 +475,7 @@ describe('Spec.lessOrEqual', () => {
   })
 })
 
-describe('Spec.between', () => {
+describe('Validator: between', () => {
   runSimpleSpecTest({
     spec: Spec.between(0, 100),
     validValues: [true, false, null, 1, 2, 2.22, 3, 42, 100, '100', [], [0]],
@@ -489,7 +489,7 @@ describe('Spec.between', () => {
   })
 })
 
-describe('Spec.all', () => {
+describe('Validator: all', () => {
   runSimpleSpecTest({
     spec: Spec.all(Spec.number),
     validValues: [undefined, null, [], [1, 2, 3], new Set([123.45, -42])],
@@ -497,7 +497,7 @@ describe('Spec.all', () => {
   })
 })
 
-describe('Spec.keysOf', () => {
+describe('Validator: keysOf', () => {
   runSimpleSpecTest({
     spec: Spec.keysOf(Spec.match(/^[a-z]+$/)),
     validValues: [{}, { a: 1, b: 2 }, { abc: 123, xyz: 789 }],
@@ -505,7 +505,7 @@ describe('Spec.keysOf', () => {
   })
 })
 
-describe('Spec.valuesOf', () => {
+describe('Validator: valuesOf', () => {
   runSimpleSpecTest({
     spec: Spec.valuesOf(Spec.number),
     validValues: [{}, { a: 1, b: 2 }, { A: 123.4, B: 678.9 }],
@@ -513,7 +513,7 @@ describe('Spec.valuesOf', () => {
   })
 })
 
-describe('Spec.and', () => {
+describe('Validator: and', () => {
   runSimpleSpecTest({
     spec: Spec.and(Spec.string, (it: string) => it.indexOf('x') !== -1),
     validValues: ['x', 'axb', 'xab', 'abx', 'xxx', 'aaxxbb'],
@@ -521,7 +521,7 @@ describe('Spec.and', () => {
   })
 })
 
-describe('Spec.or', () => {
+describe('Validator: or', () => {
   runSimpleSpecTest({
     spec: Spec.or(Spec.string, Spec.number),
     validValues: ['', 'xxx', 'some text', 0, 1, -1, 12.3, -12.3, Infinity, -Infinity],
@@ -572,7 +572,7 @@ describe('Spec.or', () => {
   })
 })
 
-describe('Spec.when (using function as first argument that returns true)', () => {
+describe('Validator: when (using function as first argument that returns true)', () => {
   runSimpleSpecTest({
     spec: Spec.when(() => true, Spec.positiveNumber, Spec.negativeNumber),
     validValues: [1, 2, 3, 4, 5],
@@ -580,7 +580,7 @@ describe('Spec.when (using function as first argument that returns true)', () =>
   })
 })
 
-describe('Spec.when (using function as first argument that returns false)', () => {
+describe('Validator: when (using function as first argument that returns false)', () => {
   runSimpleSpecTest({
     spec: Spec.when(() => false, Spec.positiveNumber, Spec.negativeNumber),
     validValues: [-1, -2, -3, -4, -5],
@@ -588,7 +588,7 @@ describe('Spec.when (using function as first argument that returns false)', () =
   })
 })
 
-describe('Spec.when (using SpecValidator as first argument)', () => {
+describe('Validator: when (using SpecValidator as first argument)', () => {
   runSimpleSpecTest({
     spec: Spec.when(Spec.valid(() => false), Spec.positiveNumber, Spec.negativeNumber),
     validValues: [-1, -2, -3, -4, -5],
@@ -596,23 +596,23 @@ describe('Spec.when (using SpecValidator as first argument)', () => {
   })
 })
 
-describe('Spec.in', () => {
+describe('Validator: in', () => {
   runSimpleSpecTest({
-    spec: Spec.in(new Set([1, 2, 3, 4, 5])),
+    spec: Spec.isIn(new Set([1, 2, 3, 4, 5])),
     validValues: [1, 2, 3, 4, 5],
     invalidValues: [undefined, null, true, false, '1', '2', [], {}]
   })
 })
 
-describe('Spec.notIn', () => {
+describe('Validator: notIn', () => {
   runSimpleSpecTest({
-    spec: Spec.notIn(new Set([1, 2, 3, 4, 5])),
+    spec: Spec.isNotIn(new Set([1, 2, 3, 4, 5])),
     validValues: [undefined, null, true, false, '1', '2', [], {}],
     invalidValues: [1, 2, 3, 4, 5],
   })
 })
 
-describe('Spec.shape', () => {
+describe('Validator: shape', () => {
   const
     spec1 = Spec.shape({
       firstName: Spec.string,
@@ -694,7 +694,7 @@ describe('Spec.shape', () => {
   })
 })
 
-describe('Spec.exact', () => {
+describe('Validator: exact', () => {
   const
     spec1 = Spec.exact({
       firstName: Spec.string,
@@ -776,7 +776,7 @@ describe('Spec.exact', () => {
   })
 })
 
-describe('Spec.props', () => {
+describe('Validator: props', () => {
   runSimpleSpecTest({
     spec:
       Spec.props({
@@ -810,7 +810,7 @@ describe('Spec.props', () => {
   })
 })
 
-describe('Spec.checkProps (not extensible)', () => {
+describe('Validator: checkProps (not extensible)', () => {
   runSimpleSpecTest({
     spec:
       Spec.checkProps({
@@ -846,7 +846,7 @@ describe('Spec.checkProps (not extensible)', () => {
   })
 })
 
-describe('Spec.checkProps (extensible)', () => {
+describe('Validator: checkProps (extensible)', () => {
   runSimpleSpecTest({
     spec:
       Spec.checkProps({
@@ -884,7 +884,7 @@ describe('Spec.checkProps (extensible)', () => {
   })
 })
 
-describe('Spec.lazy', () => {
+describe('Validator: lazy', () => {
   it('must handle recursive specs properly', () => {
     const spec =
       Spec.exact({
