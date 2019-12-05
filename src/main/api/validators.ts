@@ -317,7 +317,7 @@ export function instanceOf(type: Function): SpecValidator {
     : 'Must be instance of ' + type.name)
 }
 
-export function extending(type: Function): SpecValidator {
+export function subclassOf(type: Function): SpecValidator {
   if (typeof type !== 'function') {
     throw new Error(
       "[extends] First paramter 'type' must be a function")

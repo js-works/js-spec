@@ -43,7 +43,7 @@ function createConfig(pkg, moduleFormat, productive) {
       file,
       format: moduleFormat,
       name: pkg === 'core' ? 'jsSpec' : 'jsSpec.validators', 
-      sourcemap: productive ? false : 'inline',
+      sourcemap: false,
 
       globals: {
         'js-spec': 'jsSpec',

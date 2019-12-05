@@ -15,6 +15,7 @@
     ]
   },
   "files": [
-    "src/main/js-spec.ts"
+    "src/main/js-spec.ts",
+    "src/main/js-spec.validators.ts"
   ]
 }

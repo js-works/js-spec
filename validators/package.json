@@ -1,5 +1,6 @@
 {
   "name": "js-spec_validators",
   "main": "./index.js",
-  "types": "../dist/types/js-spec.d.ts"
+  "module": "../dist/js-spec.esm.production.js",
+  "types": "../dist/types/api/js-spec.validators.d.ts"
 }

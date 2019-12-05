@@ -177,7 +177,7 @@ describe('Validator: string', () => {
   })
 })
 
-describe('Validator: function', () => {
+describe('Validator: func', () => {
   runSimpleSpecTest({
     spec: Spec.func,
     validValues: [() => {}, Object, Array, Date],
@@ -370,22 +370,16 @@ describe('Validator: instanceOf', () => {
   })
 })
 
-describe('Validator: extends', () => {
+describe('Validator: subclassOf', () => {
   const
     A = class {},
     B = class extends A {},
     C = class {}
 
   runSimpleSpecTest({
-    spec: Spec.extending(A),
+    spec: Spec.subclassOf(A),
     validValues: [A, B],
     invalidValues: [true, 42, '', C]
-  })
-  
-  runSimpleSpecTest({
-    spec: Spec.instanceOf(Date),
-    validValues: [new Date, new Date('1945-05-08')],
-    invalidValues: [true, 42, '', '0', 'some text']
   })
 })
 
@@ -596,7 +590,7 @@ describe('Validator: when (using SpecValidator as first argument)', () => {
   })
 })
 
-describe('Validator: in', () => {
+describe('Validator: isIn', () => {
   runSimpleSpecTest({
     spec: Spec.isIn(new Set([1, 2, 3, 4, 5])),
     validValues: [1, 2, 3, 4, 5],
@@ -604,7 +598,7 @@ describe('Validator: in', () => {
   })
 })
 
-describe('Validator: notIn', () => {
+describe('Validator: isNotIn', () => {
   runSimpleSpecTest({
     spec: Spec.isNotIn(new Set([1, 2, 3, 4, 5])),
     validValues: [undefined, null, true, false, '1', '2', [], {}],
