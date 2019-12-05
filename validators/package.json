@@ -1,6 +1,8 @@
 {
   "name": "js-spec_validators",
   "main": "./index.js",
-  "module": "../dist/js-spec.esm.production.js",
+  "module": "../dist/js-spec.validators.esm.production.js",
+  "unpkg": "../dist/js-spec.validators.umd.production.js",
+  "jsdelivr": "../dist/js-spec.validators.umd.production.js",
   "types": "../dist/types/api/validators.d.ts"
 }
