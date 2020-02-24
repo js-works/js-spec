@@ -923,7 +923,7 @@ export function isNotIn(collection: any): SpecValidator {
   })
 }
 
-export function lazy(getValidator: () => Validator) {
+export function lazy<T = any>(getValidator: () => Validator<T>): Validator<T> {
   let validator: Function = null
 
   return _specValidator((it, path) => {
