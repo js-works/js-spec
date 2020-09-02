@@ -22,7 +22,7 @@
     "@types/chai": "^4.2.0",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.7.3",
-    "bestzip": "^2.1.4",
+    "bestzip": "^2.1.7",
     "chai": "~4.2.0",
     "copyfiles": "^2.1.1",
     "coveralls": "^3.0.6",
