@@ -1,8 +1,5 @@
 {
-  "mode": "file",
   "out": "dist/docs/api",
   "name": "js-spec",
-  "theme": "minimal",
-  "ignoreCompilerErrors": "true"
+  "theme": "minimal"
 }
-
